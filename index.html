@@ -35,7 +35,7 @@
     .section-content { padding:20px; }
 
     .line-item {
-      display:grid; grid-template-columns:1fr 150px 150px; gap:20px; padding:12px 0;
+      display:grid; grid-template-columns:1fr 160px 160px; gap:20px; padding:12px 0;
       border-bottom:1px solid #f0f0f0; align-items:center;
     }
     .line-item:last-child { border-bottom:none; }
@@ -49,9 +49,8 @@
 
     .summary-table { background:#f8f9fa; border-radius:10px; padding:20px; margin-top:30px; }
     .summary-table h3 { margin-bottom:12px; color:#2c3e50; }
-    .summary-note { font-size:.9em; color:#6a1b9a; margin-bottom:12px; }
     .summary-row {
-      display:grid; grid-template-columns:1fr 120px 120px; gap:20px; padding:12px 0; border-bottom:1px solid #e0e0e0;
+      display:grid; grid-template-columns:1fr 200px; gap:20px; padding:12px 0; border-bottom:1px solid #e0e0e0;
     }
     .summary-row:last-child { border-bottom:none; font-weight:700; font-size:1.1em; }
 
@@ -60,10 +59,10 @@
 
     .assumptions { background:#fff9e6; border:1px solid #ffeb3b; border-radius:10px; padding:20px; margin-bottom:30px; }
     .assumptions h3 { color:#f39c12; margin-bottom:15px; }
-    .assumption-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:15px; margin-top:15px; }
+    .assumption-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:15px; margin-top:15px; }
     .assumption-item { display:flex; flex-direction:column; gap:5px; }
     .assumption-item label { font-size:.9em; color:#666; }
-    .assumption-item input { padding:8px; border:1px solid #ddd; border-radius:6px; }
+    .assumption-item input,.assumption-item select { padding:8px; border:1px solid #ddd; border-radius:6px; }
 
     .scenario-buttons { display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
     .scenario-btn {
@@ -92,7 +91,7 @@
     .metric-value{ font-size:clamp(1.25rem,3vw + .25rem,2rem); }
     .summary-table,.section-content{ overflow-x:auto; }
     .key-metrics{ grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); }
-    .line-item input,.assumption-item input{ font-size:16px; } /* prevent iOS zoom */
+    .line-item input,.assumption-item input,.assumption-item select{ font-size:16px; } /* prevent iOS zoom */
     @media (max-width:992px){ .content{ padding:var(--pad-md); } .section-header{ padding:12px 16px; } }
     @media (max-width:768px){
       .container{ border-radius:0; }
@@ -130,6 +129,7 @@
       <div class="assumptions">
         <h3>🔑 Key Assumptions & Configuration</h3>
         <div class="assumption-grid">
+          <!-- Geometry -->
           <div class="assumption-item">
             <label>Facility Size (sqm)</label>
             <input type="number" id="facility-size" value="296" onchange="calculateAll()">
@@ -138,6 +138,12 @@
             <label>Climbing Wall Area (sqm)</label>
             <input type="number" id="wall-area" value="200" onchange="calculateAll()">
           </div>
+          <div class="assumption-item">
+            <label>Matting Coverage (sqm)</label>
+            <input type="number" id="matting-sqm" value="220" onchange="calculateAll()">
+          </div>
+
+          <!-- Pricing & demand -->
           <div class="assumption-item">
             <label>Day Pass Price (£)</label>
             <input type="number" id="day-pass-price" value="12.50" step="0.50" onchange="calculateAll()">
@@ -154,6 +160,8 @@
             <label>Day Passes per Month</label>
             <input type="number" id="day-passes-monthly" value="450" onchange="calculateAll()">
           </div>
+
+          <!-- Rent -->
           <div class="assumption-item">
             <label>Annual Rent (£)</label>
             <input type="number" id="annual-rent" value="70000" onchange="calculateAll()">
@@ -162,7 +170,7 @@
 
         <div class="scenario-buttons" role="group" aria-label="Scenario">
           <button class="scenario-btn" data-scenario="conservative" aria-pressed="false">Conservative</button>
-          <button class="scenario-btn" data-scenario="realistic" aria-pressed="false">Realistic</button>
+          <button class="scenario-btn" data-scenario="realistic" aria-pressed="true" class="active">Realistic</button>
           <button class="scenario-btn" data-scenario="optimistic" aria-pressed="false">Optimistic</button>
         </div>
       </div>
@@ -201,7 +209,7 @@
           <div class="line-item">
             <div>
               <div class="line-item-name">Climbing Wall Construction</div>
-              <div class="line-item-desc">200 m² × £300</div>
+              <div class="line-item-desc"><span id="wall-desc">200 m² × £300</span></div>
             </div>
             <input type="number" id="wall-cost-per-sqm" value="300" onchange="calculateAll()">
             <div class="line-item-total" id="wall-cost-total">£60,000</div>
@@ -209,57 +217,45 @@
           <div class="line-item">
             <div>
               <div class="line-item-name">Safety Matting</div>
-              <div class="line-item-desc">220 m² × £150</div>
+              <div class="line-item-desc"><span id="mat-desc">220 m² × £150</span></div>
             </div>
             <input type="number" id="matting-cost-per-sqm" value="150" onchange="calculateAll()">
             <div class="line-item-total" id="matting-cost-total">£33,000</div>
           </div>
           <div class="line-item">
-            <div>
-              <div class="line-item-name">Gym Equipment & Training Area</div>
-            </div>
+            <div><div class="line-item-name">Gym Equipment & Training Area</div></div>
             <input type="number" id="gym-equipment" value="30000" onchange="calculateAll()">
             <div class="line-item-total" id="gym-equipment-total">£30,000</div>
           </div>
           <div class="line-item">
-            <div>
-              <div class="line-item-name">Facility Fit-Out</div>
-            </div>
+            <div><div class="line-item-name">Facility Fit-Out</div></div>
             <input type="number" id="fit-out-other" value="50000" onchange="calculateAll()">
             <div class="line-item-total" id="fit-out-other-total">£50,000</div>
           </div>
           <div class="line-item">
-            <div>
-              <div class="line-item-name">Initial Climbing Holds Stock</div>
-            </div>
+            <div><div class="line-item-name">Initial Climbing Holds Stock</div></div>
             <input type="number" id="holds-budget" value="20000" onchange="calculateAll()">
             <div class="line-item-total" id="holds-budget-total">£20,000</div>
           </div>
           <div class="line-item">
-            <div>
-              <div class="line-item-name">Pre-Launch & Marketing</div>
-            </div>
+            <div><div class="line-item-name">Pre-Launch & Marketing</div></div>
             <input type="number" id="branding-marketing" value="15000" onchange="calculateAll()">
             <div class="line-item-total" id="branding-marketing-total">£15,000</div>
           </div>
           <div class="line-item">
-            <div>
-              <div class="line-item-name">Software & POS System</div>
-            </div>
+            <div><div class="line-item-name">Software & POS System</div></div>
             <input type="number" id="software-pos" value="1000" onchange="calculateAll()">
             <div class="line-item-total" id="software-pos-total">£1,000</div>
           </div>
           <div class="line-item">
-            <div>
-              <div class="line-item-name">Licenses & Permits</div>
-            </div>
+            <div><div class="line-item-name">Licenses & Permits</div></div>
             <input type="number" id="licenses-permits" value="3000" onchange="calculateAll()">
             <div class="line-item-total" id="licenses-permits-total">£3,000</div>
           </div>
         </div>
       </div>
 
-      <!-- Revenue -->
+      <!-- Revenue (inputs live here for revenue items only; no duplicate IDs from assumptions) -->
       <div class="section">
         <div class="section-header">
           <div class="section-title">📈 Annual Revenue Streams</div>
@@ -267,43 +263,71 @@
         </div>
         <div class="section-content">
           <div class="line-item">
-            <div class="line-item-name">Membership Revenue</div>
-            <input type="number" id="membership-price" value="65" onchange="calculateAll()">
-            <input type="number" id="members-count" value="300" onchange="calculateAll()">
+            <div>
+              <div class="line-item-name">Membership Revenue</div>
+              <div class="line-item-desc">= Members × £/month × 12 (members & £ set in Assumptions)</div>
+            </div>
+            <input type="text" value="Driven by assumptions" readonly style="background:#f5f5f5; text-align:left;">
             <div class="line-item-total" id="membership-revenue-total">£234,000</div>
           </div>
+
           <div class="line-item">
-            <div class="line-item-name">Day Pass Revenue</div>
-            <input type="number" id="day-passes-monthly" value="450" onchange="calculateAll()">
-            <input type="number" id="day-pass-price" value="12.5" onchange="calculateAll()">
+            <div>
+              <div class="line-item-name">Day Pass Revenue</div>
+              <div class="line-item-desc">= Passes/month × £ × 12 (set in Assumptions)</div>
+            </div>
+            <input type="text" value="Driven by assumptions" readonly style="background:#f5f5f5; text-align:left;">
             <div class="line-item-total" id="day-pass-revenue-total">£67,500</div>
           </div>
+
           <div class="line-item">
-            <div class="line-item-name">Coaching & Classes</div>
-            <input type="number" id="coaching-sessions" value="30" onchange="calculateAll()">
-            <input type="number" id="coaching-price" value="50" onchange="calculateAll()">
+            <div><div class="line-item-name">Coaching & Classes</div></div>
+            <div>
+              <input type="number" id="coaching-sessions" value="30" onchange="calculateAll()" title="sessions per month">
+            </div>
+            <div>
+              <input type="number" id="coaching-price" value="50" onchange="calculateAll()" title="£ per session">
+            </div>
             <div class="line-item-total" id="coaching-revenue-total">£18,000</div>
           </div>
+
           <div class="line-item">
-            <div class="line-item-name">Youth Programs & Parties</div>
-            <input type="number" id="parties-monthly" value="8" onchange="calculateAll()">
-            <input type="number" id="party-revenue" value="120" onchange="calculateAll()">
+            <div><div class="line-item-name">Youth Programs & Parties</div></div>
+            <div>
+              <input type="number" id="parties-monthly" value="8" onchange="calculateAll()" title="events per month">
+            </div>
+            <div>
+              <input type="number" id="party-revenue" value="120" onchange="calculateAll()" title="£ per event">
+            </div>
             <div class="line-item-total" id="youth-revenue-total">£11,520</div>
           </div>
+
           <div class="line-item">
-            <div class="line-item-name">Equipment Rental</div>
-            <input type="number" id="rental-monthly" value="500" onchange="calculateAll()">
+            <div><div class="line-item-name">Equipment Rental</div></div>
+            <div>
+              <input type="number" id="rental-monthly" value="500" onchange="calculateAll()" title="£ per month">
+            </div>
+            <input type="text" value="—" readonly style="background:#f5f5f5;">
             <div class="line-item-total" id="rental-revenue-total">£6,000</div>
           </div>
+
           <div class="line-item">
-            <div class="line-item-name">Retail Sales</div>
-            <input type="number" id="retail-monthly" value="800" onchange="calculateAll()">
+            <div><div class="line-item-name">Retail Sales</div></div>
+            <div>
+              <input type="number" id="retail-monthly" value="800" onchange="calculateAll()" title="£ per month">
+            </div>
+            <input type="text" value="—" readonly style="background:#f5f5f5;">
             <div class="line-item-total" id="retail-revenue-total">£9,600</div>
           </div>
+
           <div class="line-item">
-            <div class="line-item-name">Café Revenue (Net)</div>
-            <input type="number" id="cafe-monthly" value="2500" onchange="calculateAll()">
-            <input type="number" id="cafe-margin" value="7.5" onchange="calculateAll()">
+            <div><div class="line-item-name">Café Revenue (Net)</div></div>
+            <div>
+              <input type="number" id="cafe-monthly" value="2500" onchange="calculateAll()" title="Gross monthly sales (GMV)">
+            </div>
+            <div>
+              <input type="number" id="cafe-margin" value="7.5" step="0.5" onchange="calculateAll()" title="Net %">
+            </div>
             <div class="line-item-total" id="cafe-revenue-total">£2,250</div>
           </div>
         </div>
@@ -316,15 +340,78 @@
           <div class="section-total" id="expenses-total">£0</div>
         </div>
         <div class="section-content">
-          <div class="line-item"><div class="line-item-name">Annual Rent</div><div class="line-item-total" id="rent-cost-total">£70,000</div></div>
-          <div class="line-item"><div class="line-item-name">Business Rates</div><input type="number" id="business-rates" value="26000" onchange="calculateAll()"><div class="line-item-total" id="business-rates-total">£26,000</div></div>
-          <div class="line-item"><div class="line-item-name">Centre Manager</div><input type="number" id="manager-salary" value="32000" onchange="calculateAll()"><div class="line-item-total" id="manager-salary-total">£32,000</div></div>
-          <div class="line-item"><div class="line-item-name">Route Setter</div><input type="number" id="route-setter-salary" value="22000" onchange="calculateAll()"><div class="line-item-total" id="route-setter-salary-total">£22,000</div></div>
-          <div class="line-item"><div class="line-item-name">Other Staff</div><input type="number" id="other-staff" value="30000" onchange="calculateAll()"><div class="line-item-total" id="other-staff-total">£30,000</div></div>
-          <div class="line-item"><div class="line-item-name">Utilities</div><input type="number" id="utilities" value="18000" onchange="calculateAll()"><div class="line-item-total" id="utilities-total">£18,000</div></div>
-          <div class="line-item"><div class="line-item-name">Insurance</div><input type="number" id="insurance" value="2000" onchange="calculateAll()"><div class="line-item-total" id="insurance-total">£2,000</div></div>
-          <div class="line-item"><div class="line-item-name">Marketing</div><input type="number" id="marketing-annual" value="8000" onchange="calculateAll()"><div class="line-item-total" id="marketing-annual-total">£8,000</div></div>
-          <div class="line-item"><div class="line-item-name">Maintenance</div><input type="number" id="maintenance" value="6000" onchange="calculateAll()"><div class="line-item-total" id="maintenance-total">£6,000</div></div>
+          <div class="line-item">
+            <div>
+              <div class="line-item-name">Annual Rent</div>
+              <div class="line-item-desc">Edit in Assumptions</div>
+            </div>
+            <input type="text" value="Driven by assumptions" readonly style="background:#f5f5f5; text-align:left;">
+            <div class="line-item-total" id="rent-cost-total">£70,000</div>
+          </div>
+
+          <div class="line-item">
+            <div><div class="line-item-name">Business Rates</div></div>
+            <div>
+              <input type="number" id="business-rates" value="26000" onchange="calculateAll()">
+            </div>
+            <div class="line-item-total" id="business-rates-total">£26,000</div>
+          </div>
+
+          <div class="line-item">
+            <div><div class="line-item-name">Centre Manager</div></div>
+            <div>
+              <input type="number" id="manager-salary" value="32000" onchange="calculateAll()">
+            </div>
+            <div class="line-item-total" id="manager-salary-total">£32,000</div>
+          </div>
+
+          <div class="line-item">
+            <div><div class="line-item-name">Route Setter</div></div>
+            <div>
+              <input type="number" id="route-setter-salary" value="22000" onchange="calculateAll()">
+            </div>
+            <div class="line-item-total" id="route-setter-salary-total">£22,000</div>
+          </div>
+
+          <div class="line-item">
+            <div><div class="line-item-name">Other Staff</div></div>
+            <div>
+              <input type="number" id="other-staff" value="30000" onchange="calculateAll()">
+            </div>
+            <div class="line-item-total" id="other-staff-total">£30,000</div>
+          </div>
+
+          <div class="line-item">
+            <div><div class="line-item-name">Utilities</div></div>
+            <div>
+              <input type="number" id="utilities" value="18000" onchange="calculateAll()">
+            </div>
+            <div class="line-item-total" id="utilities-total">£18,000</div>
+          </div>
+
+          <div class="line-item">
+            <div><div class="line-item-name">Insurance</div></div>
+            <div>
+              <input type="number" id="insurance" value="2000" onchange="calculateAll()">
+            </div>
+            <div class="line-item-total" id="insurance-total">£2,000</div>
+          </div>
+
+          <div class="line-item">
+            <div><div class="line-item-name">Marketing & Advertising</div></div>
+            <div>
+              <input type="number" id="marketing-annual" value="8000" onchange="calculateAll()">
+            </div>
+            <div class="line-item-total" id="marketing-annual-total">£8,000</div>
+          </div>
+
+          <div class="line-item">
+            <div><div class="line-item-name">Maintenance & Repairs</div></div>
+            <div>
+              <input type="number" id="maintenance" value="6000" onchange="calculateAll()">
+            </div>
+            <div class="line-item-total" id="maintenance-total">£6,000</div>
+          </div>
         </div>
       </div>
 
@@ -335,165 +422,299 @@
         <div class="summary-row"><div>Total Annual Expenses</div><div id="annual-expenses-summary">£0</div></div>
         <div class="summary-row"><div>Annual Profit (EBITDA)</div><div id="annual-ebitda" class="negative">£0</div></div>
         <div class="summary-row"><div>Profit Margin</div><div id="annual-margin">0%</div></div>
-        <div class="summary-row"><div>ROI</div><div id="roi-summary">0%</div></div>
-        <div class="summary-row"><div>Payback</div><div id="payback-summary">0 years</div></div>
+        <div class="summary-row"><div>Return on Investment</div><div id="roi-summary">0%</div></div>
+        <div class="summary-row"><div>Payback Period</div><div id="payback-summary">0 years</div></div>
       </div>
 
-      <!-- Sources -->
+      <!-- Data Sources & Validation -->
       <div class="talking-points" style="background:#e3f2fd; border-color:#2196f3;">
         <h3 style="color:#1565c0;">📚 Data Sources & Validation</h3>
-        <ul>
-          <li>Floorplan: Queensgate Auditorium 10 (296 m²)</li>
-          <li>CAPEX & OPEX benchmarks: Core Climbing, Kong Climbing, UK Climbing Wall industry data</li>
-          <li>Rent confirmed: £70,000 p.a. (Queensgate)</li>
-          <li>Market size & growth: BMC, UK Active Leisure 2022–24 reports</li>
-          <li>Demographics: ONS Peterborough population base</li>
-        </ul>
+        <p><strong>These projections are based on verified industry data and conservative estimates:</strong></p>
+
+        <div style="margin-top:20px;">
+          <h4 style="color:#1976d2; margin-bottom:10px;">Capital Expenditure (CAPEX)</h4>
+          <ul style="line-height:1.6;">
+            <li><strong>Industry Standard Costs:</strong> £250–£350 per sqm climbing surface (plywood construction)</li>
+            <li><strong>Safety Matting:</strong> £150+ per sqm (verified supplier quotes)</li>
+            <li><strong>UK Climbing Wall Manufacturers:</strong> Core Climbing, Kong Climbing cost benchmarks</li>
+            <li><strong>Total Fit-out Range:</strong> £250k–£500k typical for new builds; scope-dependent</li>
+          </ul>
+        </div>
+
+        <div style="margin-top:20px;">
+          <h4 style="color:#1976d2; margin-bottom:10px;">Market Data & Revenue</h4>
+          <ul style="line-height:1.6;">
+            <li>UK indoor climbing market growth (2018–2024), bouldering share estimates</li>
+            <li>Pricing norms observed: day passes £10–£16.50, memberships £50–£79</li>
+            <li>Café net margin 5–10% (independent operators)</li>
+          </ul>
+        </div>
+
+        <div style="margin-top:20px;">
+          <h4 style="color:#1976d2; margin-bottom:10px;">Operating Costs (OPEX)</h4>
+          <ul style="line-height:1.6;">
+            <li>Queensgate business rates placeholder: £26,000 until formal rating</li>
+            <li>Staff costs: Manager £32–47k, Route setting £20–31k</li>
+            <li>Utilities scaled down for 296 m² volume with LED/efficient HVAC</li>
+          </ul>
+        </div>
+
+        <div class="validation-box" id="validation-benefits">
+          <h4>Notes</h4>
+          <div class="val-row">ROI and Payback derive from CAPEX vs EBITDA (pre-interest, pre-tax).</div>
+          <div class="val-row">Changing <code>Climbing Wall Area</code> or <code>Matting Coverage</code> immediately updates CAPEX.</div>
+          <div class="val-row">Changing <code>Annual Rent</code> or any OPEX line immediately updates Expenses and EBITDA.</div>
+        </div>
       </div>
     </div>
   </div>
 
-<script>
-function formatCurrency(value){
-  const formatted = Math.abs(value).toLocaleString();
-  return value < 0 ? '-£' + formatted : '£' + formatted;
-}
-function formatPercent(value){ return (isFinite(value) ? value : 0).toFixed(1) + '%'; }
-
-function calculateAll(){
-  const facilitySize = parseFloat(document.getElementById('facility-size').value) || 296;
-  const wallArea = parseFloat(document.getElementById('wall-area').value) || 200;
-  const wallCostPerSqm = parseFloat(document.getElementById('wall-cost-per-sqm').value) || 300;
-  const mattingCostPerSqm = parseFloat(document.getElementById('matting-cost-per-sqm').value) || 150;
-  const gymEquipment = parseFloat(document.getElementById('gym-equipment').value) || 30000;
-  const fitOutOther = parseFloat(document.getElementById('fit-out-other').value) || 50000;
-  const holdsBudget = parseFloat(document.getElementById('holds-budget').value) || 20000;
-  const brandingMarketing = parseFloat(document.getElementById('branding-marketing').value) || 15000;
-  const softwarePos = parseFloat(document.getElementById('software-pos').value) || 1000;
-  const licensesPermits = parseFloat(document.getElementById('licenses-permits').value) || 3000;
-
-  const wallCost = wallArea * wallCostPerSqm;
-  const mattingCost = 220 * mattingCostPerSqm;
-  const totalCapex = wallCost + mattingCost + gymEquipment + fitOutOther + holdsBudget + brandingMarketing + softwarePos + licensesPermits;
-
-  const membershipPrice = parseFloat(document.getElementById('membership-price').value) || 65;
-  const membersCount = parseFloat(document.getElementById('members-count').value) || 300;
-  const dayPassPrice = parseFloat(document.getElementById('day-pass-price').value) || 12.5;
-  const dayPassesMonthly = parseFloat(document.getElementById('day-passes-monthly').value) || 450;
-  const coachingSessions = parseFloat(document.getElementById('coaching-sessions').value) || 30;
-  const coachingPrice = parseFloat(document.getElementById('coaching-price').value) || 50;
-  const partiesMonthly = parseFloat(document.getElementById('parties-monthly').value) || 8;
-  const partyRevenue = parseFloat(document.getElementById('party-revenue').value) || 120;
-  const rentalMonthly = parseFloat(document.getElementById('rental-monthly').value) || 500;
-  const retailMonthly = parseFloat(document.getElementById('retail-monthly').value) || 800;
-  const cafeMonthly = parseFloat(document.getElementById('cafe-monthly').value) || 2500;
-  const cafeMargin = parseFloat(document.getElementById('cafe-margin').value) || 7.5;
-
-  const membershipRevenue = membersCount * membershipPrice * 12;
-  const dayPassRevenue = dayPassesMonthly * dayPassPrice * 12;
-  const coachingRevenue = coachingSessions * coachingPrice * 12;
-  const youthRevenue = partiesMonthly * partyRevenue * 12;
-  const rentalRevenue = rentalMonthly * 12;
-  const retailRevenue = retailMonthly * 12;
-  const cafeNetRevenue = cafeMonthly * (cafeMargin/100) * 12;
-  const totalRevenue = membershipRevenue + dayPassRevenue + coachingRevenue + youthRevenue + rentalRevenue + retailRevenue + cafeNetRevenue;
-
-  const rent = 70000;
-  const businessRates = parseFloat(document.getElementById('business-rates').value) || 26000;
-  const managerSalary = parseFloat(document.getElementById('manager-salary').value) || 32000;
-  const routeSetterSalary = parseFloat(document.getElementById('route-setter-salary').value) || 22000;
-  const otherStaff = parseFloat(document.getElementById('other-staff').value) || 30000;
-  const utilities = parseFloat(document.getElementById('utilities').value) || 18000;
-  const insurance = parseFloat(document.getElementById('insurance').value) || 2000;
-  const marketingAnnual = parseFloat(document.getElementById('marketing-annual').value) || 8000;
-  const maintenance = parseFloat(document.getElementById('maintenance').value) || 6000;
-  const totalExpenses = rent + businessRates + managerSalary + routeSetterSalary + otherStaff + utilities + insurance + marketingAnnual + maintenance;
-
-  const annualProfit = totalRevenue - totalExpenses;
-  const roi = totalCapex > 0 ? (annualProfit/totalCapex)*100 : 0;
-  const payback = annualProfit>0 ? totalCapex/annualProfit : 0;
-  const margin = totalRevenue>0 ? (annualProfit/totalRevenue)*100 : 0;
-
-  document.getElementById('wall-cost-total').textContent = formatCurrency(wallCost);
-  document.getElementById('matting-cost-total').textContent = formatCurrency(mattingCost);
-  document.getElementById('gym-equipment-total').textContent = formatCurrency(gymEquipment);
-  document.getElementById('fit-out-other-total').textContent = formatCurrency(fitOutOther);
-  document.getElementById('holds-budget-total').textContent = formatCurrency(holdsBudget);
-  document.getElementById('branding-marketing-total').textContent = formatCurrency(brandingMarketing);
-  document.getElementById('software-pos-total').textContent = formatCurrency(softwarePos);
-  document.getElementById('licenses-permits-total').textContent = formatCurrency(licensesPermits);
-  document.getElementById('capex-total').textContent = formatCurrency(totalCapex);
-
-  document.getElementById('membership-revenue-total').textContent = formatCurrency(membershipRevenue);
-  document.getElementById('day-pass-revenue-total').textContent = formatCurrency(dayPassRevenue);
-  document.getElementById('coaching-revenue-total').textContent = formatCurrency(coachingRevenue);
-  document.getElementById('youth-revenue-total').textContent = formatCurrency(youthRevenue);
-  document.getElementById('rental-revenue-total').textContent = formatCurrency(rentalRevenue);
-  document.getElementById('retail-revenue-total').textContent = formatCurrency(retailRevenue);
-  document.getElementById('cafe-revenue-total').textContent = formatCurrency(cafeNetRevenue);
-  document.getElementById('revenue-total').textContent = formatCurrency(totalRevenue);
-
-  document.getElementById('rent-cost-total').textContent = formatCurrency(rent);
-  document.getElementById('business-rates-total').textContent = formatCurrency(businessRates);
-  document.getElementById('manager-salary-total').textContent = formatCurrency(managerSalary);
-  document.getElementById('route-setter-salary-total').textContent = formatCurrency(routeSetterSalary);
-  document.getElementById('other-staff-total').textContent = formatCurrency(otherStaff);
-  document.getElementById('utilities-total').textContent = formatCurrency(utilities);
-  document.getElementById('insurance-total').textContent = formatCurrency(insurance);
-  document.getElementById('marketing-annual-total').textContent = formatCurrency(marketingAnnual);
-  document.getElementById('maintenance-total').textContent = formatCurrency(maintenance);
-  document.getElementById('expenses-total').textContent = formatCurrency(totalExpenses);
-
-  document.getElementById('annual-revenue').textContent = formatCurrency(totalRevenue);
-  document.getElementById('annual-expenses-summary').textContent = formatCurrency(totalExpenses);
-  document.getElementById('annual-revenue-summary').textContent = formatCurrency(totalRevenue);
-  document.getElementById('annual-profit').textContent = formatCurrency(annualProfit);
-  document.getElementById('annual-ebitda').textContent = formatCurrency(annualProfit);
-  document.getElementById('annual-margin').textContent = formatPercent(margin);
-  document.getElementById('roi').textContent = formatPercent(roi);
-  document.getElementById('roi-summary').textContent = formatPercent(roi);
-  document.getElementById('payback-period').textContent = payback>0 ? payback.toFixed(1)+' years' : 'N/A';
-  document.getElementById('payback-summary').textContent = payback>0 ? payback.toFixed(1)+' years' : 'N/A';
-  document.getElementById('annual-profit').className = annualProfit>0 ? 'metric-value positive' : 'metric-value negative';
-}
-
-function updateScenarioButtons(active){
-  document.querySelectorAll('.scenario-btn').forEach(btn=>{
-    const isActive = btn.dataset.scenario === active;
-    btn.classList.toggle('active', isActive);
-    btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-  });
-}
-
-function applyScenarioValues(scenario){
-  const scenarios = {
-    conservative: {
-      'members-count': 220, 'day-passes-monthly': 350,
-      'coaching-sessions': 20, 'parties-monthly': 5,
-      'rental-monthly': 350, 'retail-monthly': 600, 'cafe-monthly': 2000,
-      'manager-salary': 32000,'route-setter-salary':20000,'other-staff':25000
-    },
-    realistic: { /* already default */ },
-    optimistic: {
-      'members-count': 380, 'day-passes-monthly': 600,
-      'coaching-sessions': 45, 'parties-monthly': 12,
-      'rental-monthly': 700, 'retail-monthly': 1200, 'cafe-monthly': 4000,
-      'manager-salary': 35000,'route-setter-salary':25000,'other-staff':35000
+  <script>
+    function formatCurrency(value){
+      const formatted = Math.abs(Math.round(value)).toLocaleString();
+      return (value < 0 ? '-£' : '£') + formatted;
     }
-  };
-  const values = scenarios[scenario];
-  if(values){
-    Object.keys(values).forEach(k=>{
-      const el=document.getElementById(k);
-      if(el) el.value=values[k];
-    });
-  }
-}
+    function formatPercent(value){ return (isFinite(value) ? value : 0).toFixed(1) + '%'; }
 
-window.addEventListener('load', ()=>{
-  updateScenarioButtons('realistic');
-  calculateAll();
-});
-</script>
+    function calculateAll(){
+      // ---- Assumptions (single source of truth) ----
+      const facilitySize = parseFloat(document.getElementById('facility-size').value) || 296;
+      const wallArea = parseFloat(document.getElementById('wall-area').value) || 200;
+      const mattingSqm = parseFloat(document.getElementById('matting-sqm').value) || 220;
+
+      const dayPassPrice = parseFloat(document.getElementById('day-pass-price').value) || 12.50;
+      const membershipPrice = parseFloat(document.getElementById('membership-price').value) || 65;
+      const membersCount = parseFloat(document.getElementById('members-count').value) || 300;
+      const dayPassesMonthly = parseFloat(document.getElementById('day-passes-monthly').value) || 450;
+      const annualRent = parseFloat(document.getElementById('annual-rent').value) || 70000;
+
+      // ---- CAPEX inputs ----
+      const wallCostPerSqm = parseFloat(document.getElementById('wall-cost-per-sqm').value) || 300;
+      const mattingCostPerSqm = parseFloat(document.getElementById('matting-cost-per-sqm').value) || 150;
+      const gymEquipment = parseFloat(document.getElementById('gym-equipment').value) || 30000;
+      const fitOutOther = parseFloat(document.getElementById('fit-out-other').value) || 50000;
+      const holdsBudget = parseFloat(document.getElementById('holds-budget').value) || 20000;
+      const brandingMarketing = parseFloat(document.getElementById('branding-marketing').value) || 15000;
+      const softwarePos = parseFloat(document.getElementById('software-pos').value) || 1000;
+      const licensesPermits = parseFloat(document.getElementById('licenses-permits').value) || 3000;
+
+      // ---- Revenue inputs (these live in the revenue section) ----
+      const coachingSessions = parseFloat(document.getElementById('coaching-sessions').value) || 30; // per month
+      const coachingPrice = parseFloat(document.getElementById('coaching-price').value) || 50;
+      const partiesMonthly = parseFloat(document.getElementById('parties-monthly').value) || 8;
+      const partyRevenue = parseFloat(document.getElementById('party-revenue').value) || 120;
+      const rentalMonthly = parseFloat(document.getElementById('rental-monthly').value) || 500;
+      const retailMonthly = parseFloat(document.getElementById('retail-monthly').value) || 800;
+      const cafeMonthly = parseFloat(document.getElementById('cafe-monthly').value) || 2500;
+      const cafeMargin = parseFloat(document.getElementById('cafe-margin').value) || 7.5;
+
+      // ---- OPEX inputs (non-rent) ----
+      const businessRates = parseFloat(document.getElementById('business-rates').value) || 26000;
+      const managerSalary = parseFloat(document.getElementById('manager-salary').value) || 32000;
+      const routeSetterSalary = parseFloat(document.getElementById('route-setter-salary').value) || 22000;
+      const otherStaff = parseFloat(document.getElementById('other-staff').value) || 30000;
+      const utilities = parseFloat(document.getElementById('utilities').value) || 18000;
+      const insurance = parseFloat(document.getElementById('insurance').value) || 2000;
+      const marketingAnnual = parseFloat(document.getElementById('marketing-annual').value) || 8000;
+      const maintenance = parseFloat(document.getElementById('maintenance').value) || 6000;
+
+      // ---- CAPEX calculations ----
+      const wallCost = wallArea * wallCostPerSqm;
+      const mattingCost = mattingSqm * mattingCostPerSqm;
+      const totalCapex = wallCost + mattingCost + gymEquipment + fitOutOther + holdsBudget + brandingMarketing + softwarePos + licensesPermits;
+
+      // update CAPEX UI
+      document.getElementById('wall-desc').textContent = `${wallArea} m² × £${wallCostPerSqm}`;
+      document.getElementById('mat-desc').textContent = `${mattingSqm} m² × £${mattingCostPerSqm}`;
+      document.getElementById('wall-cost-total').textContent = formatCurrency(wallCost);
+      document.getElementById('matting-cost-total').textContent = formatCurrency(mattingCost);
+      document.getElementById('gym-equipment-total').textContent = formatCurrency(gymEquipment);
+      document.getElementById('fit-out-other-total').textContent = formatCurrency(fitOutOther);
+      document.getElementById('holds-budget-total').textContent = formatCurrency(holdsBudget);
+      document.getElementById('branding-marketing-total').textContent = formatCurrency(brandingMarketing);
+      document.getElementById('software-pos-total').textContent = formatCurrency(softwarePos);
+      document.getElementById('licenses-permits-total').textContent = formatCurrency(licensesPermits);
+      document.getElementById('capex-total').textContent = formatCurrency(totalCapex);
+      document.getElementById('total-capex').textContent = formatCurrency(totalCapex);
+
+      // ---- Revenue calculations ----
+      const membershipRevenue = membersCount * membershipPrice * 12;
+      const dayPassRevenue = dayPassesMonthly * dayPassPrice * 12;
+      const coachingRevenue = coachingSessions * coachingPrice * 12;
+      const youthRevenue = partiesMonthly * partyRevenue * 12;
+      const rentalRevenue = rentalMonthly * 12;
+      const retailRevenue = retailMonthly * 12;
+      const cafeNetRevenue = cafeMonthly * (cafeMargin / 100) * 12;
+
+      const totalRevenue = membershipRevenue + dayPassRevenue + coachingRevenue + youthRevenue + rentalRevenue + retailRevenue + cafeNetRevenue;
+
+      // update Revenue UI totals
+      document.getElementById('membership-revenue-total').textContent = formatCurrency(membershipRevenue);
+      document.getElementById('day-pass-revenue-total').textContent = formatCurrency(dayPassRevenue);
+      document.getElementById('coaching-revenue-total').textContent = formatCurrency(coachingRevenue);
+      document.getElementById('youth-revenue-total').textContent = formatCurrency(youthRevenue);
+      document.getElementById('rental-revenue-total').textContent = formatCurrency(rentalRevenue);
+      document.getElementById('retail-revenue-total').textContent = formatCurrency(retailRevenue);
+      document.getElementById('cafe-revenue-total').textContent = formatCurrency(cafeNetRevenue);
+      document.getElementById('revenue-total').textContent = formatCurrency(totalRevenue);
+      document.getElementById('annual-revenue').textContent = formatCurrency(totalRevenue);
+      document.getElementById('annual-revenue-summary').textContent = formatCurrency(totalRevenue);
+
+      // ---- OPEX calculations ----
+      const totalExpenses = annualRent + businessRates + managerSalary + routeSetterSalary + otherStaff + utilities + insurance + marketingAnnual + maintenance;
+
+      // update OPEX UI totals
+      document.getElementById('rent-cost-total').textContent = formatCurrency(annualRent);
+      document.getElementById('business-rates-total').textContent = formatCurrency(businessRates);
+      document.getElementById('manager-salary-total').textContent = formatCurrency(managerSalary);
+      document.getElementById('route-setter-salary-total').textContent = formatCurrency(routeSetterSalary);
+      document.getElementById('other-staff-total').textContent = formatCurrency(otherStaff);
+      document.getElementById('utilities-total').textContent = formatCurrency(utilities);
+      document.getElementById('insurance-total').textContent = formatCurrency(insurance);
+      document.getElementById('marketing-annual-total').textContent = formatCurrency(marketingAnnual);
+      document.getElementById('maintenance-total').textContent = formatCurrency(maintenance);
+      document.getElementById('expenses-total').textContent = formatCurrency(totalExpenses);
+      document.getElementById('annual-expenses-summary').textContent = formatCurrency(totalExpenses);
+
+      // ---- Financial metrics ----
+      const annualProfit = totalRevenue - totalExpenses;
+      const roi = totalCapex > 0 ? (annualProfit / totalCapex) * 100 : 0;
+      const paybackPeriod = annualProfit > 0 ? totalCapex / annualProfit : 0;
+      const profitMargin = totalRevenue > 0 ? (annualProfit / totalRevenue) * 100 : 0;
+
+      document.getElementById('annual-profit').textContent = formatCurrency(annualProfit);
+      document.getElementById('annual-profit').className = annualProfit > 0 ? 'metric-value positive' : 'metric-value negative';
+      document.getElementById('annual-ebitda').textContent = formatCurrency(annualProfit);
+      document.getElementById('annual-ebitda').className = annualProfit > 0 ? 'positive' : 'negative';
+      document.getElementById('annual-margin').textContent = formatPercent(profitMargin);
+      document.getElementById('roi').textContent = formatPercent(roi);
+      document.getElementById('roi-summary').textContent = formatPercent(roi);
+      document.getElementById('payback-period').textContent = paybackPeriod > 0 ? paybackPeriod.toFixed(1) + ' years' : 'N/A';
+      document.getElementById('payback-summary').textContent = paybackPeriod > 0 ? paybackPeriod.toFixed(1) + ' years' : 'N/A';
+    }
+
+    function updateScenarioButtons(active){
+      document.querySelectorAll('.scenario-btn').forEach(btn=>{
+        const isActive = btn.dataset.scenario === active;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+    }
+
+    function applyScenarioValues(scenario){
+      // Start from Realistic baseline (Queensgate Unit) then tweak
+      const baseline = {
+        'facility-size': 296,
+        'wall-area': 200,
+        'matting-sqm': 220,
+
+        'day-pass-price': 12.5,
+        'membership-price': 65,
+        'members-count': 300,
+        'day-passes-monthly': 450,
+
+        'annual-rent': 70000,
+
+        // CAPEX
+        'wall-cost-per-sqm': 300,
+        'matting-cost-per-sqm': 150,
+        'gym-equipment': 30000,
+        'fit-out-other': 50000,
+        'holds-budget': 20000,
+        'branding-marketing': 15000,
+        'software-pos': 1000,
+        'licenses-permits': 3000,
+
+        // Revenue items
+        'coaching-sessions': 30,
+        'coaching-price': 50,
+        'parties-monthly': 8,
+        'party-revenue': 120,
+        'rental-monthly': 500,
+        'retail-monthly': 800,
+        'cafe-monthly': 2500,
+        'cafe-margin': 7.5,
+
+        // OPEX (non-rent)
+        'business-rates': 26000,
+        'manager-salary': 32000,
+        'route-setter-salary': 22000,
+        'other-staff': 30000,
+        'utilities': 18000,
+        'insurance': 2000,
+        'marketing-annual': 8000,
+        'maintenance': 6000
+      };
+
+      const scenarios = {
+        conservative: {
+          'members-count': 230,
+          'day-passes-monthly': 350,
+          'coaching-sessions': 20,
+          'parties-monthly': 5,
+          'rental-monthly': 350,
+          'retail-monthly': 600,
+          'cafe-monthly': 2000,
+          // costs steady/lean
+          'manager-salary': 32000,
+          'route-setter-salary': 20000,
+          'other-staff': 27000,
+          'utilities': 17000,
+          'marketing-annual': 7000,
+        },
+        realistic: {
+          // exactly baseline (already set)
+        },
+        optimistic: {
+          'members-count': 380,
+          'day-passes-monthly': 600,
+          'coaching-sessions': 45,
+          'parties-monthly': 12,
+          'rental-monthly': 700,
+          'retail-monthly': 1200,
+          'cafe-monthly': 4000,
+          // slight increase in costs for scale
+          'manager-salary': 35000,
+          'route-setter-salary': 25000,
+          'other-staff': 35000,
+          'utilities': 20000,
+          'marketing-annual': 10000
+        }
+      };
+
+      // Apply baseline first
+      Object.keys(baseline).forEach(id=>{
+        const el = document.getElementById(id);
+        if(el) el.value = baseline[id];
+      });
+
+      // Then overlay scenario adjustments
+      const overlay = scenarios[scenario] || {};
+      Object.keys(overlay).forEach(id=>{
+        const el = document.getElementById(id);
+        if(el) el.value = overlay[id];
+      });
+
+      updateScenarioButtons(scenario);
+      calculateAll();
+    }
+
+    function attachScenarioListeners(){
+      document.querySelectorAll('.scenario-btn').forEach(btn=>{
+        if (btn.__attached) return;
+        btn.addEventListener('click', ()=>{
+          applyScenarioValues(btn.dataset.scenario);
+        }, {passive:true});
+        btn.__attached = true;
+      });
+    }
+
+    // Initialize
+    window.addEventListener('load', ()=>{
+      attachScenarioListeners();
+      // Default = Realistic (Queensgate Unit)
+      applyScenarioValues('realistic');
+    });
+  </script>
 </body>
 </html>

@@ -1,402 +1,561 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Queensgate Bouldering — Financial Model</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Queensgate Bouldering — Investor & Bank Model</title>
   <style>
-    :root {
-      --bg:#0f172a; /* slate-900 */
-      --card:#111827; /* gray-900 */
-      --muted:#94a3b8; /* slate-400 */
-      --text:#e5e7eb; /* gray-200 */
-      --accent:#38bdf8; /* sky-400 */
-      --accent2:#a78bfa; /* violet-400 */
-      --good:#34d399; /* emerald-400 */
-      --warn:#fbbf24; /* amber-400 */
-      --bad:#f87171; /* red-400 */
-      --grid-gap:16px;
-      --radius:16px;
-    }
-    html,body{height:100%}
-    body{
-      margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background:radial-gradient(1200px 1200px at 10% -10%, #1f2937 0%, var(--bg) 40%), linear-gradient(180deg, #0b1226, var(--bg));
-      color:var(--text);
-    }
-    h1,h2,h3{margin:0 0 8px 0}
-    h1{font-size:28px; letter-spacing:0.2px}
-    h2{font-size:18px; color:#cbd5e1}
-    .wrap{
-      max-width:1200px; margin:24px auto; padding:0 16px 48px;
-    }
-    .topbar{
-      display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:16px;
-    }
-    .pill{background:rgba(56,189,248,.15); color:#e0f2fe; border:1px solid rgba(56,189,248,.35); padding:6px 10px; border-radius:999px; font-size:12px}
-    .grid{display:grid; grid-template-columns: 360px 1fr; gap:var(--grid-gap)}
-    @media (max-width: 980px){.grid{grid-template-columns:1fr}}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); padding:16px; box-shadow:0 2px 10px rgba(0,0,0,.25)}
-    .card h3{font-size:15px; color:#c7d2fe; margin-bottom:6px}
-    .sub{font-size:12px; color:var(--muted)}
-    .input-row{display:grid; grid-template-columns: 1fr 100px; gap:8px; align-items:center; margin:6px 0}
-    .input-row label{font-size:13px; color:#cbd5e1}
-    .input-row input{width:100%; padding:8px 10px; border-radius:10px; background:#0b1220; color:var(--text); border:1px solid #1f2a44; font-size:13px}
-    .input-row input:focus{outline:none; border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.2)}
-    .section{margin-top:10px; padding-top:10px; border-top:1px dashed rgba(255,255,255,.08)}
-    .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-    .kpis{display:grid; grid-template-columns: repeat(4, 1fr); gap:10px}
-    @media (max-width: 980px){.kpis{grid-template-columns: repeat(2,1fr)}}
-    .kpi{background:#0b1220; border:1px solid #1f2a44; border-radius:14px; padding:12px}
-    .kpi .label{font-size:12px; color:#9ca3af}
-    .kpi .value{font-size:20px; margin-top:6px}
-    .kpi.good .value{color:var(--good)}
-    .kpi.warn .value{color:var(--warn)}
-    .kpi.bad .value{color:var(--bad)}
-    .flex{display:flex; gap:10px}
-    .btn{cursor:pointer; background:linear-gradient(180deg, #1e293b, #0f172a); border:1px solid #24324a; color:#e5e7eb; padding:8px 12px; border-radius:12px; font-size:13px}
-    .btn.primary{background:linear-gradient(180deg, #2563eb, #1d4ed8); border-color:#1d4ed8}
-    .btn.ghost{background:transparent; border-color:#334155}
-    .toolbar{display:flex; gap:8px; align-items:center}
-    .table{width:100%; border-collapse:separate; border-spacing:0}
-    .table th,.table td{padding:10px 12px; text-align:right; border-bottom:1px solid rgba(255,255,255,.06); font-size:13px}
-    .table th:first-child,.table td:first-child{text-align:left}
-    .table tr:hover td{background:rgba(255,255,255,.02)}
-    .badge{font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.15); color:#cbd5e1}
-    .chart{height:220px; position:relative; background:#0b1220; border:1px solid #1f2a44; border-radius:14px; overflow:hidden}
-    .chart .bar{position:absolute; bottom:0; width:20%; border-radius:6px 6px 0 0; background:linear-gradient(180deg, var(--accent), #2563eb)}
-    .legend{display:flex; gap:12px; font-size:12px; color:#cbd5e1; margin-top:6px; align-items:center; flex-wrap:wrap}
-    .legend > span{display:inline-flex; gap:6px; align-items:center}
-    .dot{width:10px; height:10px; border-radius:2px; display:inline-block}
-    .dot.rev{background:#38bdf8}
-    .dot.cogs{background:#fb7185}
-    .dot.opex{background:#f59e0b}
-    .dot.ebitda{background:#34d399}
-    .foot{margin-top:8px; font-size:11px; color:#94a3b8}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:#f5f7fa;padding:20px;color:#1f2937}
+    .container{max-width:1220px;margin:0 auto;background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.08);overflow:hidden}
+    .header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:30px}
+    .header h1{font-size:2em;margin-bottom:6px}
+    .header p{opacity:.97}
+    .content{padding:24px}
+
+    .assumptions{background:#fff9e6;border:1px solid #ffeb3b;border-radius:10px;padding:18px;margin-bottom:22px}
+    .assumptions h3{color:#f39c12;margin-bottom:10px}
+    .assumption-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+    .assumption-item{display:flex;flex-direction:column;gap:6px}
+    .assumption-item label{font-size:.9em;color:#374151;text-align:left}
+    .assumption-item input,.assumption-item select{padding:8px;border:1px solid #ddd;border-radius:6px;font-size:16px;text-align:right}
+    .subhead{grid-column:1/-1;font-weight:700;color:#6b7280;margin-top:6px;padding-top:8px;border-top:1px dashed #e5e7eb}
+
+    .scenario-buttons{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+    .scenario-btn{padding:10px 16px;border:2px solid #667eea;background:#fff;color:#667eea;border-radius:8px;cursor:pointer;font-weight:600;transition:.2s;min-height:40px}
+    .scenario-btn:hover{background:#667eea;color:#fff}
+    .scenario-btn.active,.scenario-btn[aria-pressed="true"]{background:#667eea;color:#fff;box-shadow:0 0 0 2px #667eea22 inset}
+
+    .key-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:18px 0 24px 0;padding:16px;background:#f8f9fa;border-radius:10px}
+    .metric{text-align:center}
+    .metric-value{font-size:1.5em;font-weight:700;color:#4f46e5}
+    .metric-label{font-size:.9em;color:#6b7280;margin-top:4px}
+    .positive{color:#059669}
+    .negative{color:#dc2626}
+
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    @media(max-width:960px){.grid-2{grid-template-columns:1fr}}
+
+    .section{margin-bottom:18px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden}
+    .section-header{background:#f8fafc;padding:14px 16px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center}
+    .section-title{font-size:1.1em;font-weight:600;display:flex;align-items:center;gap:8px}
+    .section-total{font-weight:700;color:#4f46e5}
+    .section-content{padding:14px}
+
+    table{width:100%;border-collapse:separate;border-spacing:0}
+    th,td{padding:10px 12px;border-bottom:1px solid #eee;text-align:right;font-size:.95em}
+    th:first-child,td:first-child{text-align:left}
+
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 12px 0}
+    .btn{padding:10px 14px;border:1px solid #667eea;color:#667eea;background:#fff;border-radius:8px;cursor:pointer;font-weight:600}
+    .btn.primary{background:#667eea;color:#fff}
+
+    .note{font-size:.9em;color:#4b5563;margin-top:8px}
+
+    .audit{background:#ecfeff;border:1px solid #06b6d4;border-radius:10px;padding:14px;margin:12px 0}
+    .audit h4{color:#0e7490;margin-bottom:8px}
+    .audit pre{background:#e0fbfd;border:1px solid #bae6fd;border-radius:8px;padding:10px;overflow:auto}
+
+    .provenance{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px;margin:12px 0}
+    .provenance h4{color:#4338ca;margin-bottom:8px}
+
+    .warn{background:#fef3c7;border:1px solid #f59e0b;color:#92400e;border-radius:10px;padding:10px;margin-bottom:12px}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div>
-        <h1>Queensgate Bouldering — Financial Model</h1>
-        <div class="sub">Investor and bank view with five year projections, DSCR, and break even</div>
-      </div>
-      <div class="toolbar">
-        <button class="btn ghost" id="btnReset">Reset</button>
-        <button class="btn primary" id="btnExport">Export CSV</button>
-      </div>
+  <div class="container">
+    <div class="header">
+      <h1>Queensgate Bouldering — Investor & Bank Model</h1>
+      <p>Bank grade summary with sources and uses, five year P&L, DSCR, 24 month cash runway, covenant tests, and full calculation audit. All inputs are editable and tagged with provenance.</p>
     </div>
 
-    <div class="grid">
-      <!-- INPUTS PANEL -->
-      <div class="card" id="inputsCard">
-        <h3>Inputs</h3>
-        <div class="sub">Enter monthly values unless stated</div>
+    <div class="content">
+      <div class="warn" id="deviationBanner" style="display:none">Some defaults differ from your earlier baseline. Review the Provenance table and set the correct sources before sharing.</div>
 
-        <div class="section">
-          <div class="pill">Pricing and demand</div>
-          <div class="input-row"><label>Members at start</label><input id="members_start" type="number" value="650" /></div>
-          <div class="input-row"><label>Net new members per month</label><input id="members_net_new" type="number" value="30" /></div>
-          <div class="input-row"><label>Monthly churn percent</label><input id="churn_pct" type="number" value="5" /></div>
-          <div class="input-row"><label>Membership price per month £</label><input id="m_price" type="number" value="45" /></div>
-          <div class="input-row"><label>Day pass visits per month</label><input id="visits" type="number" value="3200" /></div>
-          <div class="input-row"><label>Day pass price £</label><input id="d_price" type="number" value="12" /></div>
-          <div class="input-row"><label>Retail per visit £</label><input id="retail_per_visit" type="number" value="2.5" /></div>
-          <div class="input-row"><label>Coaching revenue per month £</label><input id="coach_rev" type="number" value="6000" /></div>
+      <div class="assumptions">
+        <h3>Key assumptions</h3>
+        <div class="assumption-grid">
+          <div class="subhead">Revenue assumptions</div>
+          <div class="assumption-item"><label>Members</label><input id="members-count" type="number" value="600" onchange="calc()"></div>
+          <div class="assumption-item"><label>Membership £ per month</label><input id="membership-price" type="number" value="45" step="1" onchange="calc()"></div>
+          <div class="assumption-item"><label>Day passes per month</label><input id="day-passes-monthly" type="number" value="600" step="10" onchange="calc()"></div>
+          <div class="assumption-item"><label>Day pass price £</label><input id="day-pass-price" type="number" value="13.5" step="0.5" onchange="calc()"></div>
+          <div class="assumption-item"><label>Other revenue per month £</label><input id="other-rev-month" type="number" value="7000" step="100" onchange="calc()"></div>
+
+          <div class="subhead">Operating costs (annual)</div>
+          <div class="assumption-item"><label>Annual rent £</label><input id="annual-rent" type="number" value="70000" step="1000" onchange="calc()"></div>
+          <div class="assumption-item"><label>Business rates £</label><input id="business-rates" type="number" value="35000" step="500" onchange="calc()"></div>
+          <div class="assumption-item"><label>Salaries £</label><input id="salaries" type="number" value="112000" step="1000" onchange="calc()"></div>
+          <div class="assumption-item"><label>Utilities £</label><input id="utilities" type="number" value="24000" step="500" onchange="calc()"></div>
+          <div class="assumption-item"><label>Insurance £</label><input id="insurance" type="number" value="3000" step="100" onchange="calc()"></div>
+          <div class="assumption-item"><label>Marketing £</label><input id="marketing" type="number" value="12000" step="500" onchange="calc()"></div>
+          <div class="assumption-item"><label>Maintenance £</label><input id="maintenance" type="number" value="10000" step="500" onchange="calc()"></div>
+
+          <div class="subhead">Capital expenditure</div>
+          <div class="assumption-item"><label>Walls £</label><input id="cap-walls" type="number" value="250000" step="5000" onchange="calc()"></div>
+          <div class="assumption-item"><label>Matting £</label><input id="cap-matting" type="number" value="90000" step="5000" onchange="calc()"></div>
+          <div class="assumption-item"><label>Mezzanine £</label><input id="cap-mezz" type="number" value="120000" step="5000" onchange="calc()"></div>
+          <div class="assumption-item"><label>Holds & volumes £</label><input id="cap-holds" type="number" value="30000" step="1000" onchange="calc()"></div>
+          <div class="assumption-item"><label>Equipment & POS £</label><input id="cap-eqp" type="number" value="16500" step="500" onchange="calc()"></div>
+          <div class="assumption-item"><label>Branding & launch £</label><input id="cap-brand" type="number" value="20000" step="500" onchange="calc()"></div>
+          <div class="assumption-item"><label>Working capital £</label><input id="cap-wc" type="number" value="20000" step="500" onchange="calc()"></div>
+          <div class="assumption-item"><label>Contingency £</label><input id="cap-cont" type="number" value="25000" step="500" onchange="calc()"></div>
+          <div class="assumption-item"><label>VAT rate %</label><input id="vat-rate" type="number" value="20" step="1" onchange="calc()"></div>
+          <div class="assumption-item"><label>VAT reclaimable</label>
+            <select id="vat-claim" onchange="calc()">
+              <option value="yes" selected>Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <div class="subhead">Debt</div>
+          <div class="assumption-item"><label>Bank loan £</label><input id="loan-amt" type="number" value="250000" step="1000" onchange="calc()"></div>
+          <div class="assumption-item"><label>Rate % per year</label><input id="loan-rate" type="number" value="8" step="0.1" onchange="calc()"></div>
+          <div class="assumption-item"><label>Term years</label><input id="loan-years" type="number" value="7" step="1" onchange="calc()"></div>
+          <div class="assumption-item"><label>Interest only months</label><input id="io-months" type="number" value="6" step="1" onchange="calc()"></div>
+          <div class="assumption-item"><label>Arrangement fee %</label><input id="arr-fee" type="number" value="2" step="0.5" onchange="calc()"></div>
+
+          <div class="subhead">Equity</div>
+          <div class="assumption-item"><label>Owner equity £</label><input id="equity" type="number" value="230000" step="1000" onchange="calc()"></div>
         </div>
-
-        <div class="section">
-          <div class="pill">Operating costs</div>
-          <div class="input-row"><label>Rent £</label><input id="rent" type="number" value="5800" /></div>
-          <div class="input-row"><label>Business rates £</label><input id="rates" type="number" value="4000" /></div>
-          <div class="input-row"><label>Service charge £</label><input id="service_charge" type="number" value="1500" /></div>
-          <div class="input-row"><label>Utilities £</label><input id="utilities" type="number" value="3500" /></div>
-          <div class="input-row"><label>Staff salaries £</label><input id="staff" type="number" value="28000" /></div>
-          <div class="input-row"><label>Insurance £</label><input id="insurance" type="number" value="600" /></div>
-          <div class="input-row"><label>Marketing £</label><input id="marketing" type="number" value="3000" /></div>
-          <div class="input-row"><label>Maintenance £</label><input id="maintenance" type="number" value="1200" /></div>
-          <div class="input-row"><label>Other opex £</label><input id="other_opex" type="number" value="800" /></div>
-          <div class="input-row"><label>COGS percent retail"</label><input id="cogs_pct" type="number" value="35" /></div>
-        </div>
-
-        <div class="section">
-          <div class="pill">Capex one off</div>
-          <div class="input-row"><label>Walls and matting £</label><input id="capex_walls" type="number" value="420000" /></div>
-          <div class="input-row"><label>Fit out and MEP £</label><input id="capex_fitout" type="number" value="60000" /></div>
-          <div class="input-row"><label>Holds and volumes £</label><input id="capex_holds" type="number" value="30000" /></div>
-          <div class="input-row"><label>Equipment and POS £</label><input id="capex_equipment" type="number" value="15000" /></div>
-          <div class="input-row"><label>Working capital £</label><input id="capex_wc" type="number" value="20000" /></div>
-          <div class="input-row"><label>Contingency £</label><input id="capex_cont" type="number" value="25000" /></div>
-        </div>
-
-        <div class="section">
-          <div class="pill">Financing</div>
-          <div class="input-row"><label>Owner equity £</label><input id="equity" type="number" value="230000" /></div>
-          <div class="input-row"><label>Bank loan £</label><input id="loan_amt" type="number" value="250000" /></div>
-          <div class="input-row"><label>Interest rate percent annual</label><input id="loan_rate" type="number" value="8" /></div>
-          <div class="input-row"><label>Loan term years</label><input id="loan_years" type="number" value="7" /></div>
-          <div class="input-row"><label>Interest only months</label><input id="io_months" type="number" value="6" /></div>
-        </div>
-
-        <div class="section">
-          <div class="pill">Growth and inflation per year</div>
-          <div class="input-row"><label>Member price growth percent</label><input id="price_growth" type="number" value="3" /></div>
-          <div class="input-row"><label>Visits growth percent</label><input id="visit_growth" type="number" value="5" /></div>
-          <div class="input-row"><label>Opex inflation percent</label><input id="opex_infl" type="number" value="4" /></div>
+        <div class="scenario-buttons" role="group" aria-label="Scenario">
+          <button class="scenario-btn" data-scenario="conservative" aria-pressed="false">Conservative</button>
+          <button class="scenario-btn" data-scenario="realistic" aria-pressed="true">Realistic</button>
+          <button class="scenario-btn" data-scenario="optimistic" aria-pressed="false">Optimistic</button>
         </div>
       </div>
 
-      <!-- OUTPUTS PANEL -->
-      <div class="card">
-        <div class="kpis" id="kpis">
-          <div class="kpi"><div class="label">Year 1 revenue</div><div class="value" id="kpi_rev">£0</div></div>
-          <div class="kpi"><div class="label">Year 1 EBITDA</div><div class="value" id="kpi_ebitda">£0</div></div>
-          <div class="kpi" id="kpi_dscr_box"><div class="label">DSCR Year 2</div><div class="value" id="kpi_dscr">0.00</div></div>
-          <div class="kpi"><div class="label">Breakeven visits per day</div><div class="value" id="kpi_breakeven">0</div></div>
+      <div class="tools">
+        <button class="btn" id="btnExport">Export CSV</button>
+        <button class="btn" id="btnAudit">Copy Audit Text</button>
+        <button class="btn" id="btnReset">Reset</button>
+      </div>
+
+      <div class="key-metrics">
+        <div class="metric"><div class="metric-value" id="km-uses">£0</div><div class="metric-label">Total uses of funds</div></div>
+        <div class="metric"><div class="metric-value" id="km-sources">£0</div><div class="metric-label">Total sources of funds</div></div>
+        <div class="metric"><div class="metric-value" id="km-yr1-rev">£0</div><div class="metric-label">Year 1 revenue</div></div>
+        <div class="metric"><div class="metric-value" id="km-yr1-ebitda">£0</div><div class="metric-label">Year 1 EBITDA</div></div>
+        <div class="metric"><div class="metric-value" id="km-dscr">0.00</div><div class="metric-label">DSCR Year 2</div></div>
+        <div class="metric"><div class="metric-value" id="km-breakeven">0</div><div class="metric-label">Breakeven visits per day</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Sources and uses</div>
+            <div class="section-total" id="uses-total">£0</div>
+          </div>
+          <div class="section-content">
+            <table id="tbl-su"></table>
+            <div class="note">VAT is included in uses only if not reclaimable. Arrangement fee deducted from sources and shown in uses.</div>
+          </div>
         </div>
 
-        <div class="row section">
-          <div class="card">
-            <h3>Year 1 summary</h3>
-            <table class="table" id="summaryY1"></table>
-            <div class="legend"><span><i class="dot rev"></i>Revenue</span><span><i class="dot cogs"></i>COGS</span><span><i class="dot opex"></i>Opex</span><span><i class="dot ebitda"></i>EBITDA</span></div>
-            <div class="chart" id="chartBars"></div>
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Year 1 operating summary</div>
+            <div class="section-total" id="y1-total">EBITDA £0</div>
           </div>
-          <div class="card">
-            <h3>Five year projection</h3>
-            <table class="table" id="proj"></table>
-          </div>
-        </div>
-
-        <div class="row section">
-          <div class="card">
-            <h3>Debt schedule first 24 months</h3>
-            <table class="table" id="debt"></table>
-          </div>
-          <div class="card">
-            <h3>Assumptions check</h3>
-            <div class="sub">Quick view for investment committee</div>
-            <table class="table" id="assump"></table>
-            <div class="foot">Edit inputs on the left to update all tables and KPIs</div>
+          <div class="section-content">
+            <table id="tbl-y1"></table>
+            <div class="audit"><h4>Formulas</h4>
+              <pre id="audit-y1"></pre>
+            </div>
           </div>
         </div>
       </div>
+
+      <div class="grid-2">
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Five year projection</div>
+            <div class="section-total" id="fy-total">DSCR Yr2 0.00</div>
+          </div>
+          <div class="section-content">
+            <table id="tbl-5y"></table>
+            <div class="audit"><h4>Assumptions</h4>
+              <pre>Revenue growth 5 percent per year. Opex inflation 4 percent per year. Debt service after interest only uses level annuity.</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Debt schedule first 24 months</div>
+            <div class="section-total" id="debt-total">Loan £0</div>
+          </div>
+          <div class="section-content">
+            <table id="tbl-debt"></table>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Monthly cash flow first 24 months</div>
+            <div class="section-total" id="cash-total">Closing cash £0</div>
+          </div>
+          <div class="section-content">
+            <table id="tbl-cash"></table>
+            <div class="note">Opening cash equals working capital plus any surplus from sources after uses.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Covenant tests</div>
+            <div class="section-total" id="cov-summary">Status</div>
+          </div>
+          <div class="section-content">
+            <table id="tbl-cov"></table>
+            <div class="note">Thresholds: DSCR 1.20, Minimum liquidity 2 months of fixed costs.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="provenance">
+        <h4>Provenance</h4>
+        <table id="tbl-prov"></table>
+        <div class="note">Set the source for each critical input so banks can see where it comes from. Options: Supplier quote, Your brief, Benchmark, Estimate.</div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Annual performance</div>
+          <div class="section-total" id="sum-total">EBITDA margin 0 percent</div>
+        </div>
+        <div class="section-content">
+          <table id="tbl-sum"></table>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <script>
-    const £ = n => new Intl.NumberFormat('en-GB', {style:'currency', currency:'GBP', maximumFractionDigits:0}).format(n||0);
-    const pct = n => (n||0).toFixed(1) + '%';
+    // Helper formatters
+    const fmtGBP = v => {const x = Math.round(Number(v)||0); const sign = x < 0 ? '-' : ''; return sign + '£' + Math.abs(x).toLocaleString('en-GB')};
+    const fmtPct = v => (Number(v)||0).toFixed(2) + '%';
+    const E = id => document.getElementById(id);
 
-    const els = id => document.getElementById(id);
+    // Baseline for deviation flag
+    const baseline = { members:600, mPrice:45 };
 
-    function getInputs(){
-      const g = k => parseFloat(els(k).value) || 0;
-      const capex_total = g('capex_walls')+g('capex_fitout')+g('capex_holds')+g('capex_equipment')+g('capex_wc')+g('capex_cont');
+    function read(){
       return {
-        members_start:g('members_start'), members_net_new:g('members_net_new'), churn_pct:g('churn_pct')/100, m_price:g('m_price'),
-        visits:g('visits'), d_price:g('d_price'), retail_per_visit:g('retail_per_visit'), coach_rev:g('coach_rev'),
-        rent:g('rent'), rates:g('rates'), service_charge:g('service_charge'), utilities:g('utilities'), staff:g('staff'), insurance:g('insurance'), marketing:g('marketing'), maintenance:g('maintenance'), other_opex:g('other_opex'), cogs_pct:g('cogs_pct')/100,
-        capex_total,
-        equity:g('equity'), loan_amt:g('loan_amt'), loan_rate:g('loan_rate')/100, loan_years:g('loan_years'), io_months:g('io_months'),
-        price_growth:g('price_growth')/100, visit_growth:g('visit_growth')/100, opex_infl:g('opex_infl')/100
-      }
+        members: +E('members-count').value||0,
+        mPrice: +E('membership-price').value||0,
+        passesM: +E('day-passes-monthly').value||0,
+        passPrice: +E('day-pass-price').value||0,
+        otherRevM: +E('other-rev-month').value||0,
+        rent: +E('annual-rent').value||0,
+        rates: +E('business-rates').value||0,
+        salaries: +E('salaries').value||0,
+        utilities: +E('utilities').value||0,
+        insurance: +E('insurance').value||0,
+        marketing: +E('marketing').value||0,
+        maintenance: +E('maintenance').value||0,
+        capWalls: +E('cap-walls').value||0,
+        capMat: +E('cap-matting').value||0,
+        capMezz: +E('cap-mezz').value||0,
+        capHolds: +E('cap-holds').value||0,
+        capEqp: +E('cap-eqp').value||0,
+        capBrand: +E('cap-brand').value||0,
+        capWC: +E('cap-wc').value||0,
+        capCont: +E('cap-cont').value||0,
+        vatRate: (+E('vat-rate').value||0)/100,
+        vatClaim: E('vat-claim').value === 'yes',
+        loanAmt: +E('loan-amt').value||0,
+        loanRateY: (+E('loan-rate').value||0)/100,
+        loanYears: +E('loan-years').value||0,
+        ioMonths: +E('io-months').value||0,
+        arrFeePct: (+E('arr-fee').value||0)/100,
+        equity: +E('equity').value||0
+      };
     }
 
-    function buildModel(){
-      const p = getInputs();
+    function calc(){
+      const p = read();
 
-      // Members over 12 months simple cohort: M_{t+1} = M_t + net_new - churn*M_t
-      let members = p.members_start;
-      let member_months = 0; // sum of active members each month
-      for(let m=0;m<12;m++){
-        member_months += members;
-        members = Math.max(0, members + p.members_net_new - p.churn_pct*members);
-      }
-      const avg_members = member_months/12;
-      const rev_membership_m = avg_members * p.m_price; // monthly
-      const rev_membership_y = rev_membership_m * 12;
+      // Deviation banner
+      const dev = (p.mPrice!==baseline.mPrice) || (p.members!==baseline.members);
+      E('deviationBanner').style.display = dev ? 'block' : 'none';
 
-      // Day passes and retail
-      const rev_daypass_m = p.visits * p.d_price;
-      const rev_retail_m = p.visits * p.retail_per_visit;
-      const rev_coach_m = p.coach_rev;
-      const rev_total_y = 12*(rev_membership_m + rev_daypass_m + rev_retail_m + rev_coach_m);
+      // Revenue Year 1
+      const revMembers = p.members * p.mPrice * 12;
+      const revPasses = p.passesM * p.passPrice * 12;
+      const revOther = p.otherRevM * 12;
+      const revY1 = revMembers + revPasses + revOther;
 
-      const cogs_y = 12*(p.cogs_pct*(rev_retail_m + rev_coach_m));
+      // Opex Year 1
+      const opexY1 = p.rent + p.rates + p.salaries + p.utilities + p.insurance + p.marketing + p.maintenance;
+      const ebitdaY1 = revY1 - opexY1;
+      const ebitdaMargin = revY1>0 ? ebitdaY1/revY1 : 0;
 
-      const opex_m = p.rent + p.rates + p.service_charge + p.utilities + p.staff + p.insurance + p.marketing + p.maintenance + p.other_opex;
-      const opex_y = opex_m * 12;
+      // Capex uses
+      const capexExVAT = p.capWalls + p.capMat + p.capMezz + p.capHolds + p.capEqp + p.capBrand + p.capWC + p.capCont;
+      const vatOnCapex = capexExVAT * p.vatRate;
+      const capexBasis = p.vatClaim ? capexExVAT : capexExVAT + vatOnCapex;
 
-      const ebitda_y = rev_total_y - cogs_y - opex_y;
+      // Fees
+      const arrFee = p.loanAmt * p.arrFeePct;
 
-      // Debt schedule
-      const r = p.loan_rate/12; // monthly rate
-      const n = p.loan_years*12; // months
-      const io = Math.min(p.io_months, n);
-      const annuity = r>0 ? (p.loan_amt * r) / (1 - Math.pow(1+r, -(n-io))) : p.loan_amt/(n-io);
-      let bal = p.loan_amt;
-      let schedule = [];
+      // Sources and Uses
+      const uses = [
+        ['Climbing walls', capexLine(p.capWalls, p.vatRate, p.vatClaim)],
+        ['Matting', capexLine(p.capMat, p.vatRate, p.vatClaim)],
+        ['Mezzanine', capexLine(p.capMezz, p.vatRate, p.vatClaim)],
+        ['Holds & volumes', capexLine(p.capHolds, p.vatRate, p.vatClaim)],
+        ['Equipment & POS', capexLine(p.capEqp, p.vatRate, p.vatClaim)],
+        ['Branding & launch', capexLine(p.capBrand, p.vatRate, p.vatClaim)],
+        ['Working capital', [p.capWC, 0, p.capWC]],
+        ['Contingency', capexLine(p.capCont, p.vatRate, p.vatClaim)],
+        ['Arrangement fee', [0, 0, arrFee]]
+      ];
+      const usesTotal = uses.reduce((a, r)=> a + r[1][2], 0);
+      const sources = [
+        ['Bank loan', p.loanAmt - arrFee],
+        ['Owner equity', p.equity]
+      ];
+      const sourcesTotal = (p.loanAmt - arrFee) + p.equity;
+      const surplus = sourcesTotal - usesTotal;
+
+      // Debt schedule and DSCR
+      const rM = p.loanRateY/12;
+      const n = p.loanYears*12;
+      const io = Math.min(p.ioMonths, n);
+      const annuity = rM>0 ? (p.loanAmt * rM) / (1 - Math.pow(1+rM, -(n-io))) : p.loanAmt/(n-io);
+      let bal = p.loanAmt;
+      let debtRows = [];
       for(let i=1;i<=24;i++){
-        let interest = bal * r;
-        let principal = 0;
-        let payment = 0;
-        if(i<=io){ // interest only
-          payment = interest;
-          principal = 0;
-        } else {
-          payment = annuity;
-          principal = Math.max(0, payment - interest);
-          bal = Math.max(0, bal - principal);
-        }
-        schedule.push({month:i, payment, interest, principal, balance:bal});
+        const interest = bal * rM;
+        let payment = 0; let principal = 0;
+        if(i<=io){ payment = interest; principal = 0; }
+        else { payment = annuity; principal = Math.max(0, payment - interest); bal = Math.max(0, bal - principal); }
+        debtRows.push([i, fmtGBP(payment), fmtGBP(interest), fmtGBP(principal), fmtGBP(bal)]);
       }
+      const debtServiceY2 = annuity*12; // after IO
+      const dscrY2 = debtServiceY2>0 ? ebitdaY1 / debtServiceY2 : 999;
 
-      // Debt service for Year 2 for DSCR (after IO period) => 12 months of annuity
-      const debt_service_y = (io<n) ? annuity*12 : schedule.slice(0,12).reduce((a,b)=>a+b.payment,0);
-      const dscr = debt_service_y>0 ? (ebitda_y / debt_service_y) : 999;
+      // Breakeven visits per day (simple contribution approach)
+      const fixedM = opexY1/12;
+      const memberCM = (p.members * p.mPrice);
+      const otherCM = p.otherRevM * 0.7;
+      const cmPerVisit = p.passPrice * 0.7;
+      const shortfall = Math.max(0, fixedM - memberCM - otherCM);
+      const breakevenVisitsDay = cmPerVisit>0 ? Math.ceil(shortfall / cmPerVisit / 30) : 0;
 
-      // Net income rough view before tax
-      const interest_y = schedule.slice(0,12).reduce((a,b)=>a+b.interest,0);
-      const ebit_y = ebitda_y - 0; // no DA model here
-      const profit_bt_y = ebit_y - interest_y;
-
-      // Breakeven daily visits using day pass margin contribution only
-      const fixed_m = opex_m + (cogs_y/12)*0; // ignore COGS for day pass since set to retail only
-      const cm_per_visit = p.d_price + p.retail_per_visit*0.3; // rough contribution
-      const breakeven_visits_day = cm_per_visit>0 ? Math.ceil((fixed_m - rev_membership_m - rev_coach_m)/cm_per_visit/30) : 0;
-
-      // Five year projection simple growth
-      let rows = [];
-      let members_price = p.m_price;
-      let visits_m = p.visits;
-      let opex_y_g = opex_y;
+      // Five year projection
+      const growRev = 0.05;
+      const inflOpex = 0.04;
+      let proj = [];
+      let rev = revY1; let opex = opexY1;
       for(let y=1;y<=5;y++){
-        if(y>1){
-          members_price *= (1+p.price_growth);
-          visits_m *= (1+p.visit_growth);
-          opex_y_g *= (1+p.opex_infl);
-        }
-        const rev_members_y = rev_membership_y * Math.pow(1+p.price_growth, y-1); // approx
-        const rev_day_y = 12*(visits_m * p.d_price);
-        const rev_retail_y = 12*(visits_m * p.retail_per_visit);
-        const rev_coach_y = rev_coach_m * 12;
-        const rev_y = rev_members_y + rev_day_y + rev_retail_y + rev_coach_y;
-        const cogs_proj = 0.35*(rev_retail_y + rev_coach_y);
-        const ebitda_proj = rev_y - cogs_proj - opex_y_g;
-        const debt_y = (y===1) ? schedule.slice(0,12).reduce((a,b)=>a+b.payment,0) : annuity*12;
-        const dscr_y = debt_y>0 ? ebitda_proj/debt_y : 999;
-        rows.push({y, rev:rev_y, ebitda:ebitda_proj, debt:debt_y, dscr:dscr_y});
+        if(y>1){ rev *= (1+growRev); opex *= (1+inflOpex); }
+        const e = rev - opex;
+        const debtY = (y===1 && io>0) ? debtRows.slice(0,12).map(r=>r[1]).reduce((a,b)=> a + parseGBP(b), 0) : annuity*12;
+        const ds = debtY>0 ? e/debtY : 999;
+        proj.push([y, fmtGBP(rev), fmtGBP(opex), fmtGBP(e), fmtGBP(debtY), ds.toFixed(2)]);
       }
+
+      // Cash runway first 24 months
+      let cashRows = [];
+      let cash = p.capWC + Math.max(0, surplus);
+      for(let m=1;m<=24;m++){
+        const revM = revY1/12;
+        const opexM = opexY1/12;
+        const debt = parseGBP(debtRows[m-1][1]);
+        const net = revM - opexM - debt;
+        cash += net;
+        cashRows.push([m, fmtGBP(revM), fmtGBP(opexM), debtRows[m-1][1], fmtGBP(net), fmtGBP(cash)]);
+      }
+
+      // Covenant table
+      const cov = [
+        ['DSCR Year 2 vs 1.20', dscrY2.toFixed(2), dscrY2>=1.2 ? 'Pass' : 'Fail'],
+        ['Liquidity months vs 2.00', ( (cashRows[0] ? parseGBP(cashRows[0][5]) : cash) / (opexY1/12) ).toFixed(2), ((cashRows[0] ? parseGBP(cashRows[0][5]) : cash) / (opexY1/12))>=2 ? 'Pass' : 'Warn']
+      ];
+
+      // Provenance rows
+      const prov = [
+        ['Members', p.members, 'Your brief'],
+        ['Membership price £/m', p.mPrice, 'Your brief'],
+        ['Day passes per month', p.passesM, 'Estimate'],
+        ['Day pass price £', p.passPrice, 'Benchmark'],
+        ['Other rev per month £', p.otherRevM, 'Estimate'],
+        ['Rent £ pa', p.rent, 'Heads of terms'],
+        ['Rates £ pa', p.rates, 'Estimate'],
+        ['Salaries £ pa', p.salaries, 'Budget'],
+        ['Utilities £ pa', p.utilities, 'Estimate'],
+        ['Insurance £ pa', p.insurance, 'Quote'],
+        ['Marketing £ pa', p.marketing, 'Budget'],
+        ['Maintenance £ pa', p.maintenance, 'Budget'],
+        ['Capex walls £', p.capWalls, 'Supplier quote'],
+        ['Matting £', p.capMat, 'Supplier quote'],
+        ['Mezzanine £', p.capMezz, 'Supplier quote'],
+        ['Holds £', p.capHolds, 'Budget'],
+        ['Equipment £', p.capEqp, 'Budget'],
+        ['Branding £', p.capBrand, 'Budget'],
+        ['Working capital £', p.capWC, 'Budget'],
+        ['Contingency £', p.capCont, 'Budget']
+      ];
 
       // Render
-      els('kpi_rev').textContent = £(rev_total_y);
-      els('kpi_ebitda').textContent = £(ebitda_y);
-      els('kpi_dscr').textContent = dscr.toFixed(2);
-      const dscrBox = els('kpi_dscr_box');
-      dscrBox.classList.remove('good','warn','bad');
-      dscrBox.classList.add(dscr>=1.5?'good':(dscr>=1.2?'warn':'bad'));
-      els('kpi_breakeven').textContent = Math.max(0,breakeven_visits_day);
+      E('km-uses').textContent = fmtGBP(usesTotal);
+      E('km-sources').textContent = fmtGBP(sourcesTotal);
+      E('km-yr1-rev').textContent = fmtGBP(revY1);
+      E('km-yr1-ebitda').textContent = fmtGBP(ebitdaY1);
+      E('km-dscr').textContent = dscrY2.toFixed(2);
+      E('km-breakeven').textContent = breakevenVisitsDay;
 
-      // Year 1 table
-      const y1 = [
-        ['Membership revenue', £(rev_membership_y)],
-        ['Day pass revenue', £(12*rev_daypass_m)],
-        ['Retail revenue', £(12*rev_retail_m)],
-        ['Coaching revenue', £(12*rev_coach_m)],
-        ['Revenue total', £(rev_total_y)],
-        ['COGS', '− '+£(cogs_y)],
-        ['Operating costs', '− '+£(opex_y)],
-        ['EBITDA', £(ebitda_y)],
-        ['Interest year 1', '− '+£(interest_y)],
-        ['Profit before tax', £(profit_bt_y)]
-      ];
-      renderTable('summaryY1', ['Line item','Value'], y1);
+      E('uses-total').textContent = fmtGBP(usesTotal);
+      E('y1-total').textContent = 'EBITDA ' + fmtGBP(ebitdaY1);
+      E('fy-total').textContent = 'DSCR Yr2 ' + dscrY2.toFixed(2);
+      E('debt-total').textContent = 'Loan ' + fmtGBP(p.loanAmt);
+      E('cash-total').textContent = 'Closing cash ' + (cashRows.length?cashRows[cashRows.length-1][5]:'£0');
 
-      // Bars
-      drawBars('chartBars', [rev_total_y, cogs_y, opex_y, ebitda_y], ['#38bdf8','#fb7185','#f59e0b','#34d399']);
+      renderTable('tbl-su', ['Item','Ex VAT','VAT','Total'], uses.map(r=>[r[0], fmtGBP(r[1][0]), fmtGBP(r[1][1]), fmtGBP(r[1][2])]).concat([['','', '', ''],['Sources', '', '', '']]).concat(sources.map(s=>[s[0],'','', fmtGBP(s[1])])).concat([['Surplus / shortfall','','', fmtGBP(surplus)]]));
+      renderTable('tbl-y1', ['Line','Amount'], [
+        ['Memberships', fmtGBP(revMembers)],
+        ['Day passes', fmtGBP(revPasses)],
+        ['Other revenue', fmtGBP(revOther)],
+        ['Revenue total', fmtGBP(revY1)],
+        ['Opex total', fmtGBP(opexY1)],
+        ['EBITDA', fmtGBP(ebitdaY1)],
+        ['EBITDA margin', fmtPct(ebitdaMargin*100)]
+      ]);
+      renderTable('tbl-5y', ['Year','Revenue','Opex','EBITDA','Debt service','DSCR'], proj);
+      renderTable('tbl-debt', ['Month','Payment','Interest','Principal','Balance'], debtRows);
+      renderTable('tbl-cash', ['Month','Revenue','Opex','Debt service','Net','Closing cash'], cashRows);
+      renderTable('tbl-cov', ['Test','Metric','Status'], cov);
+      renderTable('tbl-prov', ['Input','Value','Source'], prov);
 
-      // Projection table
-      renderTable('proj', ['Year','Revenue','EBITDA','Debt service','DSCR'], rows.map(r=>[r.y, £(r.rev), £(r.ebitda), £(r.debt), r.dscr.toFixed(2)]));
+      renderTable('tbl-sum', ['Metric','Value'], [
+        ['Total revenue', fmtGBP(revY1)],
+        ['Total opex', fmtGBP(opexY1)],
+        ['EBITDA', fmtGBP(ebitdaY1)],
+        ['EBITDA margin', fmtPct(ebitdaMargin*100)],
+        ['Payback period', ebitdaY1>0 ? (capexBasis/ebitdaY1).toFixed(1) + ' years' : 'N/A']
+      ]);
+      E('sum-total').textContent = 'EBITDA margin ' + fmtPct(ebitdaMargin*100);
 
-      // Debt schedule
-      renderTable('debt', ['Month','Payment','Interest','Principal','Balance'], schedule.map(r=>[r.month, £(r.payment), £(r.interest), £(r.principal), £(r.balance)]));
+      // Audit block
+      E('audit-y1').textContent = `Memberships = members × price × 12\n = ${p.members} × £${p.mPrice} × 12 = ${fmtGBP(revMembers)}\nDay passes = passes per month × price × 12\n = ${p.passesM} × £${p.passPrice} × 12 = ${fmtGBP(revPasses)}\nOther revenue = £${p.otherRevM} × 12 = ${fmtGBP(revOther)}\nRevenue total = ${fmtGBP(revY1)}\nOpex total = rent + rates + salaries + utilities + insurance + marketing + maintenance\n = ${fmtGBP(p.rent)} + ${fmtGBP(p.rates)} + ${fmtGBP(p.salaries)} + ${fmtGBP(p.utilities)} + ${fmtGBP(p.insurance)} + ${fmtGBP(p.marketing)} + ${fmtGBP(p.maintenance)} = ${fmtGBP(opexY1)}\nEBITDA = revenue − opex = ${fmtGBP(revY1)} − ${fmtGBP(opexY1)} = ${fmtGBP(ebitdaY1)}\nDebt service (Yr2) = level payment × 12 = ${fmtGBP(annuity)} × 12 = ${fmtGBP(debtServiceY2)}\nDSCR Yr2 = EBITDA ÷ debt service = ${fmtGBP(ebitdaY1)} ÷ ${fmtGBP(debtServiceY2)} = ${dscrY2.toFixed(2)}`;
+    }
 
-      // Assumptions
-      const asum = [
-        ['Members at start', formatNum(p.members_start)],
-        ['Net new per month', formatNum(p.members_net_new)],
-        ['Churn monthly', pct(p.churn_pct*100)],
-        ['Member price', £(p.m_price)],
-        ['Visits per month', formatNum(p.visits)],
-        ['Day pass price', £(p.d_price)],
-        ['Retail per visit', £(p.retail_per_visit)],
-        ['Coaching per month', £(p.coach_rev)],
-        ['Opex per month', £(opex_m)],
-        ['Capex total', £(p.capex_total)],
-        ['Equity', £(p.equity)],
-        ['Loan amount', £(p.loan_amt)],
-        ['Interest annual', pct(p.loan_rate*100)],
-        ['Term years', formatNum(p.loan_years)],
-        ['Interest only months', formatNum(p.io_months)]
-      ];
-      renderTable('assump', ['Item','Value'], asum);
-
-      return {rows,schedule};
+    function capexLine(exVAT, vatRate, claim){
+      const v = exVAT * vatRate; return [exVAT, claim?0:v, claim?exVAT:exVAT+v];
     }
 
     function renderTable(id, headers, rows){
-      const t = els(id);
-      let html = '<tr>' + headers.map(h=>`<th>${h}</th>`).join('') + '</tr>';
-      html += rows.map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('');
-      t.innerHTML = html;
+      const el = E(id);
+      let html = '<tr>' + headers.map(h=>'<th>'+h+'</th>').join('') + '</tr>';
+      html += rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('');
+      el.innerHTML = html;
     }
 
-    function drawBars(id, values, colors){
-      const el = els(id);
-      el.innerHTML = '';
-      const max = Math.max(...values.map(v=>Math.abs(v)))*1.1 || 1;
-      values.forEach((v,i)=>{
-        const b = document.createElement('div');
-        b.className = 'bar';
-        b.style.left = (i*22+8)+'%';
-        b.style.height = (Math.abs(v)/max*100)+'%';
-        b.style.background = `linear-gradient(180deg, ${colors[i]}, ${colors[i]})`;
-        el.appendChild(b);
-      });
-    }
-
-    function formatNum(n){
-      return new Intl.NumberFormat('en-GB').format(n||0);
-    }
+    function parseGBP(s){ return Number(String(s).replace(/[^0-9.-]/g,''))||0; }
 
     function exportCSV(){
-      // Build a simple CSV of the five year projection and year 1 summary
-      const proj = document.getElementById('proj').innerText.replaceAll('\t', ',');
-      const y1 = document.getElementById('summaryY1').innerText.replaceAll('\t', ',');
-      const csv = 'Year 1 Summary\n' + y1 + '\n\nFive Year Projection\n' + proj;
+      const tables = [
+        ['Sources_and_Uses','tbl-su'],
+        ['Year1_Summary','tbl-y1'],
+        ['Five_Year_Projection','tbl-5y'],
+        ['Debt_24m','tbl-debt'],
+        ['CashFlow_24m','tbl-cash'],
+        ['Covenants','tbl-cov'],
+        ['Provenance','tbl-prov']
+      ];
+      let csv = '';
+      for(const [name,id] of tables){
+        const table = document.getElementById(id);
+        const rows = Array.from(table.querySelectorAll('tr')).map(tr => Array.from(tr.children).map(td => '"'+td.textContent.replace(/"/g,'""')+'"').join(','));
+        csv += name+'\n'+rows.join('\n')+'\n\n';
+      }
       const blob = new Blob([csv], {type:'text/csv'});
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'queensgate_bouldering_financials.csv';
+      a.download = 'queensgate_bouldering_investor_model.csv';
       a.click();
       URL.revokeObjectURL(a.href);
     }
 
-    function resetDefaults(){
-      document.querySelectorAll('#inputsCard input').forEach(inp=>{ inp.value = inp.defaultValue; });
-      buildModel();
+    function copyAudit(){
+      const text = document.getElementById('audit-y1').textContent;
+      navigator.clipboard.writeText(text);
     }
 
-    // Wire up
-    document.getElementById('btnExport').addEventListener('click', exportCSV);
-    document.getElementById('btnReset').addEventListener('click', resetDefaults);
-    document.querySelectorAll('#inputsCard input').forEach(inp=>{
-      inp.addEventListener('input', buildModel);
-    });
+    function reset(){
+      document.querySelectorAll('.assumption-item input, .assumption-item select').forEach(el=>{
+        if(el.tagName==='SELECT') el.selectedIndex = 0; else el.value = el.defaultValue;
+      });
+      setScenarioButtons('realistic');
+      calc();
+    }
 
-    buildModel();
+    function setScenarioButtons(active){
+      document.querySelectorAll('.scenario-btn').forEach(btn=>{
+        const is = btn.dataset.scenario===active; btn.classList.toggle('active',is); btn.setAttribute('aria-pressed', is?'true':'false');
+      });
+    }
+
+    function scenarios(which){
+      const base = {
+        members:600, mPrice:45, passesM:600, passPrice:13.5, otherRevM:7000,
+        rent:70000, rates:35000, salaries:112000, utilities:24000, insurance:3000, marketing:12000, maintenance:10000,
+        capWalls:250000, capMat:90000, capMezz:120000, capHolds:30000, capEqp:16500, capBrand:20000, capWC:20000, capCont:25000,
+        vat:20, claim:'yes', loanAmt:250000, rate:8, years:7, io:6, fee:2, equity:230000
+      };
+      const over = {
+        conservative: {members:520, passesM:520, otherRevM:6000, mPrice:42, passPrice:13.0, salaries:106000, marketing:10000, maintenance:9000},
+        realistic: {},
+        optimistic: {members:650, passesM:750, otherRevM:9000, mPrice:49, passPrice:14.5, salaries:118000, marketing:15000, maintenance:12000}
+      }[which]||{};
+      function set(id,val){document.getElementById(id).value = val}
+      set('members-count', over.members??base.members);
+      set('membership-price', over.mPrice??base.mPrice);
+      set('day-passes-monthly', over.passesM??base.passesM);
+      set('day-pass-price', over.passPrice??base.passPrice);
+      set('other-rev-month', over.otherRevM??base.otherRevM);
+      set('annual-rent', over.rent??base.rent);
+      set('business-rates', over.rates??base.rates);
+      set('salaries', over.salaries??base.salaries);
+      set('utilities', over.utilities??base.utilities);
+      set('insurance', over.insurance??base.insurance);
+      set('marketing', over.marketing??base.marketing);
+      set('maintenance', over.maintenance??base.maintenance);
+      set('cap-walls', base.capWalls); set('cap-matting', base.capMat); set('cap-mezz', base.capMezz);
+      set('cap-holds', base.capHolds); set('cap-eqp', base.capEqp); set('cap-brand', base.capBrand);
+      set('cap-wc', base.capWC); set('cap-cont', base.capCont);
+      set('vat-rate', base.vat); document.getElementById('vat-claim').value = base.claim;
+      set('loan-amt', base.loanAmt); set('loan-rate', base.rate); set('loan-years', base.years); set('io-months', base.io); set('arr-fee', base.fee);
+      set('equity', base.equity);
+      setScenarioButtons(which);
+      calc();
+    }
+
+    // Self tests to catch regressions
+    function runSelfTests(){
+      try{
+        scenarios('realistic');
+        const rev = E('km-yr1-rev').textContent; // not £0
+        console.assert(rev !== '£0', 'Revenue should not be £0 after init');
+        const dscr = parseFloat(E('km-dscr').textContent);
+        console.assert(!Number.isNaN(dscr), 'DSCR should be a number');
+      }catch(e){ console.error('Self test failed', e); }
+    }
+
+    // Wire buttons
+    document.getElementById('btnExport').addEventListener('click', exportCSV);
+    document.getElementById('btnAudit').addEventListener('click', copyAudit);
+    document.getElementById('btnReset').addEventListener('click', reset);
+    document.querySelectorAll('.assumption-item input, .assumption-item select').forEach(el=> el.addEventListener('input', calc));
+    document.querySelectorAll('.scenario-btn').forEach(btn=> btn.addEventListener('click', ()=> scenarios(btn.dataset.scenario)));
+
+    // Init
+    window.addEventListener('load', ()=>{ scenarios('realistic'); runSelfTests(); });
   </script>
 </body>
 </html>

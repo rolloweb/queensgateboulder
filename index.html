@@ -1,688 +1,402 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Queensgate Bouldering — Bank Model</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:#f5f7fa;color:#243447;padding:20px}
-  .container{max-width:1200px;margin:0 auto;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.08);overflow:hidden}
-  .header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:28px}
-  .header h1{font-size:1.9rem;margin-bottom:6px}
-  .header p{opacity:.95}
-  .content{padding:24px}
-  .section{border:1px solid #e6e8eb;border-radius:10px;margin-bottom:24px;overflow:hidden}
-  .section-header{background:#f8f9fb;padding:14px 18px;border-bottom:1px solid #e6e8eb;display:flex;align-items:center;justify-content:space-between}
-  .section-title{font-weight:700}
-  .section-content{padding:18px}
-  .grid{display:grid;gap:14px}
-  .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
-  @media (max-width:900px){.grid.cols-4{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media (max-width:700px){
-    .grid.cols-3{grid-template-columns:1fr}
-    .grid.cols-2{grid-template-columns:1fr}
-    .grid.cols-4{grid-template-columns:1fr}
-  }
-  label{font-size:.9rem;color:#5b6776}
-  .input{display:flex;gap:8px;align-items:center}
-  .input input,.input select{margin-left:auto;min-width:140px;padding:8px 10px;border:1px solid #d7dbe0;border-radius:8px;font-size:15px;text-align:right}
-  .stack{display:flex;flex-direction:column;gap:4px}
-  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#3949ab;font-weight:600;font-size:.85rem}
-  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;background:#f8f9fb;border:1px solid #e6e8eb;border-radius:10px;padding:16px;margin-bottom:18px}
-  .metric{text-align:center}
-  .metric .v{font-size:1.45rem;font-weight:800;color:#667eea}
-  .metric .l{font-size:.85rem;color:#6b7280;margin-top:2px}
-  .btnbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
-  .btn{padding:10px 16px;border:2px solid #667eea;background:#fff;color:#667eea;border-radius:10px;font-weight:700;cursor:pointer}
-  .btn:hover{background:#667eea;color:#fff}
-  .btn.active{background:#667eea;color:#fff;box-shadow:0 0 0 2px #667eea22 inset}
-  .table{width:100%;border-collapse:collapse}
-  .table th,.table td{border-bottom:1px solid #edf0f2;padding:10px 8px;text-align:right}
-  .table th:first-child,.table td:first-child{text-align:left}
-  .table thead th{background:#f8f9fb;font-weight:700}
-  .good{color:#2e7d32;font-weight:700}
-  .warn{color:#d32f2f;font-weight:700}
-  .note{font-size:.9rem;color:#5b6776;margin-top:8px}
-  .foot{background:#faf7ff;border:1px solid #e0d7f6;border-left:4px solid #6a1b9a;border-radius:8px;padding:14px;margin-top:16px}
-  .kbd{background:#eef2ff;border:1px solid #d7dcff;border-radius:6px;padding:2px 6px}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Queensgate Bouldering — Financial Model</title>
+  <style>
+    :root {
+      --bg:#0f172a; /* slate-900 */
+      --card:#111827; /* gray-900 */
+      --muted:#94a3b8; /* slate-400 */
+      --text:#e5e7eb; /* gray-200 */
+      --accent:#38bdf8; /* sky-400 */
+      --accent2:#a78bfa; /* violet-400 */
+      --good:#34d399; /* emerald-400 */
+      --warn:#fbbf24; /* amber-400 */
+      --bad:#f87171; /* red-400 */
+      --grid-gap:16px;
+      --radius:16px;
+    }
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background:radial-gradient(1200px 1200px at 10% -10%, #1f2937 0%, var(--bg) 40%), linear-gradient(180deg, #0b1226, var(--bg));
+      color:var(--text);
+    }
+    h1,h2,h3{margin:0 0 8px 0}
+    h1{font-size:28px; letter-spacing:0.2px}
+    h2{font-size:18px; color:#cbd5e1}
+    .wrap{
+      max-width:1200px; margin:24px auto; padding:0 16px 48px;
+    }
+    .topbar{
+      display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:16px;
+    }
+    .pill{background:rgba(56,189,248,.15); color:#e0f2fe; border:1px solid rgba(56,189,248,.35); padding:6px 10px; border-radius:999px; font-size:12px}
+    .grid{display:grid; grid-template-columns: 360px 1fr; gap:var(--grid-gap)}
+    @media (max-width: 980px){.grid{grid-template-columns:1fr}}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); padding:16px; box-shadow:0 2px 10px rgba(0,0,0,.25)}
+    .card h3{font-size:15px; color:#c7d2fe; margin-bottom:6px}
+    .sub{font-size:12px; color:var(--muted)}
+    .input-row{display:grid; grid-template-columns: 1fr 100px; gap:8px; align-items:center; margin:6px 0}
+    .input-row label{font-size:13px; color:#cbd5e1}
+    .input-row input{width:100%; padding:8px 10px; border-radius:10px; background:#0b1220; color:var(--text); border:1px solid #1f2a44; font-size:13px}
+    .input-row input:focus{outline:none; border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.2)}
+    .section{margin-top:10px; padding-top:10px; border-top:1px dashed rgba(255,255,255,.08)}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .kpis{display:grid; grid-template-columns: repeat(4, 1fr); gap:10px}
+    @media (max-width: 980px){.kpis{grid-template-columns: repeat(2,1fr)}}
+    .kpi{background:#0b1220; border:1px solid #1f2a44; border-radius:14px; padding:12px}
+    .kpi .label{font-size:12px; color:#9ca3af}
+    .kpi .value{font-size:20px; margin-top:6px}
+    .kpi.good .value{color:var(--good)}
+    .kpi.warn .value{color:var(--warn)}
+    .kpi.bad .value{color:var(--bad)}
+    .flex{display:flex; gap:10px}
+    .btn{cursor:pointer; background:linear-gradient(180deg, #1e293b, #0f172a); border:1px solid #24324a; color:#e5e7eb; padding:8px 12px; border-radius:12px; font-size:13px}
+    .btn.primary{background:linear-gradient(180deg, #2563eb, #1d4ed8); border-color:#1d4ed8}
+    .btn.ghost{background:transparent; border-color:#334155}
+    .toolbar{display:flex; gap:8px; align-items:center}
+    .table{width:100%; border-collapse:separate; border-spacing:0}
+    .table th,.table td{padding:10px 12px; text-align:right; border-bottom:1px solid rgba(255,255,255,.06); font-size:13px}
+    .table th:first-child,.table td:first-child{text-align:left}
+    .table tr:hover td{background:rgba(255,255,255,.02)}
+    .badge{font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.15); color:#cbd5e1}
+    .chart{height:220px; position:relative; background:#0b1220; border:1px solid #1f2a44; border-radius:14px; overflow:hidden}
+    .chart .bar{position:absolute; bottom:0; width:20%; border-radius:6px 6px 0 0; background:linear-gradient(180deg, var(--accent), #2563eb)}
+    .legend{display:flex; gap:12px; font-size:12px; color:#cbd5e1; margin-top:6px; align-items:center; flex-wrap:wrap}
+    .legend > span{display:inline-flex; gap:6px; align-items:center}
+    .dot{width:10px; height:10px; border-radius:2px; display:inline-block}
+    .dot.rev{background:#38bdf8}
+    .dot.cogs{background:#fb7185}
+    .dot.opex{background:#f59e0b}
+    .dot.ebitda{background:#34d399}
+    .foot{margin-top:8px; font-size:11px; color:#94a3b8}
+  </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <h1>Queensgate Bouldering — Funding Model</h1>
-    <p>Supplier-quoted build, stepped lease terms, conservative pricing, 5-year P&amp;L, loan sizing and DSCR checks.</p>
-  </div>
-
-  <div class="content">
-
-    <!-- SCENARIOS -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">Scenario</div>
-        <div class="pill" id="scenario-pill">Conservative</div>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <h1>Queensgate Bouldering — Financial Model</h1>
+        <div class="sub">Investor and bank view with five year projections, DSCR, and break even</div>
       </div>
-      <div class="section-content">
-        <div class="btnbar">
-          <button class="btn active" data-s="conservative">Conservative</button>
-          <button class="btn" data-s="realistic">Realistic</button>
-          <button class="btn" data-s="optimistic">Optimistic</button>
-        </div>
-        <p class="note">All scenarios use supplier quotes for build. Price and volume assumptions are conservative vs local competitors.</p>
+      <div class="toolbar">
+        <button class="btn ghost" id="btnReset">Reset</button>
+        <button class="btn primary" id="btnExport">Export CSV</button>
       </div>
     </div>
 
-    <!-- TOP METRICS -->
-    <div class="metrics">
-      <div class="metric"><div class="v" id="m-capex-ex">£0</div><div class="l">CAPEX ex VAT</div></div>
-      <div class="metric"><div class="v" id="m-capex-inc">£0</div><div class="l">CAPEX incl VAT (if not reclaimed)</div></div>
-      <div class="metric"><div class="v" id="m-rev">£0</div><div class="l">Annual Revenue (Year 2 steady)</div></div>
-      <div class="metric"><div class="v" id="m-ebitda">£0</div><div class="l">EBITDA (Year 2 steady)</div></div>
-      <div class="metric"><div class="v" id="m-dscr-y2">0.0x</div><div class="l">DSCR Year 2</div></div>
-      <div class="metric"><div class="v" id="m-payback">0.0 yrs</div><div class="l">Payback on CAPEX</div></div>
-    </div>
+    <div class="grid">
+      <!-- INPUTS PANEL -->
+      <div class="card" id="inputsCard">
+        <h3>Inputs</h3>
+        <div class="sub">Enter monthly values unless stated</div>
 
-    <!-- 1. CAPEX (supplier quoted) -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">1) Build Budget</div>
-        <div class="pill">Supplier quoted</div>
+        <div class="section">
+          <div class="pill">Pricing and demand</div>
+          <div class="input-row"><label>Members at start</label><input id="members_start" type="number" value="650" /></div>
+          <div class="input-row"><label>Net new members per month</label><input id="members_net_new" type="number" value="30" /></div>
+          <div class="input-row"><label>Monthly churn percent</label><input id="churn_pct" type="number" value="5" /></div>
+          <div class="input-row"><label>Membership price per month £</label><input id="m_price" type="number" value="45" /></div>
+          <div class="input-row"><label>Day pass visits per month</label><input id="visits" type="number" value="3200" /></div>
+          <div class="input-row"><label>Day pass price £</label><input id="d_price" type="number" value="12" /></div>
+          <div class="input-row"><label>Retail per visit £</label><input id="retail_per_visit" type="number" value="2.5" /></div>
+          <div class="input-row"><label>Coaching revenue per month £</label><input id="coach_rev" type="number" value="6000" /></div>
+        </div>
+
+        <div class="section">
+          <div class="pill">Operating costs</div>
+          <div class="input-row"><label>Rent £</label><input id="rent" type="number" value="5800" /></div>
+          <div class="input-row"><label>Business rates £</label><input id="rates" type="number" value="4000" /></div>
+          <div class="input-row"><label>Service charge £</label><input id="service_charge" type="number" value="1500" /></div>
+          <div class="input-row"><label>Utilities £</label><input id="utilities" type="number" value="3500" /></div>
+          <div class="input-row"><label>Staff salaries £</label><input id="staff" type="number" value="28000" /></div>
+          <div class="input-row"><label>Insurance £</label><input id="insurance" type="number" value="600" /></div>
+          <div class="input-row"><label>Marketing £</label><input id="marketing" type="number" value="3000" /></div>
+          <div class="input-row"><label>Maintenance £</label><input id="maintenance" type="number" value="1200" /></div>
+          <div class="input-row"><label>Other opex £</label><input id="other_opex" type="number" value="800" /></div>
+          <div class="input-row"><label>COGS percent retail"</label><input id="cogs_pct" type="number" value="35" /></div>
+        </div>
+
+        <div class="section">
+          <div class="pill">Capex one off</div>
+          <div class="input-row"><label>Walls and matting £</label><input id="capex_walls" type="number" value="420000" /></div>
+          <div class="input-row"><label>Fit out and MEP £</label><input id="capex_fitout" type="number" value="60000" /></div>
+          <div class="input-row"><label>Holds and volumes £</label><input id="capex_holds" type="number" value="30000" /></div>
+          <div class="input-row"><label>Equipment and POS £</label><input id="capex_equipment" type="number" value="15000" /></div>
+          <div class="input-row"><label>Working capital £</label><input id="capex_wc" type="number" value="20000" /></div>
+          <div class="input-row"><label>Contingency £</label><input id="capex_cont" type="number" value="25000" /></div>
+        </div>
+
+        <div class="section">
+          <div class="pill">Financing</div>
+          <div class="input-row"><label>Owner equity £</label><input id="equity" type="number" value="230000" /></div>
+          <div class="input-row"><label>Bank loan £</label><input id="loan_amt" type="number" value="250000" /></div>
+          <div class="input-row"><label>Interest rate percent annual</label><input id="loan_rate" type="number" value="8" /></div>
+          <div class="input-row"><label>Loan term years</label><input id="loan_years" type="number" value="7" /></div>
+          <div class="input-row"><label>Interest only months</label><input id="io_months" type="number" value="6" /></div>
+        </div>
+
+        <div class="section">
+          <div class="pill">Growth and inflation per year</div>
+          <div class="input-row"><label>Member price growth percent</label><input id="price_growth" type="number" value="3" /></div>
+          <div class="input-row"><label>Visits growth percent</label><input id="visit_growth" type="number" value="5" /></div>
+          <div class="input-row"><label>Opex inflation percent</label><input id="opex_infl" type="number" value="4" /></div>
+        </div>
       </div>
-      <div class="section-content grid cols-3">
-        <div class="stack">
-          <label>Climbing fit out incl mezzanine and initial set (£)</label>
-          <div class="input"><input id="capex-fitout" type="number" value="425000" step="5000" oninput="recalc()"></div>
-          <div class="note">Quote window £400k to £450k excl VAT</div>
+
+      <!-- OUTPUTS PANEL -->
+      <div class="card">
+        <div class="kpis" id="kpis">
+          <div class="kpi"><div class="label">Year 1 revenue</div><div class="value" id="kpi_rev">£0</div></div>
+          <div class="kpi"><div class="label">Year 1 EBITDA</div><div class="value" id="kpi_ebitda">£0</div></div>
+          <div class="kpi" id="kpi_dscr_box"><div class="label">DSCR Year 2</div><div class="value" id="kpi_dscr">0.00</div></div>
+          <div class="kpi"><div class="label">Breakeven visits per day</div><div class="value" id="kpi_breakeven">0</div></div>
         </div>
-        <div class="stack">
-          <label>Initial holds purchase (£)</label>
-          <div class="input"><input id="capex-holds" type="number" value="30000" step="1000" oninput="recalc()"></div>
-          <div class="note">Supplier guidance £25k to £35k</div>
+
+        <div class="row section">
+          <div class="card">
+            <h3>Year 1 summary</h3>
+            <table class="table" id="summaryY1"></table>
+            <div class="legend"><span><i class="dot rev"></i>Revenue</span><span><i class="dot cogs"></i>COGS</span><span><i class="dot opex"></i>Opex</span><span><i class="dot ebitda"></i>EBITDA</span></div>
+            <div class="chart" id="chartBars"></div>
+          </div>
+          <div class="card">
+            <h3>Five year projection</h3>
+            <table class="table" id="proj"></table>
+          </div>
         </div>
-        <div class="stack">
-          <label>Training area and small gym kit (£)</label>
-          <div class="input"><input id="capex-gym" type="number" value="30000" step="1000" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Branding and launch (£)</label>
-          <div class="input"><input id="capex-brand" type="number" value="20000" step="1000" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Software and POS (£)</label>
-          <div class="input"><input id="capex-pos" type="number" value="1500" step="100" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Licences and permits (£)</label>
-          <div class="input"><input id="capex-lic" type="number" value="5000" step="500" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Contingency on build (%)</label>
-          <div class="input"><input id="capex-cont-pct" type="number" value="7" step="1" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>VAT rate (%)</label>
-          <div class="input"><input id="vat-rate" type="number" value="20" step="1" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>VAT reclaimable</label>
-          <div class="input">
-            <select id="vat-reclaim" onchange="recalc()">
-              <option value="yes" selected>Yes</option>
-              <option value="no">No</option>
-            </select>
+
+        <div class="row section">
+          <div class="card">
+            <h3>Debt schedule first 24 months</h3>
+            <table class="table" id="debt"></table>
+          </div>
+          <div class="card">
+            <h3>Assumptions check</h3>
+            <div class="sub">Quick view for investment committee</div>
+            <table class="table" id="assump"></table>
+            <div class="foot">Edit inputs on the left to update all tables and KPIs</div>
           </div>
         </div>
       </div>
-      <div class="section-content">
-        <table class="table">
-          <thead><tr><th>Item</th><th>Amount</th></tr></thead>
-          <tbody>
-            <tr><td>Fit out incl mezzanine and initial set</td><td id="t-fitout" align="right">£0</td></tr>
-            <tr><td>Initial holds</td><td id="t-holds" align="right">£0</td></tr>
-            <tr><td>Training area and gym kit</td><td id="t-gym" align="right">£0</td></tr>
-            <tr><td>Branding and launch</td><td id="t-brand" align="right">£0</td></tr>
-            <tr><td>Software and POS</td><td id="t-pos" align="right">£0</td></tr>
-            <tr><td>Licences and permits</td><td id="t-lic" align="right">£0</td></tr>
-            <tr><td>Contingency</td><td id="t-cont" align="right">£0</td></tr>
-            <tr><th>CAPEX ex VAT</th><th id="t-capex-ex">£0</th></tr>
-            <tr><td>VAT</td><td id="t-vat">£0</td></tr>
-            <tr><th>CAPEX incl VAT</th><th id="t-capex-inc">£0</th></tr>
-          </tbody>
-        </table>
-        <p class="note">The model uses ex VAT for ROI if VAT is reclaimable. Toggle VAT above if the bank needs worst case.</p>
-      </div>
-    </div>
-
-    <!-- 2. LEASE TERMS AND CORE OPEX -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">2) Lease and Core Operating Costs</div>
-        <div class="pill">Agreed terms</div>
-      </div>
-      <div class="section-content grid cols-3">
-        <div class="stack">
-          <label>Service charge (£ p.a.)</label>
-          <div class="input"><input id="svc" type="number" value="57850" step="250" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Business rates payable (£ p.a.)</label>
-          <div class="input"><input id="rates" type="number" value="35000" step="250" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Base rent nominal (£ p.a.)</label>
-          <div class="input"><input id="rent-full" type="number" value="70000" step="1000" oninput="recalc()"></div>
-          <div class="note">Lease: 10 years, break at 5, open market review end of year 5</div>
-        </div>
-      </div>
-      <div class="section-content">
-        <table class="table" id="rent-table">
-          <thead>
-            <tr>
-              <th>Year</th><th>Rent (£)</th><th>Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Year 1</td><td><input id="r1" type="number" value="0" step="1000" oninput="recalc()"></td><td align="right">Rent free (9 months build/soft launch)</td></tr>
-            <tr><td>Year 2</td><td><input id="r2" type="number" value="35000" step="1000" oninput="recalc()"></td><td align="right">Per landlord term</td></tr>
-            <tr><td>Year 3</td><td><input id="r3" type="number" value="35000" step="1000" oninput="recalc()"></td><td align="right">Per landlord term</td></tr>
-            <tr><td>Year 4</td><td><input id="r4" type="number" value="70000" step="1000" oninput="recalc()"></td><td align="right">Per landlord term</td></tr>
-            <tr><td>Year 5</td><td><input id="r5" type="number" value="70000" step="1000" oninput="recalc()"></td><td align="right">Review to OMV after Year 5</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="section-content grid cols-3">
-        <div class="stack"><label>Manager (£ p.a.)</label><div class="input"><input id="mgr" type="number" value="34000" step="500" oninput="recalc()"></div></div>
-        <div class="stack"><label>Route setting (£ p.a.)</label><div class="input"><input id="rs" type="number" value="24000" step="500" oninput="recalc()"></div></div>
-        <div class="stack"><label>Other staff (£ p.a.)</label><div class="input"><input id="staff" type="number" value="46000" step="1000" oninput="recalc()"></div></div>
-        <div class="stack"><label>Utilities (£ p.a.)</label><div class="input"><input id="utils" type="number" value="23000" step="500" oninput="recalc()"></div></div>
-        <div class="stack"><label>Insurance (£ p.a.)</label><div class="input"><input id="ins" type="number" value="3000" step="100" oninput="recalc()"></div></div>
-        <div class="stack"><label>Marketing (£ p.a.)</label><div class="input"><input id="mkt" type="number" value="10000" step="500" oninput="recalc()"></div></div>
-        <div class="stack"><label>Maintenance and holds refresh (£ p.a.)</label><div class="input"><input id="maint" type="number" value="9000" step="250" oninput="recalc()"></div></div>
-      </div>
-    </div>
-
-    <!-- 3. COMMERCIALS -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">3) Commercial Model</div>
-        <div class="pill">Conservative vs competitors</div>
-      </div>
-      <div class="section-content grid cols-4">
-        <div class="stack">
-          <label>Members</label>
-          <div class="input"><input id="m-qty" type="number" value="380" step="10" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Monthly membership price (£)</label>
-          <div class="input"><input id="m-price" type="number" value="62" step="1" oninput="recalc()"></div>
-          <div class="note">Local comps 60 to 75</div>
-        </div>
-        <div class="stack">
-          <label>Day passes per month</label>
-          <div class="input"><input id="dp-qty" type="number" value="500" step="10" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Day pass price (£)</label>
-          <div class="input"><input id="dp-price" type="number" value="12" step="0.5" oninput="recalc()"></div>
-        </div>
-
-        <div class="stack">
-          <label>Coaching sessions / month</label>
-          <div class="input"><input id="coach-qty" type="number" value="30" step="1" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Coaching price (£)</label>
-          <div class="input"><input id="coach-price" type="number" value="50" step="1" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Parties and youth / month</label>
-          <div class="input"><input id="party-qty" type="number" value="9" step="1" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Party revenue each (£)</label>
-          <div class="input"><input id="party-price" type="number" value="140" step="5" oninput="recalc()"></div>
-        </div>
-
-        <div class="stack">
-          <label>Equipment rental net (£/month)</label>
-          <div class="input"><input id="rent-net" type="number" value="600" step="50" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Retail net (£/month)</label>
-          <div class="input"><input id="retail-net" type="number" value="900" step="50" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Cafe GMV (£/month)</label>
-          <div class="input"><input id="cafe-gmv" type="number" value="3000" step="100" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Cafe net margin (%)</label>
-          <div class="input"><input id="cafe-margin" type="number" value="7.5" step="0.5" oninput="recalc()"></div>
-        </div>
-      </div>
-      <div class="section-content">
-        <table class="table">
-          <thead><tr><th>Revenue line</th><th>Annual</th></tr></thead>
-          <tbody>
-            <tr><td>Memberships</td><td id="rev-members">£0</td></tr>
-            <tr><td>Day passes</td><td id="rev-daypass">£0</td></tr>
-            <tr><td>Coaching and classes</td><td id="rev-coach">£0</td></tr>
-            <tr><td>Parties and youth</td><td id="rev-party">£0</td></tr>
-            <tr><td>Equipment rental (net)</td><td id="rev-rent">£0</td></tr>
-            <tr><td>Retail (net)</td><td id="rev-retail">£0</td></tr>
-            <tr><td>Cafe (net)</td><td id="rev-cafe">£0</td></tr>
-            <tr><th>Total revenue</th><th id="rev-total">£0</th></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 4. LOAN STRUCTURE -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">4) Loan Structure</div>
-        <div class="pill">For bank</div>
-      </div>
-      <div class="section-content grid cols-3">
-        <div class="stack">
-          <label>Loan amount (£)</label>
-          <div class="input"><input id="loan-amt" type="number" value="350000" step="5000" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Interest rate (% per annum)</label>
-          <div class="input"><input id="loan-rate" type="number" value="7.5" step="0.1" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Amortisation term (years)</label>
-          <div class="input"><input id="loan-term" type="number" value="6" step="1" oninput="recalc()"></div>
-        </div>
-        <div class="stack">
-          <label>Interest-only months before amortisation</label>
-          <div class="input"><input id="io-months" type="number" value="9" step="1" oninput="recalc()"></div>
-          <div class="note">Matches rent-free and build period</div>
-        </div>
-        <div class="stack">
-          <label>Use CAPEX incl VAT for loan sizing</label>
-          <div class="input">
-            <select id="loan-capex-mode" onchange="recalc()">
-              <option value="ex" selected>Ex VAT basis</option>
-              <option value="inc">Incl VAT basis</option>
-            </select>
-          </div>
-        </div>
-        <div class="stack">
-          <label>One-off fees added to loan (£)</label>
-          <div class="input"><input id="loan-fee" type="number" value="0" step="500" oninput="recalc()"></div>
-        </div>
-      </div>
-      <div class="section-content">
-        <table class="table">
-          <thead><tr><th>Item</th><th>Amount</th></tr></thead>
-          <tbody>
-            <tr><td>Principal for amortisation</td><td id="loan-prin">£0</td></tr>
-            <tr><td>Interest-only cost in Year 1</td><td id="loan-io-y1">£0</td></tr>
-            <tr><td>Annual amortising payment (Years 2+)</td><td id="loan-pmt">£0</td></tr>
-          </tbody>
-        </table>
-        <p class="note">Annual payment uses standard fixed-rate amortisation starting after the interest-only months.</p>
-      </div>
-    </div>
-
-    <!-- 5. 5-YEAR P&L AND DSCR -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">5) Five-year P&L and DSCR</div>
-        <div class="pill">Auto from inputs</div>
-      </div>
-      <div class="section-content grid cols-3">
-        <div class="stack"><label>Revenue growth Year 2 onward (%)</label><div class="input"><input id="g-rev" type="number" value="6" step="0.5" oninput="recalc()"></div></div>
-        <div class="stack"><label>Opex growth Year 2 onward (%)</label><div class="input"><input id="g-opex" type="number" value="4" step="0.5" oninput="recalc()"></div></div>
-        <div class="stack"><label>Use Year 2 as steady run-rate</label><div class="input"><select id="y2-steady" onchange="recalc()"><option value="yes" selected>Yes</option><option value="no">No</option></select></div></div>
-      </div>
-      <div class="section-content">
-        <table class="table" id="pl-table">
-          <thead>
-            <tr>
-              <th>Year</th>
-              <th>Revenue</th>
-              <th>Opex excl rent and rates</th>
-              <th>Rent</th>
-              <th>Service charge</th>
-              <th>Business rates</th>
-              <th>EBITDA</th>
-              <th>Debt service</th>
-              <th>DSCR</th>
-            </tr>
-          </thead>
-          <tbody id="pl-body"></tbody>
-        </table>
-        <p class="note">DSCR = EBITDA divided by debt service. Banks typically want at least 1.25x on steady years.</p>
-      </div>
-    </div>
-
-    <!-- SOURCES -->
-    <div class="section">
-      <div class="section-header"><div class="section-title">Sources and calculation notes</div></div>
-      <div class="section-content">
-        <ul class="note">
-          <li>Build costs: supplier quotes on file. Fit out incl mezzanine and initial set 400k to 450k. Model default 425k.</li>
-          <li>Initial holds: supplier guidance 25k to 35k. Model default 30k.</li>
-          <li>Lease: 10 years outside LTA, break at year 5, rent free year 1, stepped rent years 2 to 5, review to open market after year 5. Service charge 57,850. Business rates c. 35,000.</li>
-          <li>Pricing: benchmarked vs nearby bouldering gyms. Model uses conservative price points to remain competitive.</li>
-          <li>Cafe net is GMV times net margin. Retail and rental are net of cost of sales.</li>
-          <li>Amortisation uses standard PMT on annual basis after interest-only months. Interest-only cost in year 1 is simple interest on outstanding principal for the IO period.</li>
-        </ul>
-        <div class="foot">Export to CSV: press <span class="kbd">E</span> on your keyboard. You will get a downloadable CSV with 5-year lines.</div>
-      </div>
     </div>
   </div>
-</div>
 
-<script>
-  function N(v,d=0){const x=parseFloat(v);return isFinite(x)?x:d;}
-  function £(v){const r=Math.round(v);return (r<0?'-£':'£')+Math.abs(r).toLocaleString();}
-  function pct(v){return (isFinite(v)?v:0).toFixed(1)+'%';}
+  <script>
+    const £ = n => new Intl.NumberFormat('en-GB', {style:'currency', currency:'GBP', maximumFractionDigits:0}).format(n||0);
+    const pct = n => (n||0).toFixed(1) + '%';
 
-  const S = {
-    conservative: {
-      mQty:380, mPrice:62, dpQty:500, dpPrice:12,
-      coachQty:30, coachPrice:50, partyQty:9, partyPrice:140,
-      rentNet:600, retailNet:900, cafeGMV:3000, cafeMargin:7.5,
-      mgr:34000, rs:24000, staff:46000, utils:23000, ins:3000, mkt:10000, maint:9000
-    },
-    realistic: {
-      mQty:450, mPrice:65, dpQty:600, dpPrice:13,
-      coachQty:40, coachPrice:55, partyQty:12, partyPrice:150,
-      rentNet:800, retailNet:1200, cafeGMV:4000, cafeMargin:8.0,
-      mgr:36000, rs:26000, staff:50000, utils:24000, ins:3000, mkt:12000, maint:10000
-    },
-    optimistic: {
-      mQty:520, mPrice:70, dpQty:750, dpPrice:14,
-      coachQty:60, coachPrice:60, partyQty:16, partyPrice:160,
-      rentNet:1200, retailNet:1800, cafeGMV:6000, cafeMargin:9.0,
-      mgr:38000, rs:30000, staff:60000, utils:27000, ins:3200, mkt:15000, maint:12000
-    }
-  };
+    const els = id => document.getElementById(id);
 
-  function applyScenario(name){
-    const s = S[name];
-    document.querySelectorAll('.btn').forEach(b=>b.classList.toggle('active', b.dataset.s===name));
-    document.getElementById('scenario-pill').textContent = name.charAt(0).toUpperCase()+name.slice(1);
-
-    // commercials
-    document.getElementById('m-qty').value = s.mQty;
-    document.getElementById('m-price').value = s.mPrice;
-    document.getElementById('dp-qty').value = s.dpQty;
-    document.getElementById('dp-price').value = s.dpPrice;
-    document.getElementById('coach-qty').value = s.coachQty;
-    document.getElementById('coach-price').value = s.coachPrice;
-    document.getElementById('party-qty').value = s.partyQty;
-    document.getElementById('party-price').value = s.partyPrice;
-    document.getElementById('rent-net').value = s.rentNet;
-    document.getElementById('retail-net').value = s.retailNet;
-    document.getElementById('cafe-gmv').value = s.cafeGMV;
-    document.getElementById('cafe-margin').value = s.cafeMargin;
-
-    // opex
-    document.getElementById('mgr').value = s.mgr;
-    document.getElementById('rs').value = s.rs;
-    document.getElementById('staff').value = s.staff;
-    document.getElementById('utils').value = s.utils;
-    document.getElementById('ins').value = s.ins;
-    document.getElementById('mkt').value = s.mkt;
-    document.getElementById('maint').value = s.maint;
-
-    recalc();
-  }
-
-  function PMT(rate, nper, pv){
-    if(rate===0) return pv / nper;
-    const r = rate;
-    return pv * r / (1 - Math.pow(1+r, -nper));
-  }
-
-  function recalc(){
-    // CAPEX
-    const fit = N(document.getElementById('capex-fitout').value);
-    const holds = N(document.getElementById('capex-holds').value);
-    const gym = N(document.getElementById('capex-gym').value);
-    const brand = N(document.getElementById('capex-brand').value);
-    const pos = N(document.getElementById('capex-pos').value);
-    const lic = N(document.getElementById('capex-lic').value);
-    const contPct = N(document.getElementById('capex-cont-pct').value)/100;
-    const vatPct = N(document.getElementById('vat-rate').value)/100;
-    const vatReclaim = document.getElementById('vat-reclaim').value === 'yes';
-
-    const capexBase = fit + holds + gym + brand + pos + lic;
-    const cont = capexBase * contPct;
-    const capexEx = capexBase + cont;
-    const vat = capexEx * vatPct;
-    const capexInc = capexEx + vat;
-    const capexRoiBasis = vatReclaim ? capexEx : capexInc;
-
-    // CAPEX UI
-    document.getElementById('t-fitout').textContent = £(fit);
-    document.getElementById('t-holds').textContent = £(holds);
-    document.getElementById('t-gym').textContent = £(gym);
-    document.getElementById('t-brand').textContent = £(brand);
-    document.getElementById('t-pos').textContent = £(pos);
-    document.getElementById('t-lic').textContent = £(lic);
-    document.getElementById('t-cont').textContent = £(cont);
-    document.getElementById('t-capex-ex').textContent = £(capexEx);
-    document.getElementById('t-vat').textContent = £(vat);
-    document.getElementById('t-capex-inc').textContent = £(capexInc);
-    document.getElementById('m-capex-ex').textContent = £(capexEx);
-    document.getElementById('m-capex-inc').textContent = £(capexInc);
-
-    // OPEX fixed
-    const svc = N(document.getElementById('svc').value);
-    const rates = N(document.getElementById('rates').value);
-    const mgr = N(document.getElementById('mgr').value);
-    const rs = N(document.getElementById('rs').value);
-    const staff = N(document.getElementById('staff').value);
-    const utils = N(document.getElementById('utils').value);
-    const ins = N(document.getElementById('ins').value);
-    const mkt = N(document.getElementById('mkt').value);
-    const maint = N(document.getElementById('maint').value);
-
-    const opexExRentRates = mgr + rs + staff + utils + ins + mkt + maint + svc;
-
-    // Rent schedule
-    const rent = [
-      N(document.getElementById('r1').value),
-      N(document.getElementById('r2').value),
-      N(document.getElementById('r3').value),
-      N(document.getElementById('r4').value),
-      N(document.getElementById('r5').value)
-    ];
-
-    // Commercials to annual
-    const mQty = N(document.getElementById('m-qty').value);
-    const mPrice = N(document.getElementById('m-price').value);
-    const dpQty = N(document.getElementById('dp-qty').value);
-    const dpPrice = N(document.getElementById('dp-price').value);
-    const coachQty = N(document.getElementById('coach-qty').value);
-    const coachPrice = N(document.getElementById('coach-price').value);
-    const partyQty = N(document.getElementById('party-qty').value);
-    const partyPrice = N(document.getElementById('party-price').value);
-    const rentNet = N(document.getElementById('rent-net').value);
-    const retailNet = N(document.getElementById('retail-net').value);
-    const cafeGMV = N(document.getElementById('cafe-gmv').value);
-    const cafeMargin = N(document.getElementById('cafe-margin').value)/100;
-
-    const revMembers = mQty * mPrice * 12;
-    const revDayPass = dpQty * dpPrice * 12;
-    const revCoach = coachQty * coachPrice * 12;
-    const revParty = partyQty * partyPrice * 12;
-    const revRent = rentNet * 12;
-    const revRetail = retailNet * 12;
-    const revCafe = cafeGMV * cafeMargin * 12;
-
-    const revTotalY2 = revMembers + revDayPass + revCoach + revParty + revRent + revRetail + revCafe;
-
-    // loan
-    const loanAmt = N(document.getElementById('loan-amt').value);
-    const loanFee = N(document.getElementById('loan-fee').value);
-    const loanRate = N(document.getElementById('loan-rate').value)/100;
-    const loanTerm = Math.max(1, N(document.getElementById('loan-term').value));
-    const ioMonths = Math.max(0, N(document.getElementById('io-months').value));
-    const useCapex = document.getElementById('loan-capex-mode').value;
-    const capexForLoan = useCapex==='inc' ? capexInc : capexEx;
-
-    // principal used for PMT
-    const principal = Math.max(loanAmt + loanFee, 0);
-    const annualRate = loanRate;
-    const pmt = PMT(annualRate, loanTerm, principal);
-    const ioCostY1 = principal * annualRate * (ioMonths/12);
-
-    document.getElementById('loan-prin').textContent = £(principal);
-    document.getElementById('loan-io-y1').textContent = £(ioCostY1);
-    document.getElementById('loan-pmt').textContent = £(pmt);
-
-    // 5 year P&L
-    const gRev = N(document.getElementById('g-rev').value)/100;
-    const gOpex = N(document.getElementById('g-opex').value)/100;
-    const y2Steady = document.getElementById('y2-steady').value === 'yes';
-
-    const tbody = document.getElementById('pl-body');
-    tbody.innerHTML = '';
-
-    let rev = revTotalY2; // treat as Year 2 steady in default
-    let opex = opexExRentRates;
-    let dscrY2 = 0;
-    let ebitdaY2 = 0;
-
-    for(let y=1; y<=5; y++){
-      // Year 1 ramp. Use 70% of steady by default, then grow into Y2
-      let revY = (y===1 ? rev * 0.7 : (y===2 ? rev : rev = rev * (1+gRev)));
-      // Opex ramp in Y1 at 95% of steady to reflect partial year ops
-      let opexY = (y===1 ? opex * 0.95 : (y===2 ? opex : opex = opex * (1+gOpex)));
-
-      // Debt service stream
-      const debtY = (y===1 ? ioCostY1 : pmt);
-
-      const ebitda = revY - (opexY + rent[y-1] + rates);
-      const dscr = debtY>0 ? (ebitda / debtY) : 999;
-
-      if(y===2){ dscrY2 = dscr; ebitdaY2 = ebitda; }
-
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>Year ${y}</td>
-        <td>${£(revY)}</td>
-        <td>${£(opexY)}</td>
-        <td>${£(rent[y-1])}</td>
-        <td>${£(svc)}</td>
-        <td>${£(rates)}</td>
-        <td ${ebitda>=0?'class="good"':'class="warn"'}>${£(ebitda)}</td>
-        <td>${£(debtY)}</td>
-        <td ${dscr>=1.25?'class="good"':'class="warn"'}>${isFinite(dscr)?dscr.toFixed(2)+'x':'—'}</td>
-      `;
-      tbody.appendChild(tr);
-
-      // If using Year 2 as steady, do not compound after Y2 unless specified
-      if(y2Steady && y>=2){ rev = revTotalY2; opex = opexExRentRates; }
+    function getInputs(){
+      const g = k => parseFloat(els(k).value) || 0;
+      const capex_total = g('capex_walls')+g('capex_fitout')+g('capex_holds')+g('capex_equipment')+g('capex_wc')+g('capex_cont');
+      return {
+        members_start:g('members_start'), members_net_new:g('members_net_new'), churn_pct:g('churn_pct')/100, m_price:g('m_price'),
+        visits:g('visits'), d_price:g('d_price'), retail_per_visit:g('retail_per_visit'), coach_rev:g('coach_rev'),
+        rent:g('rent'), rates:g('rates'), service_charge:g('service_charge'), utilities:g('utilities'), staff:g('staff'), insurance:g('insurance'), marketing:g('marketing'), maintenance:g('maintenance'), other_opex:g('other_opex'), cogs_pct:g('cogs_pct')/100,
+        capex_total,
+        equity:g('equity'), loan_amt:g('loan_amt'), loan_rate:g('loan_rate')/100, loan_years:g('loan_years'), io_months:g('io_months'),
+        price_growth:g('price_growth')/100, visit_growth:g('visit_growth')/100, opex_infl:g('opex_infl')/100
+      }
     }
 
-    // KPIs
-    document.getElementById('m-rev').textContent = £(revTotalY2);
-    document.getElementById('m-ebitda').textContent = £(ebitdaY2);
-    document.getElementById('m-dscr-y2').textContent = isFinite(dscrY2)? dscrY2.toFixed(2)+'x' : '—';
+    function buildModel(){
+      const p = getInputs();
 
-    const payback = ebitdaY2>0 ? (capexRoiBasis / ebitdaY2) : 0;
-    document.getElementById('m-payback').textContent = ebitdaY2>0 ? payback.toFixed(1)+' yrs' : 'N/A';
+      // Members over 12 months simple cohort: M_{t+1} = M_t + net_new - churn*M_t
+      let members = p.members_start;
+      let member_months = 0; // sum of active members each month
+      for(let m=0;m<12;m++){
+        member_months += members;
+        members = Math.max(0, members + p.members_net_new - p.churn_pct*members);
+      }
+      const avg_members = member_months/12;
+      const rev_membership_m = avg_members * p.m_price; // monthly
+      const rev_membership_y = rev_membership_m * 12;
 
-    // Revenue table UI
-    document.getElementById('rev-members').textContent = £(revMembers);
-    document.getElementById('rev-daypass').textContent = £(revDayPass);
-    document.getElementById('rev-coach').textContent = £(revCoach);
-    document.getElementById('rev-party').textContent = £(revParty);
-    document.getElementById('rev-rent').textContent = £(revRent);
-    document.getElementById('rev-retail').textContent = £(revRetail);
-    document.getElementById('rev-cafe').textContent = £(revCafe);
-    document.getElementById('rev-total').textContent = £(revTotalY2);
-  }
+      // Day passes and retail
+      const rev_daypass_m = p.visits * p.d_price;
+      const rev_retail_m = p.visits * p.retail_per_visit;
+      const rev_coach_m = p.coach_rev;
+      const rev_total_y = 12*(rev_membership_m + rev_daypass_m + rev_retail_m + rev_coach_m);
 
-  // CSV export
-  function exportCSV(){
-    // Build a flat 5-year CSV from current table plus assumptions
-    const rows = [];
-    const get = id => document.getElementById(id).value;
+      const cogs_y = 12*(p.cogs_pct*(rev_retail_m + rev_coach_m));
 
-    // header
-    rows.push(['Section','Field','Value']);
+      const opex_m = p.rent + p.rates + p.service_charge + p.utilities + p.staff + p.insurance + p.marketing + p.maintenance + p.other_opex;
+      const opex_y = opex_m * 12;
 
-    // capex
-    rows.push(['CAPEX','Fit out incl mezz and initial set', get('capex-fitout')]);
-    rows.push(['CAPEX','Initial holds', get('capex-holds')]);
-    rows.push(['CAPEX','Training kit', get('capex-gym')]);
-    rows.push(['CAPEX','Branding and launch', get('capex-brand')]);
-    rows.push(['CAPEX','Software and POS', get('capex-pos')]);
-    rows.push(['CAPEX','Licences and permits', get('capex-lic')]);
-    rows.push(['CAPEX','Contingency %', get('capex-cont-pct')]);
-    rows.push(['CAPEX','VAT %', get('vat-rate')]);
-    rows.push(['CAPEX','VAT reclaimable', document.getElementById('vat-reclaim').value]);
+      const ebitda_y = rev_total_y - cogs_y - opex_y;
 
-    // lease
-    rows.push(['Lease','Service charge', get('svc')]);
-    rows.push(['Lease','Business rates', get('rates')]);
-    rows.push(['Lease','Year 1 rent', get('r1')]);
-    rows.push(['Lease','Year 2 rent', get('r2')]);
-    rows.push(['Lease','Year 3 rent', get('r3')]);
-    rows.push(['Lease','Year 4 rent', get('r4')]);
-    rows.push(['Lease','Year 5 rent', get('r5')]);
+      // Debt schedule
+      const r = p.loan_rate/12; // monthly rate
+      const n = p.loan_years*12; // months
+      const io = Math.min(p.io_months, n);
+      const annuity = r>0 ? (p.loan_amt * r) / (1 - Math.pow(1+r, -(n-io))) : p.loan_amt/(n-io);
+      let bal = p.loan_amt;
+      let schedule = [];
+      for(let i=1;i<=24;i++){
+        let interest = bal * r;
+        let principal = 0;
+        let payment = 0;
+        if(i<=io){ // interest only
+          payment = interest;
+          principal = 0;
+        } else {
+          payment = annuity;
+          principal = Math.max(0, payment - interest);
+          bal = Math.max(0, bal - principal);
+        }
+        schedule.push({month:i, payment, interest, principal, balance:bal});
+      }
 
-    // commercials
-    rows.push(['Commercials','Members', get('m-qty')]);
-    rows.push(['Commercials','Membership price', get('m-price')]);
-    rows.push(['Commercials','Day passes / month', get('dp-qty')]);
-    rows.push(['Commercials','Day pass price', get('dp-price')]);
-    rows.push(['Commercials','Coaching / month', get('coach-qty')]);
-    rows.push(['Commercials','Coaching price', get('coach-price')]);
-    rows.push(['Commercials','Parties / month', get('party-qty')]);
-    rows.push(['Commercials','Party price', get('party-price')]);
-    rows.push(['Commercials','Equipment rental net / month', get('rent-net')]);
-    rows.push(['Commercials','Retail net / month', get('retail-net')]);
-    rows.push(['Commercials','Cafe GMV / month', get('cafe-gmv')]);
-    rows.push(['Commercials','Cafe margin %', get('cafe-margin')]);
+      // Debt service for Year 2 for DSCR (after IO period) => 12 months of annuity
+      const debt_service_y = (io<n) ? annuity*12 : schedule.slice(0,12).reduce((a,b)=>a+b.payment,0);
+      const dscr = debt_service_y>0 ? (ebitda_y / debt_service_y) : 999;
 
-    // loan
-    rows.push(['Loan','Amount', get('loan-amt')]);
-    rows.push(['Loan','Rate %', get('loan-rate')]);
-    rows.push(['Loan','Term years', get('loan-term')]);
-    rows.push(['Loan','Interest-only months', get('io-months')]);
-    rows.push(['Loan','Capex basis', document.getElementById('loan-capex-mode').value]);
-    rows.push(['Loan','Fees added', get('loan-fee')]);
+      // Net income rough view before tax
+      const interest_y = schedule.slice(0,12).reduce((a,b)=>a+b.interest,0);
+      const ebit_y = ebitda_y - 0; // no DA model here
+      const profit_bt_y = ebit_y - interest_y;
 
-    // P&L from table
-    const pl = document.querySelectorAll('#pl-body tr');
-    rows.push([]);
-    rows.push(['P&L','Year','Revenue','Opex excl rent and rates','Rent','Service charge','Business rates','EBITDA','Debt service','DSCR']);
-    pl.forEach(tr=>{
-      const tds = Array.from(tr.children).map(td=>td.textContent.replace(/,/g,''));
-      rows.push(['P&L', tds[0], tds[1], tds[2], tds[3], tds[4], tds[5], tds[6], tds[7], tds[8]]);
+      // Breakeven daily visits using day pass margin contribution only
+      const fixed_m = opex_m + (cogs_y/12)*0; // ignore COGS for day pass since set to retail only
+      const cm_per_visit = p.d_price + p.retail_per_visit*0.3; // rough contribution
+      const breakeven_visits_day = cm_per_visit>0 ? Math.ceil((fixed_m - rev_membership_m - rev_coach_m)/cm_per_visit/30) : 0;
+
+      // Five year projection simple growth
+      let rows = [];
+      let members_price = p.m_price;
+      let visits_m = p.visits;
+      let opex_y_g = opex_y;
+      for(let y=1;y<=5;y++){
+        if(y>1){
+          members_price *= (1+p.price_growth);
+          visits_m *= (1+p.visit_growth);
+          opex_y_g *= (1+p.opex_infl);
+        }
+        const rev_members_y = rev_membership_y * Math.pow(1+p.price_growth, y-1); // approx
+        const rev_day_y = 12*(visits_m * p.d_price);
+        const rev_retail_y = 12*(visits_m * p.retail_per_visit);
+        const rev_coach_y = rev_coach_m * 12;
+        const rev_y = rev_members_y + rev_day_y + rev_retail_y + rev_coach_y;
+        const cogs_proj = 0.35*(rev_retail_y + rev_coach_y);
+        const ebitda_proj = rev_y - cogs_proj - opex_y_g;
+        const debt_y = (y===1) ? schedule.slice(0,12).reduce((a,b)=>a+b.payment,0) : annuity*12;
+        const dscr_y = debt_y>0 ? ebitda_proj/debt_y : 999;
+        rows.push({y, rev:rev_y, ebitda:ebitda_proj, debt:debt_y, dscr:dscr_y});
+      }
+
+      // Render
+      els('kpi_rev').textContent = £(rev_total_y);
+      els('kpi_ebitda').textContent = £(ebitda_y);
+      els('kpi_dscr').textContent = dscr.toFixed(2);
+      const dscrBox = els('kpi_dscr_box');
+      dscrBox.classList.remove('good','warn','bad');
+      dscrBox.classList.add(dscr>=1.5?'good':(dscr>=1.2?'warn':'bad'));
+      els('kpi_breakeven').textContent = Math.max(0,breakeven_visits_day);
+
+      // Year 1 table
+      const y1 = [
+        ['Membership revenue', £(rev_membership_y)],
+        ['Day pass revenue', £(12*rev_daypass_m)],
+        ['Retail revenue', £(12*rev_retail_m)],
+        ['Coaching revenue', £(12*rev_coach_m)],
+        ['Revenue total', £(rev_total_y)],
+        ['COGS', '− '+£(cogs_y)],
+        ['Operating costs', '− '+£(opex_y)],
+        ['EBITDA', £(ebitda_y)],
+        ['Interest year 1', '− '+£(interest_y)],
+        ['Profit before tax', £(profit_bt_y)]
+      ];
+      renderTable('summaryY1', ['Line item','Value'], y1);
+
+      // Bars
+      drawBars('chartBars', [rev_total_y, cogs_y, opex_y, ebitda_y], ['#38bdf8','#fb7185','#f59e0b','#34d399']);
+
+      // Projection table
+      renderTable('proj', ['Year','Revenue','EBITDA','Debt service','DSCR'], rows.map(r=>[r.y, £(r.rev), £(r.ebitda), £(r.debt), r.dscr.toFixed(2)]));
+
+      // Debt schedule
+      renderTable('debt', ['Month','Payment','Interest','Principal','Balance'], schedule.map(r=>[r.month, £(r.payment), £(r.interest), £(r.principal), £(r.balance)]));
+
+      // Assumptions
+      const asum = [
+        ['Members at start', formatNum(p.members_start)],
+        ['Net new per month', formatNum(p.members_net_new)],
+        ['Churn monthly', pct(p.churn_pct*100)],
+        ['Member price', £(p.m_price)],
+        ['Visits per month', formatNum(p.visits)],
+        ['Day pass price', £(p.d_price)],
+        ['Retail per visit', £(p.retail_per_visit)],
+        ['Coaching per month', £(p.coach_rev)],
+        ['Opex per month', £(opex_m)],
+        ['Capex total', £(p.capex_total)],
+        ['Equity', £(p.equity)],
+        ['Loan amount', £(p.loan_amt)],
+        ['Interest annual', pct(p.loan_rate*100)],
+        ['Term years', formatNum(p.loan_years)],
+        ['Interest only months', formatNum(p.io_months)]
+      ];
+      renderTable('assump', ['Item','Value'], asum);
+
+      return {rows,schedule};
+    }
+
+    function renderTable(id, headers, rows){
+      const t = els(id);
+      let html = '<tr>' + headers.map(h=>`<th>${h}</th>`).join('') + '</tr>';
+      html += rows.map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('');
+      t.innerHTML = html;
+    }
+
+    function drawBars(id, values, colors){
+      const el = els(id);
+      el.innerHTML = '';
+      const max = Math.max(...values.map(v=>Math.abs(v)))*1.1 || 1;
+      values.forEach((v,i)=>{
+        const b = document.createElement('div');
+        b.className = 'bar';
+        b.style.left = (i*22+8)+'%';
+        b.style.height = (Math.abs(v)/max*100)+'%';
+        b.style.background = `linear-gradient(180deg, ${colors[i]}, ${colors[i]})`;
+        el.appendChild(b);
+      });
+    }
+
+    function formatNum(n){
+      return new Intl.NumberFormat('en-GB').format(n||0);
+    }
+
+    function exportCSV(){
+      // Build a simple CSV of the five year projection and year 1 summary
+      const proj = document.getElementById('proj').innerText.replaceAll('\t', ',');
+      const y1 = document.getElementById('summaryY1').innerText.replaceAll('\t', ',');
+      const csv = 'Year 1 Summary\n' + y1 + '\n\nFive Year Projection\n' + proj;
+      const blob = new Blob([csv], {type:'text/csv'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'queensgate_bouldering_financials.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function resetDefaults(){
+      document.querySelectorAll('#inputsCard input').forEach(inp=>{ inp.value = inp.defaultValue; });
+      buildModel();
+    }
+
+    // Wire up
+    document.getElementById('btnExport').addEventListener('click', exportCSV);
+    document.getElementById('btnReset').addEventListener('click', resetDefaults);
+    document.querySelectorAll('#inputsCard input').forEach(inp=>{
+      inp.addEventListener('input', buildModel);
     });
 
-    const csv = rows.map(r=>r.join(',')).join('\n');
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'queensgate_bouldering_bank_model.csv';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-
-  // listeners
-  document.querySelectorAll('.btn').forEach(b=>{
-    b.addEventListener('click', ()=>applyScenario(b.dataset.s));
-  });
-  window.addEventListener('load', ()=>{ applyScenario('conservative'); });
-  window.addEventListener('keydown', e=>{
-    if(e.key.toLowerCase()==='e'){ exportCSV(); }
-  });
-</script>
+    buildModel();
+  </script>
 </body>
 </html>

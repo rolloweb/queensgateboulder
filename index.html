@@ -398,3 +398,72 @@
     markUnchangedInputs('realistic'); // initial state
   });
 </script>
+<!-- ↓↓↓ ADD THIS NEW BLOCK BELOW ↓↓↓ -->
+<script>
+// 1) Make parsing comma-safe
+function toInt(v){
+  const cleaned = String(v).replace(/[, ]+/g,'').trim();
+  const x = Math.floor(Number(cleaned));
+  return isFinite(x) ? x : 0;
+}
+
+// 2) Comma helpers
+function formatCommas(v){
+  const n = toInt(v);
+  return n.toLocaleString('en-GB');
+}
+function stripCommas(v){
+  return String(v).replace(/,/g,'');
+}
+
+// 3) Convert number inputs to text so commas are allowed
+function enableCommaFormatting(){
+  const numericSelectors = [
+    '#capex-climbing','#capex-general','#capex-facilities','#capex-software','#capex-branding',
+    '#vat-rate',
+    '#annual-rent','#business-rates','#manager-salary','#route-setter-salary','#other-staff',
+    '#utilities','#insurance','#marketing-annual','#maintenance',
+    '#membership-price','#members-count','#day-pass-price','#day-passes-monthly',
+    '#coaching-sessions','#coaching-price','#parties-monthly','#party-revenue',
+    '#rental-monthly','#retail-monthly','#cafe-monthly','#cafe-margin'
+  ];
+
+  numericSelectors.forEach(sel=>{
+    const el=document.querySelector(sel);
+    if(!el) return;
+    if(el.type==='number'){ try{ el.type='text'; }catch(_){} }
+    el.value=formatCommas(el.value);
+    el.addEventListener('focus',()=>{el.value=stripCommas(el.value);el.select?.();});
+    el.addEventListener('blur',()=>{
+      el.value=stripCommas(el.value);
+      el.value=String(toInt(el.value));
+      el.value=formatCommas(el.value);
+      calculateAll();
+    });
+    el.addEventListener('input',()=>{el.value=el.value.replace(/[^\d,]/g,'');});
+  });
+}
+
+// 4) After any UI write, reformat inputs so commas remain visible
+function prettifyAllInputs(){
+  document.querySelectorAll('input').forEach(el=>{
+    if(el.type!=='text') return;
+    if(!el.matches('[id^="capex-"],#vat-rate,#annual-rent,#business-rates,#manager-salary,#route-setter-salary,#other-staff,#utilities,#insurance,#marketing-annual,#maintenance,#membership-price,#members-count,#day-pass-price,#day-passes-monthly,#coaching-sessions,#coaching-price,#parties-monthly,#party-revenue,#rental-monthly,#retail-monthly,#cafe-monthly,#cafe-margin')) return;
+    el.value=formatCommas(el.value);
+  });
+}
+
+// 5) Hook into load and keep commas after recalculations
+window.addEventListener('load',()=>{
+  enableCommaFormatting();
+  const _calculateAll=window.calculateAll;
+  window.calculateAll=function(){
+    _calculateAll();
+    prettifyAllInputs();
+  };
+});
+</script>
+
+<!-- Close the HTML document if missing -->
+</body>
+</html>

@@ -22,22 +22,23 @@
     :root{ --paper:#0b0b0c; --ink:#e6e6e6; }
   }
 
-  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+  html,body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+  }
 
-  /* STICKY header (same method as your working example) */
+  /* STICKY header from the working version */
   header{
     position: sticky;
     top: 0;
     z-index: 10;
-    background: rgba(248,250,252,.9); /* light */
+    background: rgba(255,255,255,.97);
+    border-bottom: 2px solid var(--gold);
     backdrop-filter: saturate(1.1) blur(6px);
-    border-bottom: 1px solid rgba(0,0,0,.06);
+    box-sizing: border-box;
   }
   @media (prefers-color-scheme:dark){
-    header{
-      background: rgba(11,11,12,.9);
-      border-bottom: 1px solid rgba(255,255,255,.1);
-    }
+    header{ background: rgba(16,16,16,.9) }
   }
 
   .wrap{max-width:1100px;margin:0 auto;padding:16px}
@@ -66,7 +67,6 @@
   .switch input::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .18s ease}
   .switch input:checked::after{left:24px}
 
-  /* Lock chart height to prevent infinite growth */
   .chart-wrap{position:relative;height:280px;width:100%}
   .chart-wrap>canvas{display:block;width:100% !important;height:100% !important}
 
@@ -75,7 +75,7 @@
   .drivers input{width:100%;box-sizing:border-box;border:2px solid var(--blue);border-radius:10px;padding:8px 10px;font-weight:800;font-variant-numeric:tabular-nums;background:#fff}
   @media (prefers-color-scheme:dark){.drivers input{background:#0b0e12;color:#e6f0fb;border-color:#2c6a9e}}
 
-  /* Monthly break even styling */
+  /* Monthly break even improved */
   .break-card{background:#0e1216;border:2px solid #1f2937;color:#f1f5f9;border-radius:16px;padding:16px}
   .break-head{display:flex;justify-content:space-between;align-items:center}
   .break-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
@@ -86,7 +86,6 @@
   .pill{display:inline-block;background:#10b981;color:#062e26;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800}
   @media (prefers-color-scheme:dark){.pill{background:#10b981;color:#022019}}
 
-  /* Debt inputs */
   .finance-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .finance-grid .field label{display:block;font-size:12px;opacity:.7;margin-bottom:4px}
   .finance-grid input{width:100%;box-sizing:border-box;border:2px solid var(--salmon);border-radius:10px;padding:8px 10px;font-weight:800;font-variant-numeric:tabular-nums;background:#fff}
@@ -96,6 +95,7 @@
   .metric{border-radius:12px;padding:10px}
   .metric h4{margin:0 0 4px;font-size:12px;opacity:.9}
   .metric .val{font-weight:900;font-size:18px}
+
   .m-gold{background:var(--gold);color:#1f2937}
   .m-blue{background:var(--blue);color:#fff}
   .m-salmon{background:var(--salmon);color:#fff}
@@ -133,7 +133,6 @@
 </header>
 
 <main class="wrap" style="padding-top:16px;padding-bottom:40px">
-
   <!-- KPIs -->
   <section class="row cols-4">
     <div class="card accent"><div class="kpi mono" id="kpiRevenue">£0</div><div class="kpi-sub" id="kpiRevenueLabel">Annual revenue</div></div>
@@ -210,7 +209,7 @@
 </main>
 
 <script>
-  /* Try the new CSV first, then fall back so the page never goes blank */
+  /* CSV candidates (v3 first) */
   const CSV_CANDIDATES = [
     "./adjusted_queensgate_bouldering_model_v3.csv",
     "./adjusted_queensgate_bouldering_model.csv",
@@ -230,7 +229,9 @@
   const driverOverrides = { membersPerMonth:null, memberPrice:null, dayPassesPerMonth:null, dayPassPrice:null, otherPerMonth:null };
 
   function getCol(row, names){
-    for (const n of names){ if (row.hasOwnProperty(n)) return row[n]; }
+    for (const n of names){
+      if (row.hasOwnProperty(n)) return row[n];
+    }
     return null;
   }
   function sectionName(row){
@@ -246,13 +247,20 @@
     const y1 = getCol(row, ["Year 1","Year1","YEAR 1","YEAR_1"]);
     if (useYear1 && y1 !== null && y1 !== "") return num(y1);
     const tryCols = [scn, scn.toUpperCase(), scn[0], scn[0]?.toUpperCase()];
-    for (const c of tryCols){ const v = getCol(row, [c]); if (v !== null && v !== "") return num(v); }
+    for (const c of tryCols){
+      const v = getCol(row, [c]);
+      if (v !== null && v !== "") return num(v);
+    }
     return 0;
   }
 
   function groupRows(){
     bySection = {};
-    rows.forEach(r=>{ const s = sectionName(r); if(!bySection[s]) bySection[s] = []; bySection[s].push(r); });
+    rows.forEach(r=>{
+      const s = sectionName(r);
+      if(!bySection[s]) bySection[s] = [];
+      bySection[s].push(r);
+    });
   }
 
   function readRevenueDriversFromCSV(scn){
@@ -287,7 +295,7 @@
 
   function sectionTotal(secName, scn){
     const arr = bySection[secName] || [];
-    const isCapex = secName.toUpperCase().includes("CAPITAL") || secName.toUpperCase().includes("CAPEX") || secName.toUpperCase().includes("FIT OUT");
+    const isCapex = secName.toUpperCase().includes("CAPITAL EXPENDITURE") || secName.toUpperCase().includes("CAPEX") || secName.toUpperCase().includes("FIT OUT");
     const isRevenue = secName.toUpperCase().includes("REVENUE");
     if (isRevenue) return getRevenuePieces(scn).annual;
     if (isCapex) return arr.reduce((a,r)=>a+num(getCol(r, ["Year 1","Year1","YEAR 1","YEAR_1","Realistic","R","Conservative"])),0);
@@ -303,7 +311,6 @@
     },0);
   }
 
-  /* Debt maths */
   function annuityPayment(P, r_annual, years){
     const n = years * 12;
     const i = r_annual / 12;
@@ -311,6 +318,7 @@
     const m = P * (i) / (1 - Math.pow(1+i, -n));
     return m * 12;
   }
+
   function totalCapex(){
     return Object.keys(bySection).reduce((acc,sec)=>{
       const name = sec.toUpperCase();
@@ -320,6 +328,7 @@
       return acc;
     },0);
   }
+
   function renderDebtAndPayback(ebitda, capex){
     const loan = parseFloat(document.getElementById("loanAmount").value) || 0;
     const rate = (parseFloat(document.getElementById("loanRate").value) || 0) / 100;
@@ -390,7 +399,7 @@
         </thead><tbody>
     `;
     secOrder.forEach(sec=>{
-      const isCapex = sec.toUpperCase().includes("CAPITAL") || sec.toUpperCase().includes("CAPEX") || sec.toUpperCase().includes("FIT OUT");
+      const isCapex = sec.toUpperCase().includes("CAPITAL EXPENDITURE") || sec.toUpperCase().includes("CAPEX") || sec.toUpperCase().includes("FIT OUT");
       const isRevenue = sec.toUpperCase().includes("REVENUE");
       const t = sectionTotal(sec, currentScenario);
       html += `
@@ -488,7 +497,6 @@
     setIf("otherPerMonth","inOther");
   }
 
-  /* CSV loader with fallback */
   function loadCSVFrom(list, idx=0){
     if (idx >= list.length){
       document.querySelector("main").innerHTML = `

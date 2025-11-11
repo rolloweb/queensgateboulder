@@ -17,6 +17,7 @@
     --blue:#6ba0cc;
     --ink:#101418;
     --paper:#f8fafc;
+    --header-h:72px;
   }
   @media (prefers-color-scheme:dark){
     :root{ --paper:#0b0b0c; --ink:#e6e6e6; }
@@ -27,11 +28,11 @@
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
   }
 
-  /* Sticky header from Code A, applied to Code B */
+  /* Fixed header + spacer */
   header{
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
     background: rgba(255,255,255,.97);
     border-bottom: 2px solid var(--gold);
     backdrop-filter: saturate(1.1) blur(6px);
@@ -40,6 +41,7 @@
   @media (prefers-color-scheme:dark){
     header{ background: rgba(16,16,16,.97) }
   }
+  .header-spacer{ height: var(--header-h); }
 
   .wrap{max-width:1100px;margin:0 auto;padding:16px}
   h1{margin:.25rem 0 0;font-weight:900;font-size:clamp(22px,3vw,30px)}
@@ -75,7 +77,6 @@
   .drivers input{width:100%;box-sizing:border-box;border:2px solid var(--blue);border-radius:10px;padding:8px 10px;font-weight:800;font-variant-numeric:tabular-nums;background:#fff}
   @media (prefers-color-scheme:dark){.drivers input{background:#0b0e12;color:#e6f0fb;border-color:#2c6a9e}}
 
-  /* Monthly break even improved */
   .break-card{background:#0e1216;border:2px solid #1f2937;color:#f1f5f9;border-radius:16px;padding:16px}
   .break-head{display:flex;justify-content:space-between;align-items:center}
   .break-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
@@ -131,6 +132,9 @@
     </div>
   </div>
 </header>
+
+<!-- Spacer to offset the fixed header height -->
+<div id="headerSpacer" class="header-spacer"></div>
 
 <main class="wrap" style="padding-top:16px;padding-bottom:40px">
   <!-- KPIs -->
@@ -209,6 +213,18 @@
 </main>
 
 <script>
+  /* Header spacer sizing */
+  function sizeHeaderSpacer(){
+    const h = document.querySelector('header');
+    const s = document.getElementById('headerSpacer');
+    if (!h || !s) return;
+    const px = h.offsetHeight || 72;
+    s.style.height = px + 'px';
+    document.documentElement.style.setProperty('--header-h', px + 'px');
+  }
+  window.addEventListener('load', sizeHeaderSpacer);
+  window.addEventListener('resize', sizeHeaderSpacer);
+
   /* CSV candidates (v3 first) */
   const CSV_CANDIDATES = [
     "./adjusted_queensgate_bouldering_model_v3.csv",
@@ -285,7 +301,7 @@
     const membersPerMonth = driverOverrides.membersPerMonth ?? csvVals.membersPerMonth;
     const memberPrice     = driverOverrides.memberPrice ?? csvVals.memberPrice;
     const dayPassesPerMonth = driverOverrides.dayPassesPerMonth ?? csvVals.dayPassesPerMonth;
-    const dayPassPrice    = driverOverrides.dayPassPrice ?? csvVals.dayPassPrice;
+    const dayPassPrice    = driverOverrides.dayPassPrice ?? csvVals.dayPassesPerMonth && csvVals.dayPassPrice || csvVals.dayPassPrice;
     const otherPerMonth   = driverOverrides.otherPerMonth ?? csvVals.otherPerMonth;
     const monthlyFromMembers = membersPerMonth * memberPrice;
     const monthlyFromDay = dayPassesPerMonth * dayPassPrice;
@@ -387,6 +403,7 @@
 
     renderDebtAndPayback(ebitda, totalCapex());
     setDriverInputs();
+    sizeHeaderSpacer(); /* in case header height changed due to metric wrap */
   }
 
   function renderTable(){
@@ -465,8 +482,14 @@
     [...document.querySelectorAll("#scenarioBar .btn")].forEach(x=>x.setAttribute("aria-selected", x===b ? "true":"false"));
     document.getElementById("scenarioTag").textContent = currentScenario;
     recalc();
+    sizeHeaderSpacer(); /* header may wrap differently after KPI updates */
   });
-  document.getElementById("year1Toggle").addEventListener("change", e=>{ useYear1 = e.target.checked; recalc(); });
+
+  document.getElementById("year1Toggle").addEventListener("change", e=>{
+    useYear1 = e.target.checked;
+    recalc();
+    sizeHeaderSpacer();
+  });
 
   ["inMembers","inMemberPrice","inDayPasses","inDayPassPrice","inOther"].forEach(id=>{
     document.getElementById(id).addEventListener("input", ()=>{
@@ -476,12 +499,15 @@
       driverOverrides.dayPassPrice = parseFloat(document.getElementById("inDayPassPrice").value) || 0;
       driverOverrides.otherPerMonth = parseFloat(document.getElementById("inOther").value) || 0;
       recalc();
+      sizeHeaderSpacer();
     });
   });
+
   document.getElementById("resetDrivers").addEventListener("click", ()=>{
     Object.keys(driverOverrides).forEach(k=> driverOverrides[k]=null);
     setDriverInputs(true);
     recalc();
+    sizeHeaderSpacer();
   });
 
   function setDriverInputs(reset=false){
@@ -502,6 +528,7 @@
       document.querySelector("main").innerHTML = `
         <div class="card"><h2 style="margin:0 0 8px;font-size:18px;font-weight:900">Could not load CSV</h2>
         <p style="color:#dc2626;margin:0 0 8px">Tried: ${CSV_CANDIDATES.join(", ")}</p></div>`;
+      sizeHeaderSpacer();
       return;
     }
     const path = list[idx];
@@ -509,7 +536,7 @@
       download:true, header:true, dynamicTyping:false, skipEmptyLines:true,
       complete:(res)=>{
         rows = res.data.map(r=>{ Object.keys(r).forEach(k=>{ if(r[k]==="") r[k]=null; }); return r; });
-        groupRows(); setDriverInputs(true); recalc();
+        groupRows(); setDriverInputs(true); recalc(); sizeHeaderSpacer();
       },
       error:()=> loadCSVFrom(list, idx+1)
     });

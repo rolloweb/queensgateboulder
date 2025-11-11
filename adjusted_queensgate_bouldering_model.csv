@@ -1,0 +1,35 @@
+SECTION TITLE,DESCRIPTION,Year 1,Conservative,Realistic,Optimistic,NOTES
+REVENUE,MEMBERS_ MONTHLY,270,220,560,"2,117",| v2 efficiencies: rev uplift
+REVENUE,MEMBERS_PRICE,42,46,56,67,| v2 efficiencies: rev uplift
+REVENUE,DAY_PASSES_MONTHLY,250,194,342,693,| v2 efficiencies: rev uplift
+REVENUE,DAY_PASS_PRICE,12,12,13,16,| v2 efficiencies: rev uplift
+REVENUE,OTHER_REV_MONTH,500,583,700,1000,| v2 efficiencies: rev uplift
+CAPITAL EXPENDITURE (SETUP),WALLS_&_MATTS,300000,,,,
+CAPITAL EXPENDITURE (SETUP),HOLDS_BUDGET,25000,,,,
+CAPITAL EXPENDITURE (SETUP),GENERAL_CONSTRUCTION,95000,,,,
+CAPITAL EXPENDITURE (SETUP),STRIP_OUT,20000,,,,
+FIXED PREMISES COSTS,RENT,0,"35,000","35,000","35,000","Queensgate guidance | v2 efficiencies: cost efficiency, rent steady-state 35k"
+FIXED PREMISES COSTS,BUSINESS_RATES,35000,"35,000","35,000","35,000",Queensgate guidance
+FIXED PREMISES COSTS,SERVICE_CHARGE,57850,"56,114","54,958","54,958",Queensgate guidance | v2 efficiencies: cost efficiency
+FIXED PREMISES COSTS,UTILITIES,24000,"21,600","20,400","19,200",Queensgate guidance | v2 efficiencies: cost efficiency
+STAFFING COSTS,GENERAL_MANAGER,30000,"32,200","28,160","25,500",External hire at £35k (C) vs. experienced or founder-managed at £30–32k (R/O). Based on East England gym manager averages (£33–36k). Founder operation reduces cost and improves DSCR. | v2 efficiencies: cost efficiency
+STAFFING COSTS,CLIMBING_INSTRUCTORS,15000,"44,160","39,600","35,700",£26k each (C) for qualified CWI instructors; £24k (R) typical regional rate; £22k (O) with mixed part-time or volunteer cover. Based on ABC Climbing Jobs & UK wall benchmarks. | v2 efficiencies: cost efficiency
+STAFFING COSTS,RECEPTION_FRONT_DESK,3500,"16,560","14,080","12,750","25–35 hrs/week coverage; £20k (C) full rota, £18k (R) leaner, £16k (O) shared role or self-check-in system (e.g., Griptonite). Matches small-wall staffing levels. | v2 efficiencies: cost efficiency"
+STAFFING COSTS,CLEANER_MAINTENANCE,7000,"10,120","8,800","7,650","Contracted daily 7 days (C £11k), reduced 5–6 days (R £10k), or part-time shared service (O £9k). Based on UK cleaning contractor rates £10–13/hr. | v2 efficiencies: cost efficiency"
+STAFFING COSTS,PAYROLL_NI_HOLIDAY,8000,"21,712","19,008","16,830","20 % uplift (C/R) covers NI 13.8 %, pension 3 %, holiday/training. 17 % (O) if mostly PT or owner-operated. Based on HMRC employer cost guidance. | v2 efficiencies: cost efficiency"
+OPERATING & MAINTENANCE,ROUTE_SETTING_&_HOLDS_REPLACEMENT,4000,"8,550","7,360","6,300","Year 1: 3–4 resets instead of 6, minimal spare holds; use freelance setters at ~£300/day. | v2 efficiencies: cost efficiency"
+OPERATING & MAINTENANCE,EQUIPMENT_&_PPE_TESTING,1200,"1,710","1,380","1,080",Year 1: single LOLER + basic inspections; less equipment volume. | v2 efficiencies: cost efficiency
+OPERATING & MAINTENANCE,CLEANING_&_WASTE,2000,"3,325","2,760","2,250",Year 1: small-scale contract or part-time cleaner; reduced bin service frequency. | v2 efficiencies: cost efficiency
+OPERATING & MAINTENANCE,REPAIRS_&_MAINTENANCE,2000,"4,275","3,680","2,700",New fit-out should need limited repair; keep minor contingency only. | v2 efficiencies: cost efficiency
+OPERATING & MAINTENANCE,INSURANCE,6500,"7,600","6,900","6,300",First-year policy discounts often available; smaller insured contents pre-café. | v2 efficiencies: cost efficiency
+OPERATING & MAINTENANCE,IT_SOFTWARE_WIFI_CCTV,1500,"2,660","2,300","1,980",Year 1: use basic POS + single camera system; delay CRM upgrade. | v2 efficiencies: cost efficiency
+OPERATING & MAINTENANCE,PRS_MUSIC_LICENCE,650,712,644,585,Mandatory from Day 1 but fixed low cost. | v2 efficiencies: cost efficiency
+MARKETING,LAUNCH_CAMPAIGN,1500,"5,700","4,500","3,600","You’ll handle design and digital ads yourself; cost covers boosted posts, local PR ads, signage, and flyers. | v2 efficiencies: cost efficiency"
+MARKETING,PAID_ADS_ONGOING,2400,"6,840","5,400","4,320","Year 1 minimal spend: ~£200/month across Meta + Google; rely heavily on organic reach, content, and partnerships. | v2 efficiencies: cost efficiency"
+MARKETING,WEBSITE_HOSTING,400,665,540,450,Use existing Squarespace/WordPress subscription and handle SEO/updates yourself. | v2 efficiencies: cost efficiency
+MARKETING,PRINT_&_MERCH,600,"1,425","1,080",900,Limited signage and posters; produce materials in-house. | v2 efficiencies: cost efficiency
+MARKETING,COMMUNITY_EVENTS_LOCAL,800,"1,425","1,080",900,Run 1–2 open days or collaborations with nearby leisure outlets; minimal spend on prizes and refreshments. | v2 efficiencies: cost efficiency
+ADMIN & PROFESSIONAL FEES,ACCOUNTANCY_BOOKKEEPING,1000,"3,201","2,850","2,565",Year 1: use small local accountant for year-end + self-manage bookkeeping in Xero or QuickBooks. | v2 efficiencies: cost efficiency
+ADMIN & PROFESSIONAL FEES,LEGAL_HR,800,"2,134","1,900","1,710","Basic one-off legal review of lease, insurance and H&S templates; postpone ongoing retainers until Year 2. | v2 efficiencies: cost efficiency"
+ADMIN & PROFESSIONAL FEES,BANK_FEES_CARD_PROCESSING,1700,"4,074","3,420","2,850",First-year turnover smaller → ~1 % of ~£175 k revenue. Update automatically in model to scale with sales. | v2 efficiencies: cost efficiency
+ADMIN & PROFESSIONAL FEES,OFFICE_SUPPLIES_SOFTWARE,800,"1,358","1,140",950,Minimal printing and admin tools; use Google Workspace or Microsoft 365 personal tier. | v2 efficiencies: cost efficiency

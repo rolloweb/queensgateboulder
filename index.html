@@ -1,506 +1,417 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Queensgate Bouldering — Live Investor Model</title>
-<style>
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:#0f1220;color:#121826;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif}
-  .wrap{max-width:1200px;margin:0 auto;padding:18px}
-  .hero{background:linear-gradient(135deg,#6c8cff 0%,#8a6cff 100%);color:#fff;border-radius:16px;padding:22px 22px 16px}
-  .hero h1{font-size:1.8rem;margin:0 0 6px 0}
-  .hero p{opacity:.95;margin:0}
-  .panel{background:#fff;border-radius:14px;box-shadow:0 4px 22px rgba(20,26,60,.10);margin-top:-14px;padding:16px}
-  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:2px 0 12px}
-  .seg{display:flex;border:1px solid #dbe1ff;border-radius:10px;overflow:hidden}
-  .seg button{padding:10px 14px;border:0;background:#f5f7ff;color:#334;cursor:pointer;font-weight:700}
-  .seg button.active{background:#6c8cff;color:#fff}
-  .seg button+button{border-left:1px solid #dbe1ff}
-  .spacer{flex:1}
-  select,input[type="file"]{padding:10px 12px;border:1px solid #dbe1ff;border-radius:10px;background:#fff}
-
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:10px 0}
-  .kpi{background:#f7f9ff;border:1px solid #e9edff;border-radius:12px;padding:12px}
-  .kpi .lab{font-size:.85rem;color:#5b6eae}
-  .kpi .val{font-size:1.6rem;font-weight:900;color:#1b2a7a;margin-top:4px}
-  .kpi.negative .val{color:#d12f3f}
-  .kpi .delta{font-size:.75rem;margin-top:2px;color:#6c8cff}
-
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
-  .card{background:#fff;border:1px solid #eef1ff;border-radius:12px;padding:12px}
-  .card h3{margin:0 0 8px 0;font-size:1rem;color:#1b2a7a}
-
-  .sections{display:grid;grid-template-columns:1fr;gap:12px;margin-top:10px}
-  .section{background:#fff;border:1px solid #eef1ff;border-radius:12px}
-  .section .head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #eef1ff;background:#fafbff}
-  .section .head h4{margin:0;font-size:1rem;color:#1b2a7a}
-  .section .sum{margin-left:auto;font-weight:900;color:#1b2a7a}
-  .rows{padding:6px 8px}
-  .row{display:grid;grid-template-columns:1.2fr .6fr .6fr .6fr .6fr auto;gap:10px;align-items:center;padding:8px;border-top:1px dashed #f0f2ff}
-  .row:first-child{border-top:0}
-  .cell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .cell.key{font-weight:700;color:#334}
-  .pill{font-size:.75rem;border:1px solid #e0e6ff;border-radius:999px;padding:3px 8px;color:#4b5bbb;background:#f5f7ff;cursor:pointer}
-  .pill:hover{background:#eef1ff}
-  .val{font-feature-settings:"tnum" 1; font-variant-numeric: tabular-nums}
-  .flash{animation:flash .9s ease}
-  @keyframes flash{0%{background:#fffae6}100%{background:transparent}}
-  .note{font-size:.85rem;color:#607}
-  .toolbar{display:flex;gap:8px;align-items:center;margin-top:8px}
-
-  /* Drawer */
-  .drawer{position:fixed;top:0;right:-420px;width:420px;height:100vh;background:#fff;border-left:1px solid #eef1ff;box-shadow:-6px 0 22px rgba(20,26,60,.08);transition:right .25s ease;display:flex;flex-direction:column;z-index:30}
-  .drawer.open{right:0}
-  .drawer .dh{display:flex;align-items:center;gap:8px;padding:12px;border-bottom:1px solid #eef1ff;background:#fafbff}
-  .drawer .dh h3{margin:0;font-size:1rem;color:#1b2a7a}
-  .drawer .cnt{padding:12px;overflow:auto}
-  .drawer .claim{background:#f7f9ff;border:1px solid #e9edff;border-radius:10px;padding:10px;margin-bottom:10px}
-  .drawer .files{margin-top:8px}
-  .drawer .files a{display:block;color:#1b2a7a;text-decoration:none;padding:8px;border:1px solid #e9edff;border-radius:8px;margin-top:8px;background:#fafbff}
-  .close{margin-left:auto;border:0;background:#6c8cff;color:#fff;border-radius:8px;padding:8px 10px;cursor:pointer}
-
-  .footer{margin:16px 0;color:#dfe3ff;font-size:.85rem;text-align:center}
-  @media(max-width:980px){.kpis{grid-template-columns:repeat(2,1fr)} .grid2{grid-template-columns:1fr}}
-  @media(max-width:520px){.row{grid-template-columns:1fr .6fr .6fr .6fr .6fr auto}}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="hero">
-    <h1>Queensgate Bouldering investor model</h1>
-    <p>Live view with instant scenario switches and a research drawer. Data reads from your CSV and the attached PDF evidence.</p>
-  </div>
-
-  <div class="panel">
-    <div class="controls">
-      <div class="seg" role="group" aria-label="Scenario">
-        <button data-scen="Conservative" class="active">Conservative</button>
-        <button data-scen="Realistic">Realistic</button>
-        <button data-scen="Optimistic">Optimistic</button>
-      </div>
-      <div class="seg" role="group" aria-label="Year mode" style="margin-left:8px">
-        <button data-year="y1" class="active">Year 1</button>
-        <button data-year="steady">Year 2+</button>
-      </div>
-      <div class="spacer"></div>
-      <input id="file" type="file" accept=".csv"/>
-    </div>
-
-    <!-- KPIs -->
-    <div class="kpis">
-      <div class="kpi" id="k-rev"><div class="lab">Total revenue</div><div class="val" data-key="kpi-rev">£0</div><div class="delta" data-delta="kpi-rev"></div></div>
-      <div class="kpi" id="k-opex"><div class="lab">Total operating costs</div><div class="val" data-key="kpi-opex">£0</div><div class="delta" data-delta="kpi-opex"></div></div>
-      <div class="kpi" id="k-ebitda"><div class="lab">EBITDA</div><div class="val" data-key="kpi-ebitda">£0</div><div class="delta" data-delta="kpi-ebitda"></div></div>
-      <div class="kpi" id="k-capex"><div class="lab">Setup costs</div><div class="val" data-key="kpi-capex">£0</div><div class="delta" data-delta="kpi-capex"></div></div>
-    </div>
-
-    <div class="grid2">
-      <div class="card">
-        <h3>Revenue mix</h3>
-        <canvas id="revChart" height="220"></canvas>
-      </div>
-      <div class="card">
-        <h3>Cost mix</h3>
-        <canvas id="costChart" height="220"></canvas>
-      </div>
-    </div>
-
-    <div class="grid2">
-      <div class="card">
-        <h3>EBITDA bridge</h3>
-        <canvas id="bridge" height="240"></canvas>
-      </div>
-      <div class="card">
-        <h3>Monthly cash proxy</h3>
-        <canvas id="cash" height="240"></canvas>
-      </div>
-    </div>
-
-    <!-- Sections auto-built from CSV -->
-    <div class="sections" id="sections"></div>
-
-    <div class="toolbar">
-      <button class="pill" id="auditMode">Audit mode</button>
-      <span class="note" id="stateNote"></span>
-    </div>
-  </div>
-
-  <div class="footer">CSV fields and notes drive everything shown. Click any evidence pill to open the research drawer.</div>
-</div>
-
-<!-- Drawer -->
-<div class="drawer" id="drawer">
-  <div class="dh"><h3 id="drawerTitle">Evidence</h3><button class="close" id="closeDrawer">Close</button></div>
-  <div class="cnt">
-    <div class="claim" id="drawerNote">No note available.</div>
-    <div class="files">
-      <!-- Place the four PDFs next to this file for local testing, or host alongside on GitHub -->
-      <a href="Bouldering Centre Financial Model Data.pdf" target="_blank">Open: Bouldering Centre Financial Model Data.pdf</a>
-      <a href="Staffing.pdf" target="_blank">Open: Staffing.pdf</a>
-      <a href="Membership modelling assumptions.pdf" target="_blank">Open: Membership modelling assumptions.pdf</a>
-      <a href="Market & Demand Summary.pdf" target="_blank">Open: Market & Demand Summary.pdf</a>
-    </div>
-  </div>
-</div>
-
-<!-- Libs -->
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script>
-/* ===== helpers ===== */
-const money = n => {
-  const x = Math.round((+String(n).replace(/[, ]/g,'')) || 0);
-  return (x<0?'-£':'£') + Math.abs(x).toLocaleString('en-GB');
-};
-const num = v => {
-  if(v===null || v===undefined) return 0;
-  const s = String(v).replace(/[, ]/g,'').trim();
-  if(!s) return 0;
-  const f = parseFloat(s);
-  return isFinite(f) ? f : 0;
-};
-const setText = (sel, text) => { const el = document.querySelector(sel); if(el) el.textContent = text; };
-const animateVal = (el, oldV, newV) => {
-  if(!el) return;
-  el.classList.add('flash');
-  let start = null;
-  const dur = 420;
-  const from = oldV;
-  const to = newV;
-  const step = ts => {
-    if(!start) start = ts;
-    const t = Math.min(1, (ts - start) / dur);
-    const val = Math.round(from + (to - from) * t);
-    el.textContent = money(val);
-    if(t < 1) requestAnimationFrame(step);
-    else setTimeout(()=>el.classList.remove('flash'), 150);
-  };
-  requestAnimationFrame(step);
-};
-
-/* ===== state ===== */
-let RAW = [];           // All rows
-let SECTIONS = [];      // Parsed sections with items
-let SCEN = 'Conservative';
-let YEAR = 'y1';        // y1 or steady
-let charts = {};
-let LAST = {};          // for deltas
-
-/* ===== CSV load and parse ===== */
-async function fetchCsv() {
-  const candidates = ['Queensgate_Bouldering_Financial_Model.csv','./Queensgate_Bouldering_Financial_Model.csv'];
-  for(const url of candidates){
-    try{
-      const res = await fetch(url, {cache:'no-store'});
-      if(res.ok){ return await res.text(); }
-    }catch(e){}
-  }
-  return null;
-}
-
-function parseRows(text){
-  const parsed = Papa.parse(text, {header:true, skipEmptyLines:true});
-  RAW = parsed.data;
-  // Build sections based on first column changes
-  const out = [];
-  let current = null;
-  RAW.forEach(r=>{
-    const sec = r['Unnamed: 0'];
-    const key = r['Unnamed: 1'];
-    if(sec){ // new section start or header
-      current = { name: sec.trim(), items: [] };
-      out.push(current);
+  <meta charset="utf-8" />
+  <title>Queensgate Bouldering • Financial Model</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- PapaParse for CSV -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- Chart.js for charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root { color-scheme: light dark; }
+    .card { @apply bg-white/70 dark:bg-white/5 backdrop-blur rounded-2xl shadow p-5; }
+    .pill { @apply px-3 py-1 rounded-full text-sm font-semibold; }
+    .btn { @apply px-4 py-2 rounded-xl font-semibold border border-black/10 dark:border-white/10; }
+    .btn.active { @apply bg-black text-white dark:bg-white dark:text-black; }
+    .kpi { @apply text-3xl md:text-4xl font-extrabold; }
+    .kpi-sub { @apply text-sm text-black/60 dark:text-white/60; }
+    .mono { font-variant-numeric: tabular-nums; }
+    .table thead th { @apply text-left text-xs md:text-sm uppercase tracking-wide text-black/60 dark:text-white/60; }
+    .table td, .table th { @apply py-2 align-top; }
+    .sticky-top { position: sticky; top: 0; z-index: 20; }
+    .tooltip { position: relative; cursor: help; }
+    .tooltip .tip {
+      visibility: hidden; opacity: 0; transition: opacity .15s ease;
+      position: absolute; left: 0; bottom: 120%; width: 20rem; max-width: 70vw;
+      @apply bg-black text-white text-xs p-3 rounded-xl shadow;
     }
-    if(current && key){
-      current.items.push({
-        key: key.trim(),
-        y1: r['Year 1'],
-        cons: r['Conservative'],
-        real: r['Realistic'],
-        opt: r['Optimistic'],
-        note: r['NOTES'] || ''
+    .tooltip:hover .tip { visibility: visible; opacity: 1; }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-neutral-900 text-slate-900 dark:text-slate-100 min-h-screen">
+  <header class="sticky-top bg-slate-50/80 dark:bg-neutral-900/80 backdrop-blur border-b border-black/5 dark:border-white/10">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-black">Queensgate Bouldering • Financial Model</h1>
+        <p class="text-sm text-black/60 dark:text-white/60">Interactive view for banks and investors. Data source: CSV in this folder.</p>
+      </div>
+      <div class="flex items-center gap-2" id="scenarioButtons" role="tablist" aria-label="Scenarios">
+        <button class="btn active" data-scenario="Conservative" role="tab" aria-selected="true">Conservative</button>
+        <button class="btn" data-scenario="Realistic" role="tab" aria-selected="false">Realistic</button>
+        <button class="btn" data-scenario="Optimistic" role="tab" aria-selected="false">Optimistic</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <!-- KPI Row -->
+    <section class="grid md:grid-cols-4 gap-4">
+      <div class="card">
+        <div class="kpi mono" id="kpiRevenue">£0</div>
+        <div class="kpi-sub">Annual revenue</div>
+      </div>
+      <div class="card">
+        <div class="kpi mono" id="kpiCosts">£0</div>
+        <div class="kpi-sub">Annual operating costs</div>
+      </div>
+      <div class="card">
+        <div class="kpi mono" id="kpiEbitda">£0</div>
+        <div class="kpi-sub">EBITDA</div>
+        <div class="text-xs text-black/60 dark:text-white/60 mono" id="kpiMargin">0%</div>
+      </div>
+      <div class="card">
+        <div class="kpi mono" id="kpiCapex">£0</div>
+        <div class="kpi-sub">Startup capex</div>
+      </div>
+    </section>
+
+    <!-- Break even and drivers -->
+    <section class="grid md:grid-cols-3 gap-4">
+      <div class="card">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-bold">Monthly break even</h2>
+          <span class="pill bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200" id="scenarioTag">Conservative</span>
+        </div>
+        <p class="text-sm text-black/60 dark:text-white/60 mt-2">Based on current month volumes in the CSV for the chosen scenario.</p>
+        <div class="mt-3 space-y-1">
+          <div class="flex items-baseline justify-between">
+            <span class="text-sm">Monthly cost to cover</span>
+            <span class="mono" id="beCost">£0</span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-sm">Revenue from day passes and other</span>
+            <span class="mono" id="beOtherRev">£0</span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-sm">Members required</span>
+            <span class="mono text-xl font-black" id="membersReq">0</span>
+          </div>
+          <p class="text-xs text-black/60 dark:text-white/60 mt-2">If this number is below the current member count, you are above break even on the given mix.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="text-lg font-bold">Revenue drivers</h2>
+        <div class="grid grid-cols-2 gap-3 mt-3 text-sm">
+          <div><div class="text-black/60 dark:text-white/60">Members per month</div><div class="mono text-xl font-bold" id="drvMembers">0</div></div>
+          <div><div class="text-black/60 dark:text-white/60">Member price</div><div class="mono text-xl font-bold" id="drvMemberPrice">£0</div></div>
+          <div><div class="text-black/60 dark:text-white/60">Day passes per month</div><div class="mono text-xl font-bold" id="drvDayPasses">0</div></div>
+          <div><div class="text-black/60 dark:text-white/60">Day pass price</div><div class="mono text-xl font-bold" id="drvDayPassPrice">£0</div></div>
+          <div class="col-span-2"><div class="text-black/60 dark:text-white/60">Other revenue per month</div><div class="mono text-xl font-bold" id="drvOther">£0</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="text-lg font-bold">Revenue vs costs</h2>
+        <canvas id="revCostChart" aria-label="Revenue vs Costs chart"></canvas>
+      </div>
+    </section>
+
+    <!-- Detailed Table -->
+    <section class="card">
+      <div class="flex items-baseline justify-between mb-2">
+        <h2 class="text-lg font-bold">Detailed view</h2>
+        <div class="text-sm text-black/60 dark:text-white/60">Values reflect the selected scenario. Capex is one time.</div>
+      </div>
+      <div id="tableContainer" class="overflow-x-auto">
+        <!-- Filled by JS -->
+      </div>
+    </section>
+
+    <!-- Sources -->
+    <section class="card">
+      <h2 class="text-lg font-bold">Notes from CSV</h2>
+      <p class="text-sm text-black/60 dark:text-white/60">Hover the “i” markers in the table to read line notes. All figures are taken directly from the CSV file and used as provided.</p>
+    </section>
+  </main>
+
+  <script>
+    // ---------- Helpers ----------
+    const money = n => {
+      if (!isFinite(n)) return "£0";
+      return "£" + n.toLocaleString("en-GB", { maximumFractionDigits: 0 });
+    };
+    const num = v => {
+      if (v === null || v === undefined) return 0;
+      if (typeof v === "number") return v;
+      // remove commas, spaces, currency signs
+      const clean = String(v).replace(/[£,\s]/g, "");
+      const parsed = parseFloat(clean);
+      return isNaN(parsed) ? 0 : parsed;
+    };
+    const sum = arr => arr.reduce((a,b)=>a+num(b), 0);
+
+    // ---------- Data model ----------
+    const CSV_PATH = "./Queensgate_Bouldering_Financial_ModelV2_ADJUSTED.csv";
+
+    let rows = [];           // raw rows
+    let bySection = {};      // { section: [rows...] }
+    let scenarios = ["Conservative", "Realistic", "Optimistic"];
+    let currentScenario = "Conservative";
+    let chartInstance = null;
+
+    function groupRows() {
+      bySection = {};
+      rows.forEach(r => {
+        const sec = r["SECTION TITLE"] || "Other";
+        if (!bySection[sec]) bySection[sec] = [];
+        bySection[sec].push(r);
       });
     }
-  });
-  SECTIONS = out;
-}
 
-function findSection(name){
-  return SECTIONS.find(s => s.name.toLowerCase().includes(name.toLowerCase()));
-}
-function sectionTotal(section, mode){
-  // prefer explicit "TOTAL" row in that section
-  if(!section) return 0;
-  const tot = section.items.find(i => i.key.toUpperCase()==='TOTAL');
-  if(tot) return pickVal(tot, mode);
-  // else sum all items except any obvious headers
-  return section.items.reduce((a,i)=> a + pickVal(i,mode), 0);
-}
-function pickVal(item, mode){
-  if(mode==='y1') return num(item.y1);
-  // steady uses scenario
-  if(SCEN==='Conservative') return num(item.cons);
-  if(SCEN==='Realistic') return num(item.real);
-  return num(item.opt);
-}
-
-/* ===== UI build ===== */
-function buildSections(){
-  const host = document.getElementById('sections');
-  host.innerHTML = '';
-
-  const wanted = [
-    'REVENUE',
-    'CAPITAL EXPENDITURE',
-    'FIXED PREMISES COSTS',
-    'STAFFING COSTS',
-    'OPERATING & MAINTENANCE',
-    'MARKETING',
-    'ADMIN & PROFESSIONAL FEES'
-  ];
-
-  SECTIONS.forEach(sec=>{
-    // Show only the key groups above, but allow flexible matching
-    if(!wanted.some(w => sec.name.toLowerCase().includes(w.toLowerCase()))) return;
-
-    const sectionEl = document.createElement('div');
-    sectionEl.className = 'section';
-
-    const header = document.createElement('div');
-    header.className = 'head';
-    const h = document.createElement('h4');
-    h.textContent = sec.name;
-    const sum = document.createElement('div'); sum.className='sum val'; sum.dataset.sumKey = sec.name;
-    header.appendChild(h);
-    header.appendChild(sum);
-
-    const rows = document.createElement('div');
-    rows.className = 'rows';
-
-    // Header row
-    const headRow = document.createElement('div');
-    headRow.className = 'row';
-    ['Line','Year 1','Cons','Real','Opt','Evidence'].forEach(txt=>{
-      const c = document.createElement('div'); c.className='cell'; c.style.fontWeight='700'; c.textContent=txt;
-      if(txt==='Line') c.classList.add('key');
-      headRow.appendChild(c);
-    });
-    rows.appendChild(headRow);
-
-    sec.items.forEach(it=>{
-      const r = document.createElement('div');
-      r.className = 'row';
-      const cKey = document.createElement('div'); cKey.className='cell key'; cKey.textContent = it.key;
-      const cY1 = document.createElement('div'); cY1.className='cell val'; cY1.textContent = money(num(it.y1));
-      const cC  = document.createElement('div'); cC.className='cell val'; cC.textContent  = money(num(it.cons));
-      const cR  = document.createElement('div'); cR.className='cell val'; cR.textContent  = money(num(it.real));
-      const cO  = document.createElement('div'); cO.className='cell val'; cO.textContent  = money(num(it.opt));
-      const cE  = document.createElement('div'); cE.className='cell';
-      const pill = document.createElement('button'); pill.className='pill'; pill.textContent='View';
-      pill.addEventListener('click', ()=> openDrawer(sec.name+' — '+it.key, it.note));
-      cE.appendChild(pill);
-
-      // highlight cells that will change with the current selection
-      [cY1,cC,cR,cO].forEach(cell=>cell.style.opacity=.5);
-      r.appendChild(cKey); r.appendChild(cY1); r.appendChild(cC); r.appendChild(cR); r.appendChild(cO); r.appendChild(cE);
-      rows.appendChild(r);
-    });
-
-    sectionEl.appendChild(header);
-    sectionEl.appendChild(rows);
-    host.appendChild(sectionEl);
-  });
-
-  refreshAll();
-}
-
-/* ===== calculations + charts ===== */
-function calcKpis(){
-  const sRevenue = findSection('REVENUE');
-  const sCapex   = findSection('CAPITAL EXPENDITURE');
-  const sFixed   = findSection('FIXED PREMISES COSTS');
-  const sStaff   = findSection('STAFFING COSTS');
-  const sOps     = findSection('OPERATING & MAINTENANCE');
-  const sMkt     = findSection('MARKETING');
-  const sAdmin   = findSection('ADMIN & PROFESSIONAL FEES');
-
-  const revenue = sectionTotal(sRevenue, YEAR);
-  const capex   = sectionTotal(sCapex,   'steady'); // setup cost ignores Year 1 toggle
-  const opex    = sectionTotal(sFixed, YEAR) + sectionTotal(sStaff, YEAR) + sectionTotal(sOps, YEAR) + sectionTotal(sMkt, YEAR) + sectionTotal(sAdmin, YEAR);
-  const ebitda  = revenue - opex;
-
-  return {revenue, capex, opex, ebitda, parts:{
-    revParts: pieParts(sRevenue, YEAR, ['TOTAL']),
-    costParts: piePartsFromMany(YEAR, [
-      {sec:sFixed, label:'Fixed'},
-      {sec:sStaff, label:'Staff'},
-      {sec:sOps, label:'Ops'},
-      {sec:sMkt, label:'Marketing'},
-      {sec:sAdmin, label:'Admin'}
-    ])
-  }};
-}
-function pieParts(section, mode, skipKeys=[]){
-  if(!section) return [];
-  const out = [];
-  section.items.forEach(i=>{
-    if(skipKeys.includes(i.key.toUpperCase())) return;
-    const v = pickVal(i, mode);
-    if(v>0) out.push({label:i.key, value:v});
-  });
-  return out;
-}
-function piePartsFromMany(mode, list){
-  const out = [];
-  list.forEach(x=>{
-    if(!x.sec) return;
-    const val = sectionTotal(x.sec, mode);
-    if(val>0) out.push({label:x.label, value:val});
-  });
-  return out;
-}
-
-function refreshAll(){
-  // state label
-  const state = `${SCEN} • ${YEAR==='y1'?'Year 1':'Year 2+'}`;
-  setText('#stateNote', state);
-
-  // highlight columns that change with the current selection
-  document.querySelectorAll('.row').forEach(r=>{
-    const cells = [...r.children];
-    if(cells.length<6) return;
-    const [key,y1,c,rv,o] = cells;
-    [y1,c,rv,o].forEach(x=>x && (x.style.opacity=.35));
-    if(YEAR==='y1'){ y1 && (y1.style.opacity=1); }
-    else {
-      if(SCEN==='Conservative') c && (c.style.opacity=1);
-      if(SCEN==='Realistic')    rv && (rv.style.opacity=1);
-      if(SCEN==='Optimistic')   o && (o.style.opacity=1);
+    function getRevenuePieces(scn) {
+      const getVal = key => {
+        const r = rows.find(x => (x["SECTION TITLE"] || "").toUpperCase() === "REVENUE" && (x["DESCRIPTION"] || "").toUpperCase() === key);
+        return r ? num(r[scn]) : 0;
+      };
+      const membersPerMonth = getVal("MEMBERS_ MONTHLY");
+      const memberPrice = getVal("MEMBERS_PRICE");
+      const dayPassesPerMonth = getVal("DAY_PASSES_MONTHLY");
+      const dayPassPrice = getVal("DAY_PASS_PRICE");
+      const otherPerMonth = getVal("OTHER_REV_MONTH");
+      const monthlyFromMembers = membersPerMonth * memberPrice;
+      const monthlyFromDay = dayPassesPerMonth * dayPassPrice;
+      const monthlyTotal = monthlyFromMembers + monthlyFromDay + otherPerMonth;
+      const annual = monthlyTotal * 12;
+      return {
+        membersPerMonth,
+        memberPrice,
+        dayPassesPerMonth,
+        dayPassPrice,
+        otherPerMonth,
+        monthlyTotal,
+        annual
+      };
     }
-  });
 
-  // sums in section headers
-  document.querySelectorAll('[data-sumKey]').forEach(el=>{
-    const name = el.dataset.sumKey;
-    const sec = SECTIONS.find(s => s.name===name);
-    const total = sectionTotal(sec, YEAR);
-    const old = num(el.textContent);
-    animateVal(el, isNaN(old)?0:old, total);
-  });
-
-  // KPIs
-  const k = calcKpis();
-  setDelta('.kpi [data-key="kpi-rev"]', '.kpi [data-delta="kpi-rev"]', k.revenue);
-  setDelta('.kpi [data-key="kpi-opex"]', '.kpi [data-delta="kpi-opex"]', k.opex);
-  const eEl = document.querySelector('.kpi [data-key="kpi-ebitda"]');
-  if(eEl){ if(k.ebitda<0) eEl.closest('.kpi').classList.add('negative'); else eEl.closest('.kpi').classList.remove('negative'); }
-  setDelta('.kpi [data-key="kpi-ebitda"]', '.kpi [data-delta="kpi-ebitda"]', k.ebitda);
-  setDelta('.kpi [data-key="kpi-capex"]', '.kpi [data-delta="kpi-capex"]', k.capex);
-
-  // charts
-  drawCharts(k);
-}
-function setDelta(valSel, deltaSel, newVal){
-  const el = document.querySelector(valSel);
-  const d  = document.querySelector(deltaSel);
-  const old = num(el?.textContent);
-  animateVal(el, isNaN(old)?0:old, newVal);
-  if(d){
-    const diff = Math.round(newVal - (isNaN(old)?0:old));
-    const sign = diff>0 ? '+' : '';
-    d.textContent = diff===0 ? '' : `Change ${sign}${money(diff)}`;
-  }
-}
-
-function drawCharts(k){
-  const revLabels = k.parts.revParts.map(p=>p.label);
-  const revVals   = k.parts.revParts.map(p=>p.value);
-  const costLabels = k.parts.costParts.map(p=>p.label);
-  const costVals   = k.parts.costParts.map(p=>p.value);
-
-  if(charts.rev) charts.rev.destroy();
-  charts.rev = new Chart(document.getElementById('revChart'), {type:'doughnut',
-    data:{labels:revLabels, datasets:[{data:revVals}]},
-    options:{plugins:{legend:{position:'bottom'}}, cutout:'60%'}
-  });
-
-  if(charts.cost) charts.cost.destroy();
-  charts.cost = new Chart(document.getElementById('costChart'), {type:'doughnut',
-    data:{labels:costLabels, datasets:[{data:costVals}]},
-    options:{plugins:{legend:{position:'bottom'}}, cutout:'60%'}
-  });
-
-  if(charts.bridge) charts.bridge.destroy();
-  charts.bridge = new Chart(document.getElementById('bridge'), {type:'bar',
-    data:{labels:['Revenue','Costs','EBITDA'], datasets:[{data:[k.revenue, -k.opex, k.ebitda]}]},
-    options:{plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>'£'+v.toLocaleString('en-GB')}}}}
-  });
-
-  if(charts.cash) charts.cash.destroy();
-  const monthly = Math.round(k.ebitda/12);
-  charts.cash = new Chart(document.getElementById('cash'), {type:'line',
-    data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], datasets:[{data:Array(12).fill(monthly)}]},
-    options:{plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>'£'+v.toLocaleString('en-GB')}}}}
-  });
-}
-
-/* ===== drawer ===== */
-function openDrawer(title, note){
-  const d = document.getElementById('drawer');
-  document.getElementById('drawerTitle').textContent = title;
-  document.getElementById('drawerNote').textContent = note && note.trim() ? note : 'This line has no note in the CSV.';
-  d.classList.add('open');
-}
-document.getElementById('closeDrawer').addEventListener('click', ()=> document.getElementById('drawer').classList.remove('open'));
-
-/* ===== interactions ===== */
-function bindControls(){
-  document.querySelectorAll('[data-scen]').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      document.querySelectorAll('[data-scen]').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      SCEN = b.dataset.scen;
-      if(YEAR==='y1'){ // show an immediate visual change even when Year 1 is selected
-        // Flash header note to underline that Year 1 is independent of scenario
-        setText('#stateNote', `${SCEN} • ${YEAR==='y1'?'Year 1':'Year 2+'}  (scenario set for steady state)`);
+    function sectionAnnualTotal(secName, scn) {
+      if (!bySection[secName]) return 0;
+      // Capex is not annual, we still total it for display, but exclude from annual costs
+      if (secName.toUpperCase().includes("CAPITAL EXPENDITURE")) {
+        return bySection[secName].reduce((acc, r) => acc + num(r["Year 1"]), 0);
       }
-      refreshAll();
-    });
-  });
-  document.querySelectorAll('[data-year]').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      document.querySelectorAll('[data-year]').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      YEAR = b.dataset.year;
-      refreshAll();
-    });
-  });
-  document.getElementById('file').addEventListener('change', e=>{
-    const f = e.target.files?.[0]; if(!f) return;
-    const reader = new FileReader();
-    reader.onload = ev => { parseRows(String(ev.target.result)); buildSections(); };
-    reader.readAsText(f);
-  });
-  document.getElementById('auditMode').addEventListener('click', ()=>{
-    const on = document.body.getAttribute('data-audit')==='1';
-    document.body.setAttribute('data-audit', on?'0':'1');
-    // in audit mode, show both chosen column and the source drawer on hover
-    document.querySelectorAll('.pill').forEach(p=>{
-      if(on) p.removeAttribute('title');
-      else p.setAttribute('title','Open evidence');
-    });
-  });
-}
+      return bySection[secName].reduce((acc, r) => acc + num(r[scn]), 0);
+    }
 
-/* ===== init ===== */
-(async function(){
-  bindControls();
-  const text = await fetchCsv();
-  if(!text){ alert('CSV not found. Use the file picker to load it.'); return; }
-  parseRows(text);
-  buildSections();
-})();
-</script>
+    function totalAnnualCosts(scn) {
+      let total = 0;
+      Object.keys(bySection).forEach(sec => {
+        const upper = sec.toUpperCase();
+        if (upper.includes("REVENUE")) return; // skip
+        if (upper.includes("CAPITAL EXPENDITURE")) return; // one time
+        total += sectionAnnualTotal(sec, scn);
+      });
+      return total;
+    }
+
+    function totalCapex() {
+      let capex = 0;
+      Object.keys(bySection).forEach(sec => {
+        const upper = sec.toUpperCase();
+        if (upper.includes("CAPITAL EXPENDITURE")) {
+          capex += bySection[sec].reduce((acc, r) => acc + num(r["Year 1"]), 0);
+        }
+      });
+      return capex;
+    }
+
+    function renderKPIs() {
+      const rev = getRevenuePieces(currentScenario);
+      const costs = totalAnnualCosts(currentScenario);
+      const ebitda = rev.annual - costs;
+      const margin = rev.annual > 0 ? (ebitda / rev.annual) * 100 : 0;
+
+      document.getElementById("kpiRevenue").textContent = money(rev.annual);
+      document.getElementById("kpiCosts").textContent = money(costs);
+      document.getElementById("kpiEbitda").textContent = money(ebitda);
+      document.getElementById("kpiMargin").textContent = `${margin.toFixed(1)}% margin`;
+      document.getElementById("kpiCapex").textContent = money(totalCapex());
+
+      // Drivers
+      document.getElementById("drvMembers").textContent = rev.membersPerMonth.toLocaleString("en-GB");
+      document.getElementById("drvMemberPrice").textContent = money(rev.memberPrice);
+      document.getElementById("drvDayPasses").textContent = rev.dayPassesPerMonth.toLocaleString("en-GB");
+      document.getElementById("drvDayPassPrice").textContent = money(rev.dayPassPrice);
+      document.getElementById("drvOther").textContent = money(rev.otherPerMonth);
+
+      // Break even calc
+      const monthlyCosts = totalAnnualCosts(currentScenario) / 12;
+      const monthlyOtherRevenue = (rev.dayPassesPerMonth * rev.dayPassPrice) + rev.otherPerMonth;
+      const needed = Math.max(0, Math.ceil((monthlyCosts - monthlyOtherRevenue) / (rev.memberPrice || 1)));
+      document.getElementById("beCost").textContent = money(monthlyCosts);
+      document.getElementById("beOtherRev").textContent = money(monthlyOtherRevenue);
+      document.getElementById("membersReq").textContent = isFinite(needed) ? needed.toLocaleString("en-GB") : "0";
+
+      // Chart
+      const ctx = document.getElementById("revCostChart");
+      const data = {
+        labels: ["Revenue", "Costs"],
+        datasets: [{
+          label: "Annual £",
+          data: [rev.annual, costs]
+        }]
+      };
+      const opts = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: {
+            label: ctx => money(ctx.raw)
+          } }
+        },
+        scales: {
+          y: { ticks: { callback: v => "£" + Number(v).toLocaleString("en-GB") } }
+        }
+      };
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = new Chart(ctx, { type: "bar", data, options: opts });
+      document.getElementById("scenarioTag").textContent = currentScenario;
+    }
+
+    function renderTable() {
+      const container = document.getElementById("tableContainer");
+      const secOrder = Object.keys(bySection);
+
+      let html = "";
+      secOrder.forEach(sec => {
+        const isCapex = sec.toUpperCase().includes("CAPITAL EXPENDITURE");
+        const isRevenue = sec.toUpperCase().includes("REVENUE");
+        const sectionTotal = isRevenue
+          ? getRevenuePieces(currentScenario).annual
+          : isCapex
+            ? bySection[sec].reduce((a,r)=>a+num(r["Year 1"]),0)
+            : sectionAnnualTotal(sec, currentScenario);
+
+        html += `
+          <div class="mt-6">
+            <div class="flex items-baseline justify-between">
+              <h3 class="text-base md:text-lg font-bold">${sec}</h3>
+              <div class="text-sm text-black/60 dark:text-white/60">
+                ${isRevenue ? "Annualised from monthly drivers" : isCapex ? "One time" : "Annual"}
+                total: <span class="mono font-semibold">${money(sectionTotal)}</span>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="table w-full mt-2">
+                <thead>
+                  <tr>
+                    <th class="w-44">Item</th>
+                    <th class="w-24">Unit</th>
+                    <th class="w-28">Value</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+        `;
+
+        bySection[sec].forEach(r => {
+          const desc = String(r["DESCRIPTION"] || "");
+          const notes = String(r["NOTES"] || "").trim();
+          let unit = isRevenue ? "Monthly" : isCapex ? "One time" : "Annual";
+          let value = 0;
+
+          if (isRevenue) {
+            // Show the raw monthly values for revenue inputs
+            const key = desc.toUpperCase();
+            if (key === "MEMBERS_ MONTHLY" || key === "DAY_PASSES_MONTHLY" || key === "OTHER_REV_MONTH" || key === "DAY_PASS_PRICE" || key === "MEMBERS_PRICE") {
+              value = num(r[currentScenario]);
+            }
+          } else if (isCapex) {
+            value = num(r["Year 1"]);
+          } else {
+            value = num(r[currentScenario]);
+          }
+
+          const prettyValue = (desc.toUpperCase().includes("PRICE") || desc.toUpperCase().includes("REV")) && isRevenue
+            ? money(value)
+            : isCapex
+              ? money(value)
+              : isRevenue && !desc.toUpperCase().includes("PRICE") && !desc.toUpperCase().includes("REV")
+                ? value.toLocaleString("en-GB")
+                : money(value);
+
+          html += `
+            <tr class="border-t border-black/5 dark:border-white/10">
+              <td class="pr-4">
+                <div class="flex items-start gap-2">
+                  <span class="mono">${desc.replaceAll("_"," ")}</span>
+                  ${notes && notes !== "NaN" ? `
+                  <span class="tooltip text-black/40 dark:text-white/40" aria-label="Notes">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="mt-1">
+                      <path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm1 15h-2v-2h2Zm0-4h-2V7h2Z"/>
+                    </svg>
+                    <span class="tip">${notes.replaceAll("<","&lt;").replaceAll(">","&gt;")}</span>
+                  </span>` : ``}
+                </div>
+              </td>
+              <td class="text-sm text-black/60 dark:text-white/60">${unit}</td>
+              <td class="mono font-semibold">${prettyValue}</td>
+              <td class="text-sm text-black/60 dark:text-white/60">${notes && notes !== "NaN" ? notes : ""}</td>
+            </tr>
+          `;
+        });
+
+        html += `
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function recalc() {
+      renderKPIs();
+      renderTable();
+    }
+
+    // ---------- Load CSV ----------
+    function loadCSV() {
+      Papa.parse(CSV_PATH, {
+        download: true,
+        header: true,
+        dynamicTyping: false,
+        skipEmptyLines: true,
+        complete: (res) => {
+          rows = res.data.map(r => {
+            // Normalize empty to null
+            Object.keys(r).forEach(k => { if (r[k] === "") r[k] = null; });
+            return r;
+          });
+          groupRows();
+          recalc();
+        },
+        error: (err) => {
+          const container = document.querySelector("main");
+          container.innerHTML = `
+            <div class="card">
+              <h2 class="text-lg font-bold">Could not load CSV</h2>
+              <p class="mt-2 text-sm text-red-600">Error: ${err?.message || "Unknown error"}</p>
+              <p class="mt-2 text-sm">Make sure the CSV sits next to this HTML and is named <strong>Queensgate_Bouldering_Financial_ModelV2_ADJUSTED.csv</strong>.</p>
+            </div>
+          `;
+        }
+      });
+    }
+
+    // ---------- Scenario UI ----------
+    document.getElementById("scenarioButtons").addEventListener("click", e => {
+      const btn = e.target.closest("button[data-scenario]");
+      if (!btn) return;
+      currentScenario = btn.dataset.scenario;
+      document.querySelectorAll("#scenarioButtons .btn").forEach(b=>{
+        b.classList.toggle("active", b === btn);
+        b.setAttribute("aria-selected", b === btn ? "true" : "false");
+      });
+      recalc();
+    });
+
+    // ---------- Init ----------
+    loadCSV();
+  </script>
 </body>
 </html>

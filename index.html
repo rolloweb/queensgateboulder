@@ -201,7 +201,7 @@
 </main>
 
 <script>
-  const CSV_PATH = "./adjusted_queensgate_bouldering_model.csv";
+  const CSV_PATH = "./adjusted_queensgate_bouldering_model_v3.csv";
 
   const money = n => !isFinite(n) ? "£0" : "£"+ Number(n).toLocaleString("en-GB",{maximumFractionDigits:0});
   const num = v => { if (v===null||v===undefined) return 0; if (typeof v==="number") return v; const clean=String(v).replace(/[£,\s]/g,""); const p=parseFloat(clean); return isNaN(p)?0:p; };
@@ -470,7 +470,7 @@
         document.querySelector("main").innerHTML = `
           <div class="card"><h2 style="margin:0 0 8px;font-size:18px;font-weight:900">Could not load CSV</h2>
           <p style="color:#dc2626;margin:0 0 8px">Error: ${err?.message || "Unknown error"}</p>
-          <p class="muted" style="margin:0">CSV must be next to this HTML and named <b>adjusted_queensgate_bouldering_model.csv</b>.</p></div>`;
+          <p class="muted" style="margin:0">CSV must be next to this HTML and named <b>adjusted_queensgate_bouldering_model_v3.csv</b>.</p></div>`;
         console.error("CSV load error", err);
       }
     });

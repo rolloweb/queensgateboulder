@@ -5,60 +5,111 @@
 <title>Queensgate Bouldering • Financial Model</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- Libraries -->
+<!-- Libs -->
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <style>
-  :root{color-scheme:light dark;}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;background:#f7fafc;color:#0f172a}
-  @media (prefers-color-scheme:dark){body{background:#0b0b0c;color:#e6e6e6}}
+  :root{
+    color-scheme: light dark;
+    --gold:#fce38b;
+    --salmon:#df7d6e;
+    --blue:#6ba0cc;
+    --ink:#101418;
+    --paper:#f8fafc;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{ --paper:#0b0b0c; --ink:#e6e6e6; }
+  }
+
+  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+
+  /* STICKY header (same method as your working example) */
+  header{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(248,250,252,.9); /* light */
+    backdrop-filter: saturate(1.1) blur(6px);
+    border-bottom: 1px solid rgba(0,0,0,.06);
+  }
+  @media (prefers-color-scheme:dark){
+    header{
+      background: rgba(11,11,12,.9);
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+  }
 
   .wrap{max-width:1100px;margin:0 auto;padding:16px}
-  header{position:sticky;top:0;z-index:10;background:rgba(247,250,252,.9);backdrop-filter:saturate(1.1) blur(6px);border-bottom:1px solid rgba(0,0,0,.06)}
-  @media (prefers-color-scheme:dark){header{background:rgba(11,11,12,.9);border-bottom:1px solid rgba(255,255,255,.1)}}
   h1{margin:.25rem 0 0;font-weight:900;font-size:clamp(22px,3vw,30px)}
-  p.muted{margin:.25rem 0 0;color:rgba(0,0,0,.6)}
-  @media (prefers-color-scheme:dark){p.muted{color:rgba(255,255,255,.6)}}
+  p.muted{margin:.25rem 0 0;opacity:.7}
 
   .row{display:grid;gap:12px}
   @media(min-width:900px){.row.cols-4{grid-template-columns:repeat(4,1fr)}.row.cols-3{grid-template-columns:repeat(3,1fr)}}
 
-  .card{background:rgba(255,255,255,.75);backdrop-filter:blur(6px) saturate(1.1);border:1px solid rgba(0,0,0,.06);border-radius:16px;padding:18px}
-  @media (prefers-color-scheme:dark){.card{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1)}}
+  .card{background:#fff;border:2px solid #e5e7eb;border-radius:16px;padding:18px}
+  @media (prefers-color-scheme:dark){.card{background:#121416;border-color:#222}}
+  .accent{border-color:var(--blue)}
 
   .kpi{font-weight:900;font-size:clamp(22px,3vw,32px);line-height:1}
-  .kpi-sub{font-size:13px;color:rgba(0,0,0,.6)}
-  @media (prefers-color-scheme:dark){.kpi-sub{color:rgba(255,255,255,.6)}}
+  .kpi-sub{font-size:13px;opacity:.7}
   .mono{font-variant-numeric:tabular-nums}
 
-  .btnbar{display:flex;gap:8px;flex-wrap:wrap}
-  .btn{padding:8px 14px;border-radius:12px;border:1px solid rgba(0,0,0,.12);background:transparent;font-weight:700;cursor:pointer}
-  .btn[aria-selected="true"]{background:#000;color:#fff}
-  @media (prefers-color-scheme:dark){
-    .btn{border-color:rgba(255,255,255,.15)}
-    .btn[aria-selected="true"]{background:#fff;color:#000}
-  }
+  .btnbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .btn{padding:8px 14px;border-radius:12px;border:2px solid var(--blue);background:#fff;color:#0a2540;font-weight:800;cursor:pointer}
+  .btn[aria-selected="true"]{background:var(--blue);color:#fff}
+  @media (prefers-color-scheme:dark){.btn{background:#0e1216;color:#cfe7ff}}
 
-  /* Chart height is locked to avoid infinite growth */
+  .switch{display:inline-flex;align-items:center;gap:8px;font-weight:800}
+  .switch input{appearance:none;width:46px;height:26px;border-radius:999px;background:#cbd5e1;position:relative;outline:0;cursor:pointer;border:2px solid #93a3b8}
+  .switch input:checked{background:var(--gold);border-color:var(--gold)}
+  .switch input::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .18s ease}
+  .switch input:checked::after{left:24px}
+
+  /* Lock chart height to prevent infinite growth */
   .chart-wrap{position:relative;height:280px;width:100%}
   .chart-wrap>canvas{display:block;width:100% !important;height:100% !important}
 
+  .drivers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .drivers .field label{display:block;font-size:12px;opacity:.7;margin-bottom:4px}
+  .drivers input{width:100%;box-sizing:border-box;border:2px solid var(--blue);border-radius:10px;padding:8px 10px;font-weight:800;font-variant-numeric:tabular-nums;background:#fff}
+  @media (prefers-color-scheme:dark){.drivers input{background:#0b0e12;color:#e6f0fb;border-color:#2c6a9e}}
+
+  /* Monthly break even styling */
+  .break-card{background:#0e1216;border:2px solid #1f2937;color:#f1f5f9;border-radius:16px;padding:16px}
+  .break-head{display:flex;justify-content:space-between;align-items:center}
+  .break-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .break-row{display:flex;justify-content:space-between;align-items:baseline;background:#111827;border:1px solid #1f2937;border-radius:12px;padding:10px}
+  .break-label{opacity:.85}
+  .break-val{font-weight:900}
+  .break-members{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding:12px;border-radius:12px;border:2px solid var(--gold);background:rgba(252,227,139,.18)}
+  .pill{display:inline-block;background:#10b981;color:#062e26;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800}
+  @media (prefers-color-scheme:dark){.pill{background:#10b981;color:#022019}}
+
+  /* Debt inputs */
+  .finance-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .finance-grid .field label{display:block;font-size:12px;opacity:.7;margin-bottom:4px}
+  .finance-grid input{width:100%;box-sizing:border-box;border:2px solid var(--salmon);border-radius:10px;padding:8px 10px;font-weight:800;font-variant-numeric:tabular-nums;background:#fff}
+  @media (prefers-color-scheme:dark){.finance-grid input{background:#0b0e12;color:#ffeceb;border-color:#c65b4d}}
+
+  .finance-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .metric{border-radius:12px;padding:10px}
+  .metric h4{margin:0 0 4px;font-size:12px;opacity:.9}
+  .metric .val{font-weight:900;font-size:18px}
+  .m-gold{background:var(--gold);color:#1f2937}
+  .m-blue{background:var(--blue);color:#fff}
+  .m-salmon{background:var(--salmon);color:#fff}
+
   .table{width:100%;border-collapse:collapse}
-  .table th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;text-align:left;color:rgba(0,0,0,.6);padding:8px 0}
-  .table td{padding:8px 0;border-top:1px solid rgba(0,0,0,.06);vertical-align:top}
-  @media (prefers-color-scheme:dark){
-    .table th{color:rgba(255,255,255,.6)}
-    .table td{border-top-color:rgba(255,255,255,.12)}
-  }
-  .muted{color:rgba(0,0,0,.6)}
-  @media (prefers-color-scheme:dark){.muted{color:rgba(255,255,255,.6)}}
+  .table th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;text-align:left;opacity:.7;padding:8px 0}
+  .table td{padding:8px 0;border-top:1px solid #e5e7eb;vertical-align:top}
+  @media (prefers-color-scheme:dark){.table td{border-top-color:#222}}
 
-  .pill{display:inline-block;background:#d1fae5;color:#065f46;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700}
-  @media (prefers-color-scheme:dark){.pill{background:rgba(16,185,129,.15);color:#a7f3d0}}
+  .section-head{display:flex;justify-content:space-between;align-items:baseline;margin-top:18px;border-bottom:5px solid var(--gold);padding-bottom:6px}
+  .total-badge{background:var(--salmon);color:#fff;padding:4px 12px;border-radius:999px;font-weight:900;font-size:13px}
 
-  .tooltip{position:relative;cursor:help}
-  .tooltip .tip{position:absolute;left:0;bottom:125%;visibility:hidden;opacity:0;transition:opacity .15s ease;width:min(320px,75vw);background:#000;color:#fff;font-size:12px;padding:10px;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+  .tooltip{position:relative;cursor:help;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--blue);color:#fff;font-size:12px;font-weight:900}
+  .tooltip .tip{position:absolute;left:0;bottom:125%;visibility:hidden;opacity:0;transition:opacity .15s ease;width:min(340px,75vw);background:#000;color:#fff;font-size:12px;padding:10px;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.35)}
   .tooltip:hover .tip{visibility:visible;opacity:1}
 </style>
 </head>
@@ -70,10 +121,13 @@
       <h1>Queensgate Bouldering • Financial Model</h1>
       <p class="muted">Interactive view for banks and investors. Source: CSV in this folder.</p>
     </div>
-    <div class="btnbar" id="scenarioButtons" role="tablist" aria-label="Scenarios">
-      <button class="btn" data-scenario="Conservative" role="tab" aria-selected="true">Conservative</button>
-      <button class="btn" data-scenario="Realistic" role="tab" aria-selected="false">Realistic</button>
+    <div class="btnbar" id="scenarioBar" role="tablist" aria-label="Scenarios">
+      <button class="btn" data-scenario="Conservative" role="tab" aria-selected="false">Conservative</button>
+      <button class="btn" data-scenario="Realistic" role="tab" aria-selected="true">Realistic</button>
       <button class="btn" data-scenario="Optimistic" role="tab" aria-selected="false">Optimistic</button>
+      <label class="switch" title="Show Year 1 column when available">
+        <input type="checkbox" id="year1Toggle"><span>Year 1</span>
+      </label>
     </div>
   </div>
 </header>
@@ -82,154 +136,220 @@
 
   <!-- KPIs -->
   <section class="row cols-4">
-    <div class="card">
-      <div class="kpi mono" id="kpiRevenue">£0</div>
-      <div class="kpi-sub">Annual revenue</div>
-    </div>
-    <div class="card">
-      <div class="kpi mono" id="kpiCosts">£0</div>
-      <div class="kpi-sub">Annual operating costs</div>
-    </div>
-    <div class="card">
-      <div class="kpi mono" id="kpiEbitda">£0</div>
-      <div class="kpi-sub"><span id="kpiMargin">0%</span> EBITDA margin</div>
-    </div>
-    <div class="card">
-      <div class="kpi mono" id="kpiCapex">£0</div>
-      <div class="kpi-sub">Startup capex</div>
-    </div>
+    <div class="card accent"><div class="kpi mono" id="kpiRevenue">£0</div><div class="kpi-sub" id="kpiRevenueLabel">Annual revenue</div></div>
+    <div class="card accent"><div class="kpi mono" id="kpiCosts">£0</div><div class="kpi-sub" id="kpiCostsLabel">Annual operating costs</div></div>
+    <div class="card accent"><div class="kpi mono" id="kpiEbitda">£0</div><div class="kpi-sub"><span id="kpiMargin">0%</span> EBITDA margin</div></div>
+    <div class="card accent"><div class="kpi mono" id="kpiCapex">£0</div><div class="kpi-sub">Startup capex</div></div>
   </section>
 
-  <!-- Drivers + Chart -->
+  <!-- Drivers + Break even + Chart -->
   <section class="row cols-3" style="margin-top:12px">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
+    <div class="break-card">
+      <div class="break-head">
         <h2 style="margin:0;font-size:18px;font-weight:800">Monthly break even</h2>
-        <span class="pill" id="scenarioTag">Conservative</span>
+        <span class="pill" id="scenarioTag">Realistic</span>
       </div>
-      <p class="muted" style="margin:.5rem 0 0">Based on monthly drivers in the CSV for the chosen scenario.</p>
-      <div style="margin-top:10px">
-        <div style="display:flex;justify-content:space-between"><span class="muted">Monthly cost to cover</span><span class="mono" id="beCost">£0</span></div>
-        <div style="display:flex;justify-content:space-between"><span class="muted">Revenue from day passes and other</span><span class="mono" id="beOtherRev">£0</span></div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="muted">Members required</span><span class="mono" style="font-size:22px;font-weight:900" id="membersReq">0</span></div>
+      <p style="margin:.5rem 0 0;opacity:.8;font-size:13px">Based on current drivers for the chosen scenario or Year 1 where provided.</p>
+      <div class="break-grid">
+        <div class="break-row"><span class="break-label">Monthly cost to cover</span><span class="break-val mono" id="beCost">£0</span></div>
+        <div class="break-row"><span class="break-label">Other monthly revenue</span><span class="break-val mono" id="beOtherRev">£0</span></div>
+      </div>
+      <div class="break-members">
+        <span class="break-label">Members required</span>
+        <span class="mono" style="font-size:26px;font-weight:1000" id="membersReq">0</span>
       </div>
     </div>
 
     <div class="card">
       <h2 style="margin:0 0 8px;font-size:18px;font-weight:800">Revenue drivers</h2>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:14px">
-        <div><div class="muted">Members per month</div><div class="mono" style="font-weight:800;font-size:20px" id="drvMembers">0</div></div>
-        <div><div class="muted">Member price</div><div class="mono" style="font-weight:800;font-size:20px" id="drvMemberPrice">£0</div></div>
-        <div><div class="muted">Day passes per month</div><div class="mono" style="font-weight:800;font-size:20px" id="drvDayPasses">0</div></div>
-        <div><div class="muted">Day pass price</div><div class="mono" style="font-weight:800;font-size:20px" id="drvDayPassPrice">£0</div></div>
-        <div style="grid-column:1 / span 2"><div class="muted">Other revenue per month</div><div class="mono" style="font-weight:800;font-size:20px" id="drvOther">£0</div></div>
+      <div class="drivers">
+        <div class="field"><label>Members per month</label><input id="inMembers" type="number" min="0" step="1" inputmode="numeric"></div>
+        <div class="field"><label>Member price</label><input id="inMemberPrice" type="number" min="0" step="1" inputmode="numeric"></div>
+        <div class="field"><label>Day passes per month</label><input id="inDayPasses" type="number" min="0" step="1" inputmode="numeric"></div>
+        <div class="field"><label>Day pass price</label><input id="inDayPassPrice" type="number" min="0" step="1" inputmode="numeric"></div>
+        <div class="field" style="grid-column:1/-1"><label>Other revenue per month</label><input id="inOther" type="number" min="0" step="1" inputmode="numeric"></div>
       </div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button id="resetDrivers" class="btn" type="button">Reset</button></div>
     </div>
 
     <div class="card">
       <h2 style="margin:0 0 8px;font-size:18px;font-weight:800">Revenue vs costs</h2>
-      <div class="chart-wrap">
-        <canvas id="revCostChart" aria-label="Revenue vs Costs chart"></canvas>
-      </div>
+      <div class="chart-wrap"><canvas id="revCostChart" aria-label="Revenue vs Costs chart"></canvas></div>
     </div>
+  </section>
+
+  <!-- Debt & Payback -->
+  <section class="card" style="margin-top:12px">
+    <h2 style="margin:0 0 8px;font-size:18px;font-weight:900">Debt & Payback</h2>
+    <p class="muted" style="margin:0 0 10px">Enter loan details. If EBITDA is negative you will see n/a values.</p>
+
+    <div class="finance-grid">
+      <div class="field"><label>Loan amount</label><input id="loanAmount" type="number" min="0" step="1000" inputmode="numeric" value="350000"></div>
+      <div class="field"><label>Interest rate APR</label><input id="loanRate" type="number" min="0" step="0.1" inputmode="decimal" value="7.0"></div>
+      <div class="field"><label>Term years</label><input id="loanYears" type="number" min="1" step="1" inputmode="numeric" value="7"></div>
+      <div class="field"><label>Capex funded by equity</label><input id="equityAmount" type="number" min="0" step="1000" inputmode="numeric" value="0"></div>
+    </div>
+
+    <div class="finance-metrics">
+      <div class="metric m-blue"><h4>Annual debt service</h4><div class="val mono" id="debtService">n/a</div></div>
+      <div class="metric m-salmon"><h4>DSCR (EBITDA ÷ Debt service)</h4><div class="val mono" id="dscr">n/a</div></div>
+      <div class="metric m-gold"><h4>Simple payback on capex</h4><div class="val mono" id="simplePayback">n/a</div></div>
+      <div class="metric m-gold"><h4>Debt payback on loan</h4><div class="val mono" id="debtPayback">n/a</div></div>
+    </div>
+    <p class="muted" id="bankNote" style="margin-top:8px"></p>
   </section>
 
   <!-- Table -->
   <section class="card" style="margin-top:12px">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
-      <h2 style="margin:0;font-size:18px;font-weight:800">Detailed view</h2>
-      <div class="muted" style="font-size:13px">Values reflect the selected scenario. Capex is one time.</div>
+    <div class="section-head">
+      <h2 style="margin:0;font-size:18px;font-weight:900">Detailed view</h2>
     </div>
     <div id="tableContainer" style="overflow-x:auto"></div>
-  </section>
-
-  <section class="card" style="margin-top:12px">
-    <h2 style="margin:0 0 6px;font-size:18px;font-weight:800">Notes from CSV</h2>
-    <p class="muted" style="margin:0">Hover the “i” markers in the table to read line notes. All figures are taken directly from the CSV file.</p>
   </section>
 
 </main>
 
 <script>
-  // Path to your CSV next to this HTML
-  const CSV_PATH = "./adjusted_queensgate_bouldering_model_v3.csv";
+  /* Try the new CSV first, then fall back so the page never goes blank */
+  const CSV_CANDIDATES = [
+    "./adjusted_queensgate_bouldering_model_v3.csv",
+    "./adjusted_queensgate_bouldering_model.csv",
+    "./Queensgate_Bouldering_Financial_ModelV2_ADJUSTED.csv"
+  ];
 
-  // Helpers
-  const money = n => !isFinite(n) ? "£0" : "£"+ Number(n).toLocaleString("en-GB", {maximumFractionDigits:0});
-  const num = v => {
-    if (v === null || v === undefined) return 0;
-    if (typeof v === "number") return v;
-    const clean = String(v).replace(/[£,\s]/g,"");
-    const parsed = parseFloat(clean);
-    return isNaN(parsed) ? 0 : parsed;
-  };
+  const money = n => !isFinite(n) ? "£0" : "£"+ Number(n).toLocaleString("en-GB",{maximumFractionDigits:0});
+  const num = v => { if (v===null||v===undefined) return 0; if (typeof v==="number") return v; const clean=String(v).replace(/[£,\s]/g,""); const p=parseFloat(clean); return isNaN(p)?0:p; };
+  const cssVal = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
   let rows = [];
   let bySection = {};
-  let currentScenario = "Conservative";
+  let currentScenario = "Realistic";
+  let useYear1 = false;
   let chartInstance = null;
 
-  function groupRows() {
-    bySection = {};
-    rows.forEach(r=>{
-      const s = (r["SECTION TITLE"] || r["Section"] || "Other") + "";
-      if (!bySection[s]) bySection[s] = [];
-      bySection[s].push(r);
-    });
+  const driverOverrides = { membersPerMonth:null, memberPrice:null, dayPassesPerMonth:null, dayPassPrice:null, otherPerMonth:null };
+
+  function getCol(row, names){
+    for (const n of names){ if (row.hasOwnProperty(n)) return row[n]; }
+    return null;
+  }
+  function sectionName(row){
+    return String(getCol(row, ["SECTION TITLE","Section","SECTION","Category"]) || "Other");
+  }
+  function descName(row){
+    return String(getCol(row, ["DESCRIPTION","Description","Item"]) || "");
+  }
+  function notesText(row){
+    return String(getCol(row, ["NOTES","Notes","Note"]) || "").trim();
+  }
+  function valueFor(row, scn){
+    const y1 = getCol(row, ["Year 1","Year1","YEAR 1","YEAR_1"]);
+    if (useYear1 && y1 !== null && y1 !== "") return num(y1);
+    const tryCols = [scn, scn.toUpperCase(), scn[0], scn[0]?.toUpperCase()];
+    for (const c of tryCols){ const v = getCol(row, [c]); if (v !== null && v !== "") return num(v); }
+    return 0;
   }
 
-  // Revenue driver extraction from "REVENUE" section
-  function getRevenuePieces(scn){
-    const revRows = (bySection["REVENUE"] || bySection["Revenue"] || []);
-    const lookup = (nameCandidates) => {
-      const cand = nameCandidates.map(x => x.toUpperCase());
-      const row = revRows.find(r => cand.includes(String(r["DESCRIPTION"]||"").toUpperCase()));
-      return row ? num(row[scn]) : 0;
-    };
-    const membersPerMonth = lookup(["MEMBERS_ MONTHLY","MEMBERS_MONTHLY","MEMBERS PER MONTH","MEMBERS"]);
-    const memberPrice     = lookup(["MEMBERS_PRICE","MEMBER PRICE","MEMBERSHIP PRICE"]);
-    const dayPassesPerMonth = lookup(["DAY_PASSES_MONTHLY","DAY PASSES MONTHLY","DAY PASSES"]);
-    const dayPassPrice    = lookup(["DAY_PASS_PRICE","DAY PASS PRICE"]);
-    const otherPerMonth   = lookup(["OTHER_REV_MONTH","OTHER REVENUE MONTH","OTHER"]);
+  function groupRows(){
+    bySection = {};
+    rows.forEach(r=>{ const s = sectionName(r); if(!bySection[s]) bySection[s] = []; bySection[s].push(r); });
+  }
 
+  function readRevenueDriversFromCSV(scn){
+    const revRows = (bySection["REVENUE"] || bySection["Revenue"] || bySection["Revenue "] || []);
+    const pick = (cands) => {
+      const want = cands.map(x=>x.toUpperCase());
+      const row = revRows.find(r => want.includes(descName(r).toUpperCase()));
+      if (!row) return 0;
+      return valueFor(row, scn);
+    };
+    return {
+      membersPerMonth: pick(["MEMBERS_ MONTHLY","MEMBERS_MONTHLY","MEMBERS PER MONTH","MEMBERS"]),
+      memberPrice: pick(["MEMBERS_PRICE","MEMBER PRICE","MEMBERSHIP PRICE"]),
+      dayPassesPerMonth: pick(["DAY_PASSES_MONTHLY","DAY PASSES MONTHLY","DAY PASSES"]),
+      dayPassPrice: pick(["DAY_PASS_PRICE","DAY PASS PRICE"]),
+      otherPerMonth: pick(["OTHER_REV_MONTH","OTHER REVENUE MONTH","OTHER"])
+    };
+  }
+
+  function getRevenuePieces(scn){
+    const csvVals = readRevenueDriversFromCSV(scn);
+    const membersPerMonth = driverOverrides.membersPerMonth ?? csvVals.membersPerMonth;
+    const memberPrice     = driverOverrides.memberPrice ?? csvVals.memberPrice;
+    const dayPassesPerMonth = driverOverrides.dayPassesPerMonth ?? csvVals.dayPassesPerMonth;
+    const dayPassPrice    = driverOverrides.dayPassPrice ?? csvVals.dayPassPrice;
+    const otherPerMonth   = driverOverrides.otherPerMonth ?? csvVals.otherPerMonth;
     const monthlyFromMembers = membersPerMonth * memberPrice;
     const monthlyFromDay = dayPassesPerMonth * dayPassPrice;
     const monthlyTotal = monthlyFromMembers + monthlyFromDay + otherPerMonth;
-    return {
-      membersPerMonth, memberPrice, dayPassesPerMonth, dayPassPrice, otherPerMonth,
-      monthlyTotal, annual: monthlyTotal * 12
-    };
+    return { membersPerMonth, memberPrice, dayPassesPerMonth, dayPassPrice, otherPerMonth, monthlyTotal, annual: monthlyTotal * 12 };
   }
 
-  function sectionAnnualTotal(secName, scn){
+  function sectionTotal(secName, scn){
     const arr = bySection[secName] || [];
-    const isCapex = secName.toUpperCase().includes("CAPITAL EXPENDITURE");
-    if (isCapex) return arr.reduce((a,r)=>a+num(r["Year 1"]),0);
-    if (secName.toUpperCase().includes("REVENUE")) return getRevenuePieces(scn).annual;
-    return arr.reduce((a,r)=>a+num(r[scn]),0);
+    const isCapex = secName.toUpperCase().includes("CAPITAL") || secName.toUpperCase().includes("CAPEX") || secName.toUpperCase().includes("FIT OUT");
+    const isRevenue = secName.toUpperCase().includes("REVENUE");
+    if (isRevenue) return getRevenuePieces(scn).annual;
+    if (isCapex) return arr.reduce((a,r)=>a+num(getCol(r, ["Year 1","Year1","YEAR 1","YEAR_1","Realistic","R","Conservative"])),0);
+    return arr.reduce((a,r)=>a+valueFor(r, scn),0);
   }
 
-  function totalAnnualCosts(scn){
+  function totalOperating(scn){
     return Object.keys(bySection).reduce((acc,sec)=>{
       const u = sec.toUpperCase();
       if (u.includes("REVENUE")) return acc;
-      if (u.includes("CAPITAL EXPENDITURE")) return acc;
-      return acc + sectionAnnualTotal(sec, scn);
+      if (u.includes("CAPITAL") || u.includes("CAPEX") || u.includes("FIT OUT")) return acc;
+      return acc + sectionTotal(sec, scn);
     },0);
   }
 
+  /* Debt maths */
+  function annuityPayment(P, r_annual, years){
+    const n = years * 12;
+    const i = r_annual / 12;
+    if (r_annual === 0) return P / years;
+    const m = P * (i) / (1 - Math.pow(1+i, -n));
+    return m * 12;
+  }
   function totalCapex(){
     return Object.keys(bySection).reduce((acc,sec)=>{
-      if (sec.toUpperCase().includes("CAPITAL EXPENDITURE")){
-        acc += (bySection[sec]||[]).reduce((a,r)=>a+num(r["Year 1"]),0);
+      const name = sec.toUpperCase();
+      if (name.includes("CAPITAL") || name.includes("CAPEX") || name.includes("FIT OUT")){
+        acc += (bySection[sec]||[]).reduce((a,r)=>a+num(getCol(r, ["Year 1","Year1","YEAR 1","YEAR_1","Realistic","R","Conservative"])),0);
       }
       return acc;
     },0);
   }
+  function renderDebtAndPayback(ebitda, capex){
+    const loan = parseFloat(document.getElementById("loanAmount").value) || 0;
+    const rate = (parseFloat(document.getElementById("loanRate").value) || 0) / 100;
+    const years = parseFloat(document.getElementById("loanYears").value) || 1;
+    const annualDebt = loan>0 ? annuityPayment(loan, rate, years) : 0;
+    const dscr = annualDebt>0 ? (ebitda / annualDebt) : NaN;
+    const simplePaybackYears = ebitda>0 ? (capex / ebitda) : NaN;
+    const freeAfterDebt = ebitda - annualDebt;
+    const debtPaybackYears = freeAfterDebt>0 ? (loan / freeAfterDebt) : NaN;
+
+    document.getElementById("debtService").textContent = annualDebt>0 ? money(annualDebt) : "n/a";
+    document.getElementById("dscr").textContent = isFinite(dscr) ? dscr.toFixed(2) : "n/a";
+    document.getElementById("simplePayback").textContent = isFinite(simplePaybackYears) ? simplePaybackYears.toFixed(1) + " yrs" : "n/a";
+    document.getElementById("debtPayback").textContent = isFinite(debtPaybackYears) ? debtPaybackYears.toFixed(1) + " yrs" : "n/a";
+
+    const noteEl = document.getElementById("bankNote");
+    if (!isFinite(dscr)) {
+      if (loan<=0) noteEl.textContent = "Enter a loan amount to populate DSCR and debt payback.";
+      else if (ebitda<=0) noteEl.textContent = "EBITDA is negative. Increase revenue or reduce operating costs.";
+      else noteEl.textContent = "";
+    } else {
+      if (dscr < 1.0) noteEl.textContent = "DSCR below 1.0 means EBITDA does not cover debt service.";
+      else if (dscr < 1.25) noteEl.textContent = "DSCR between 1.0 and 1.25 is tight. Many lenders prefer 1.25 or higher.";
+      else noteEl.textContent = "DSCR above 1.25 is generally considered comfortable.";
+    }
+  }
 
   function renderKPIs(){
     const rev = getRevenuePieces(currentScenario);
-    const costs = totalAnnualCosts(currentScenario);
+    const costs = totalOperating(currentScenario);
     const ebitda = rev.annual - costs;
     const margin = rev.annual ? (ebitda / rev.annual) * 100 : 0;
 
@@ -239,146 +359,155 @@
     document.getElementById("kpiMargin").textContent = margin.toFixed(1) + "%";
     document.getElementById("kpiCapex").textContent = money(totalCapex());
 
-    // Drivers
-    document.getElementById("drvMembers").textContent = rev.membersPerMonth.toLocaleString("en-GB");
-    document.getElementById("drvMemberPrice").textContent = money(rev.memberPrice);
-    document.getElementById("drvDayPasses").textContent = rev.dayPassesPerMonth.toLocaleString("en-GB");
-    document.getElementById("drvDayPassPrice").textContent = money(rev.dayPassPrice);
-    document.getElementById("drvOther").textContent = money(rev.otherPerMonth);
+    document.getElementById("kpiRevenueLabel").textContent = useYear1 ? "Year 1 revenue" : "Annual revenue";
+    document.getElementById("kpiCostsLabel").textContent = useYear1 ? "Year 1 operating costs" : "Annual operating costs";
 
-    // Break even
-    const monthlyCosts = totalAnnualCosts(currentScenario)/12;
+    const monthlyCosts = totalOperating(currentScenario)/12;
     const monthlyOtherRevenue = (rev.dayPassesPerMonth*rev.dayPassPrice) + rev.otherPerMonth;
     const needed = Math.max(0, Math.ceil((monthlyCosts - monthlyOtherRevenue) / (rev.memberPrice || 1)));
     document.getElementById("beCost").textContent = money(monthlyCosts);
     document.getElementById("beOtherRev").textContent = money(monthlyOtherRevenue);
     document.getElementById("membersReq").textContent = isFinite(needed) ? needed.toLocaleString("en-GB") : "0";
 
-    // Chart
     const ctx = document.getElementById("revCostChart");
-    const data = { labels:["Revenue","Costs"], datasets:[{label:"Annual £", data:[rev.annual, costs]}] };
-    const opts = {
-      responsive:true,
-      maintainAspectRatio:false,   // fill .chart-wrap height
-      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:(p)=>money(p.raw)}} },
-      scales:{ y:{ ticks:{ callback:v => "£" + Number(v).toLocaleString("en-GB") } } }
-    };
+    const data = { labels:["Revenue","Costs"], datasets:[{label:"Annual £", data:[rev.annual, costs], backgroundColor:[cssVal("--blue"), cssVal("--salmon")] }] };
+    const opts = { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:(p)=>money(p.raw)}} } };
     if (chartInstance) chartInstance.destroy();
     chartInstance = new Chart(ctx,{type:"bar",data,options:opts});
     document.getElementById("scenarioTag").textContent = currentScenario;
+
+    renderDebtAndPayback(ebitda, totalCapex());
+    setDriverInputs();
   }
 
   function renderTable(){
     const container = document.getElementById("tableContainer");
     const secOrder = Object.keys(bySection);
-    let html = "";
+    let html = `
+      <table class="table">
+        <thead>
+          <tr><th style="width:55%">Item</th><th style="width:20%">Unit</th><th style="width:25%">Value</th></tr>
+        </thead><tbody>
+    `;
     secOrder.forEach(sec=>{
-      const isCapex = sec.toUpperCase().includes("CAPITAL EXPENDITURE");
+      const isCapex = sec.toUpperCase().includes("CAPITAL") || sec.toUpperCase().includes("CAPEX") || sec.toUpperCase().includes("FIT OUT");
       const isRevenue = sec.toUpperCase().includes("REVENUE");
-      const sectionTotal = sectionAnnualTotal(sec, currentScenario);
+      const t = sectionTotal(sec, currentScenario);
       html += `
-        <div style="margin-top:18px">
-          <div style="display:flex;justify-content:space-between;align-items:baseline">
-            <h3 style="margin:0;font-size:16px;font-weight:800">${sec}</h3>
-            <div class="muted" style="font-size:13px">${isRevenue?"Annualised from monthly drivers":isCapex?"One time":"Annual"} total:
-              <span class="mono" style="font-weight:800">${money(sectionTotal)}</span>
+        <tr><td colspan="3">
+          <div class="section-head">
+            <h3 style="margin:0;font-size:16px;font-weight:900">${sec}</h3>
+            <div class="total-badge">${isRevenue ? "Annualised total:" : isCapex ? "One time total:" : (useYear1 ? "Year 1 total:" : "Annual total:")}
+              <span class="mono" style="margin-left:6px">${money(t)}</span>
             </div>
           </div>
-          <div style="overflow-x:auto;margin-top:6px">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th style="width:40%">Item</th>
-                  <th style="width:15%">Unit</th>
-                  <th style="width:20%">Value</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-              <tbody>
+        </td></tr>
       `;
       (bySection[sec]||[]).forEach(r=>{
-        const desc = String(r["DESCRIPTION"]||"");
-        const notes = String(r["NOTES"]||"").trim();
-        let unit = isRevenue ? "Monthly" : isCapex ? "One time" : "Annual";
+        const desc = descName(r);
+        const notes = notesText(r);
+        let unit = isRevenue ? "Monthly" : isCapex ? "One time" : (useYear1 ? "Year 1" : "Annual");
         let value = 0;
 
         if (isRevenue){
           const key = desc.toUpperCase();
-          if (["MEMBERS_ MONTHLY","MEMBERS_MONTHLY","MEMBERS PER MONTH","MEMBERS","DAY_PASSES_MONTHLY","DAY PASSES MONTHLY","DAY PASSES","OTHER_REV_MONTH","OTHER","DAY_PASS_PRICE","DAY PASS PRICE","MEMBERS_PRICE","MEMBER PRICE","MEMBERSHIP PRICE"].includes(key)){
-            value = num(r[currentScenario]);
+          const keys = ["MEMBERS_ MONTHLY","MEMBERS_MONTHLY","MEMBERS PER MONTH","MEMBERS","DAY_PASSES_MONTHLY","DAY PASSES MONTHLY","DAY PASSES","OTHER_REV_MONTH","OTHER","DAY_PASS_PRICE","DAY PASS PRICE","MEMBERS_PRICE","MEMBER PRICE","MEMBERSHIP PRICE"];
+          if (keys.includes(key)){
+            const rev = getRevenuePieces(currentScenario);
+            if (/MEMBERS_? ?MONTHLY|MEMBERS PER MONTH|^MEMBERS$/.test(key)) value = rev.membersPerMonth;
+            else if (/MEMBERS(_PRICE|HIP PRICE)|MEMBER PRICE/.test(key)) value = rev.memberPrice;
+            else if (/DAY_?PASSES/.test(key)) value = rev.dayPassesPerMonth;
+            else if (/DAY_?PASS_?PRICE|DAY PASS PRICE/.test(key)) value = rev.dayPassPrice;
+            else if (/OTHER/.test(key)) value = rev.otherPerMonth;
+            const isPriceLike = /PRICE|REV/.test(key);
+            const pretty = isPriceLike ? money(value) : Number(value).toLocaleString("en-GB");
+            html += rowHTML(desc, unit, pretty, notes);
+            return;
           }
+          return;
         } else if (isCapex){
-          value = num(r["Year 1"]);
+          value = num(getCol(r, ["Year 1","Year1","YEAR 1","YEAR_1","Realistic","R","Conservative"]));
         } else {
-          value = num(r[currentScenario]);
+          value = valueFor(r, currentScenario);
         }
-
-        const isPriceLike = /PRICE|REV/i.test(desc);
-        const pretty = isCapex ? money(value) :
-                       isRevenue && isPriceLike ? money(value) :
-                       isRevenue ? Number(value).toLocaleString("en-GB") :
-                       money(value);
-
-        html += `
-          <tr>
-            <td>
-              <div style="display:flex;gap:8px;align-items:flex-start">
-                <span class="mono">${desc.replaceAll("_"," ")}</span>
-                ${notes ? `<span class="tooltip" aria-label="Notes">ⓘ<span class="tip">${notes.replaceAll("<","&lt;").replaceAll(">","&gt;")}</span></span>` : ""}
-              </div>
-            </td>
-            <td class="muted">${unit}</td>
-            <td class="mono" style="font-weight:700">${pretty}</td>
-            <td class="muted">${notes || ""}</td>
-          </tr>
-        `;
+        html += rowHTML(desc, unit, money(value), notes);
       });
-      html += `
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
     });
+    html += `</tbody></table>`;
     container.innerHTML = html;
+  }
+
+  function rowHTML(desc, unit, pretty, notes){
+    const safeNotes = notes ? notes.replaceAll("<","&lt;").replaceAll(">","&gt;") : "";
+    const tip = notes ? `<span class="tooltip" title="Notes">i<span class="tip">${safeNotes}</span></span>` : "";
+    return `<tr>
+      <td><div style="display:flex;gap:8px;align-items:flex-start"><span class="mono">${desc.replaceAll("_"," ")}</span>${tip}</div></td>
+      <td class="mono" style="opacity:.7">${unit}</td>
+      <td class="mono" style="font-weight:900">${pretty}</td>
+    </tr>`;
   }
 
   function recalc(){ renderKPIs(); renderTable(); }
 
-  // Scenario buttons
-  document.getElementById("scenarioButtons").addEventListener("click", e=>{
-    const b = e.target.closest("button[data-scenario]");
-    if (!b) return;
+  /* UI events */
+  document.getElementById("scenarioBar").addEventListener("click", e=>{
+    const b = e.target.closest("button[data-scenario]"); if (!b) return;
     currentScenario = b.dataset.scenario;
-    [...document.querySelectorAll("#scenarioButtons .btn")].forEach(x=>x.setAttribute("aria-selected", x===b ? "true":"false"));
+    [...document.querySelectorAll("#scenarioBar .btn")].forEach(x=>x.setAttribute("aria-selected", x===b ? "true":"false"));
+    document.getElementById("scenarioTag").textContent = currentScenario;
+    recalc();
+  });
+  document.getElementById("year1Toggle").addEventListener("change", e=>{ useYear1 = e.target.checked; recalc(); });
+
+  ["inMembers","inMemberPrice","inDayPasses","inDayPassPrice","inOther"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", ()=>{
+      driverOverrides.membersPerMonth = parseFloat(document.getElementById("inMembers").value) || 0;
+      driverOverrides.memberPrice = parseFloat(document.getElementById("inMemberPrice").value) || 0;
+      driverOverrides.dayPassesPerMonth = parseFloat(document.getElementById("inDayPasses").value) || 0;
+      driverOverrides.dayPassPrice = parseFloat(document.getElementById("inDayPassPrice").value) || 0;
+      driverOverrides.otherPerMonth = parseFloat(document.getElementById("inOther").value) || 0;
+      recalc();
+    });
+  });
+  document.getElementById("resetDrivers").addEventListener("click", ()=>{
+    Object.keys(driverOverrides).forEach(k=> driverOverrides[k]=null);
+    setDriverInputs(true);
     recalc();
   });
 
-  // Load CSV
-  function loadCSV(){
-    Papa.parse(CSV_PATH,{
+  function setDriverInputs(reset=false){
+    const rev = getRevenuePieces(currentScenario);
+    const setIf = (k, id) => {
+      const el = document.getElementById(id);
+      if (reset || driverOverrides[k]===null) el.value = rev[k];
+    };
+    setIf("membersPerMonth","inMembers");
+    setIf("memberPrice","inMemberPrice");
+    setIf("dayPassesPerMonth","inDayPasses");
+    setIf("dayPassPrice","inDayPassPrice");
+    setIf("otherPerMonth","inOther");
+  }
+
+  /* CSV loader with fallback */
+  function loadCSVFrom(list, idx=0){
+    if (idx >= list.length){
+      document.querySelector("main").innerHTML = `
+        <div class="card"><h2 style="margin:0 0 8px;font-size:18px;font-weight:900">Could not load CSV</h2>
+        <p style="color:#dc2626;margin:0 0 8px">Tried: ${CSV_CANDIDATES.join(", ")}</p></div>`;
+      return;
+    }
+    const path = list[idx];
+    Papa.parse(path,{
       download:true, header:true, dynamicTyping:false, skipEmptyLines:true,
       complete:(res)=>{
-        rows = res.data.map(r=>{
-          Object.keys(r).forEach(k=>{ if(r[k]==="") r[k]=null; });
-          return r;
-        });
-        groupRows();
-        recalc();
+        rows = res.data.map(r=>{ Object.keys(r).forEach(k=>{ if(r[k]==="") r[k]=null; }); return r; });
+        groupRows(); setDriverInputs(true); recalc();
       },
-      error:(err)=>{
-        document.querySelector("main").innerHTML = `
-          <div class="card">
-            <h2 style="margin:0 0 8px;font-size:18px;font-weight:800">Could not load CSV</h2>
-            <p style="color:#dc2626;margin:0 0 8px">Error: ${err?.message || "Unknown error"}</p>
-            <p class="muted" style="margin:0">CSV must be next to this HTML and named <b>adjusted_queensgate_bouldering_model_v3.csv</b>.</p>
-          </div>`;
-        console.error("CSV load error", err);
-      }
+      error:()=> loadCSVFrom(list, idx+1)
     });
   }
 
-  loadCSV();
+  loadCSVFrom(CSV_CANDIDATES);
 </script>
 
 </body>

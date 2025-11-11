@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Queensgate Bouldering Centre — Financial Model</title>
+<title>Queensgate Bouldering — Investor Model</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:#f5f7fa;color:#2c3e50;padding:20px}
@@ -11,24 +11,28 @@
   .header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:30px}
   .header h1{font-size:2em;margin-bottom:8px}
   .header p{opacity:.95}
+  .content{padding:24px}
 
-  /* Scenario toggles and alerts */
-  .content{padding:28px}
-  .scenario-buttons{display:flex;gap:10px;margin:16px 0 22px;flex-wrap:wrap}
-  .scenario-btn{padding:10px 20px;border:2px solid #667eea;background:#fff;color:#667eea;border-radius:8px;cursor:pointer;font-weight:600;min-height:44px}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:14px 0 18px}
+  .scenario-buttons{display:flex;gap:10px;flex-wrap:wrap}
+  .scenario-btn{padding:10px 18px;border:2px solid #667eea;background:#fff;color:#667eea;border-radius:8px;cursor:pointer;font-weight:600;min-height:44px}
   .scenario-btn.active,.scenario-btn[aria-pressed="true"]{background:#667eea;color:#fff;box-shadow:0 0 0 2px #667eea22 inset}
-  .note{font-size:.9em;color:#666;margin:8px 0 0}
+  .seg{display:flex;gap:8px;align-items:center;margin-left:auto}
+  .seg label{font-weight:600}
+  select, input[type="file"]{padding:10px 12px;border:1px solid #d8def3;border-radius:8px;background:#fff}
 
-  /* Key metrics */
-  .key-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin:10px 0 26px;padding:18px;background:#f8f9fa;border-radius:10px}
-  .metric{text-align:center}
-  .metric-value{font-size:1.6em;font-weight:700;color:#667eea}
-  .metric-label{font-size:.9em;color:#666;margin-top:5px}
+  .key-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:8px 0 18px;padding:16px;background:#f8f9fa;border-radius:10px}
+  .metric{background:#fff;border:1px solid #e9eef7;border-radius:10px;padding:14px;text-align:center}
+  .metric .label{font-size:.85em;color:#667}
+  .metric .val{font-size:1.55em;font-weight:800;color:#667eea;margin-top:6px}
   .positive{color:#27ae60}
   .negative{color:#e74c3c}
 
-  /* Assumptions block */
-  .assumptions{background:#fff9e6;border:1px solid #ffeb3b;border-radius:12px;padding:18px 18px 6px;margin:6px 0 24px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .card{background:#fff;border:1px solid #e9eef7;border-radius:12px;padding:16px}
+  .card h3{font-size:1.05em;margin-bottom:10px}
+
+  .assumptions{background:#fff9e6;border:1px solid #ffeb3b;border-radius:12px;padding:18px 18px 8px;margin:18px 0}
   .assumptions h3{color:#f39c12;margin:0 0 10px}
   .assumption-columns{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   .assumption-group{background:#fff;border:1px solid #f1e4b5;border-radius:10px;overflow:hidden}
@@ -38,35 +42,27 @@
   .assumption-item label{font-size:.9em;color:#555;text-align:left}
   .assumption-item small{color:#999}
   .assumption-item input,.assumption-item select{padding:8px;border:1px solid #ddd;border-radius:6px;font-size:16px;text-align:right}
+  .note{font-size:.9em;color:#666;margin:8px 0 0}
+  .static-gray{color:#888 !important}
+  .dynamic-black{color:#111 !important}
 
-  /* Summary table (kept) */
-  .summary-table{background:#f8f9fa;border-radius:10px;padding:20px;margin-top:8px}
+  .summary-table{background:#f8f9fa;border-radius:10px;padding:20px;margin-top:10px}
   .summary-table h3{margin-bottom:12px}
   .summary-row{display:grid;grid-template-columns:1fr 220px;gap:20px;padding:12px 0;border-bottom:1px solid #e0e0e0}
   .summary-row:last-child{border-bottom:none;font-weight:700;font-size:1.05em}
 
-  /* Sources, methods and validation */
   .talking-points{background:#eef7ff;border:1px solid #b6d7ff;border-radius:12px;padding:18px;margin:22px 0 4px}
   .talking-points h3{color:#214c8f;margin:0 0 10px}
   .method{background:#fff;border:1px solid #dfe8f7;border-radius:10px;padding:14px;margin-top:10px}
   .method h4{margin:0 0 8px;color:#214c8f}
-  .refs{margin-top:10px}
-  .refs .row{display:grid;grid-template-columns:240px 1fr;gap:12px;align-items:center;padding:8px 0;border-bottom:1px dashed #e5eefc}
-  .refs .row:last-child{border-bottom:none}
-  .refs input{padding:8px;border:1px solid #d0dcf0;border-radius:6px;font-size:14px}
   .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:.95em}
 
-  /* Grey vs black rules */
-  .static-gray{color:#888 !important}
-  .dynamic-black{color:#111 !important}
-
-  @media(max-width:1024px){.assumption-columns{grid-template-columns:1fr}}
+  @media(max-width:1024px){.assumption-columns{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}}
   @media(max-width:768px){
     .content{padding:16px}
     .summary-row{grid-template-columns:1fr;gap:6px}
     .key-metrics{grid-template-columns:repeat(2,1fr)}
     .scenario-btn{flex:1 1 calc(50% - 8px)}
-    .refs .row{grid-template-columns:1fr}
   }
   @media(max-width:400px){.key-metrics{grid-template-columns:1fr}.scenario-btn{flex:1 1 100%}}
 </style>
@@ -74,63 +70,79 @@
 <body>
 <div class="container">
   <div class="header">
-    <h1>🧗 Queensgate Bouldering Centre — Financial Model</h1>
-    <p><strong>Purpose:</strong> investor-ready summary with realistic, conservative, and optimistic scenarios. Realistic reads from your CSV.</p>
+    <h1>🧗 Queensgate Bouldering — Financial Model</h1>
+    <p>Investor view with scenario toggles and Year 1 vs Year 2+ switch. Realistic reads from the CSV.</p>
   </div>
 
   <div class="content">
-    <div class="scenario-buttons" role="group" aria-label="Scenario">
-      <button class="scenario-btn" data-scenario="conservative" aria-pressed="false">Conservative</button>
-      <button class="scenario-btn" data-scenario="realistic" aria-pressed="true">Realistic</button>
-      <button class="scenario-btn" data-scenario="optimistic" aria-pressed="false">Optimistic</button>
+    <div class="controls">
+      <div class="scenario-buttons" role="group" aria-label="Scenario">
+        <button class="scenario-btn" data-scenario="conservative" aria-pressed="false">Conservative</button>
+        <button class="scenario-btn" data-scenario="realistic" aria-pressed="true">Realistic</button>
+        <button class="scenario-btn" data-scenario="optimistic" aria-pressed="false">Optimistic</button>
+      </div>
+      <div class="seg">
+        <label for="yearMode">View</label>
+        <select id="yearMode">
+          <option value="y1">Year 1 (-60%)</option>
+          <option value="steady">Year 2+ (Steady state)</option>
+        </select>
+        <input id="csvFile" type="file" accept=".csv"/>
+      </div>
     </div>
-    <div class="note">Grey fields never change across scenarios. Black fields change with the toggle.</div>
+    <div class="note">Grey inputs never change across scenarios. Black inputs do change with the toggle.</div>
 
     <!-- Key metrics -->
     <div class="key-metrics">
-      <div class="metric"><div class="metric-value" id="capex-exvat">£0</div><div class="metric-label">CAPEX ex VAT</div></div>
-      <div class="metric"><div class="metric-value" id="capex-incvat">£0</div><div class="metric-label">CAPEX incl VAT</div></div>
-      <div class="metric"><div class="metric-value" id="annual-revenue">£0</div><div class="metric-label">Annual Revenue</div></div>
-      <div class="metric"><div class="metric-value" id="annual-profit">£0</div><div class="metric-label">Annual Profit (EBITDA)</div></div>
-      <div class="metric"><div class="metric-value" id="roi">0%</div><div class="metric-label">ROI</div></div>
-      <div class="metric"><div class="metric-value" id="payback-period">0 years</div><div class="metric-label">Payback Period</div></div>
+      <div class="metric"><div class="label">CAPEX ex VAT</div><div id="capex-exvat" class="val">£0</div></div>
+      <div class="metric"><div class="label">CAPEX incl VAT</div><div id="capex-incvat" class="val">£0</div></div>
+      <div class="metric"><div class="label">Annual Revenue</div><div id="annual-revenue" class="val">£0</div></div>
+      <div class="metric"><div class="label">Annual Expenses</div><div id="annual-expenses" class="val">£0</div></div>
+      <div class="metric"><div class="label">EBITDA</div><div id="annual-profit" class="val negative">£0</div></div>
+      <div class="metric"><div class="label">Margin</div><div id="annual-margin" class="val">0%</div></div>
+      <div class="metric"><div class="label">ROI</div><div id="roi" class="val">0%</div></div>
+      <div class="metric"><div class="label">Payback</div><div id="payback-period" class="val">N/A</div></div>
     </div>
 
-    <!-- Key Assumptions & Configuration -->
+    <!-- Visuals -->
+    <div class="grid-2">
+      <div class="card">
+        <h3>Revenue mix</h3>
+        <canvas id="revDonut" height="220"></canvas>
+      </div>
+      <div class="card">
+        <h3>Cost mix</h3>
+        <canvas id="costDonut" height="220"></canvas>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:18px">
+      <div class="card">
+        <h3>EBITDA waterfall</h3>
+        <canvas id="waterfall" height="240"></canvas>
+      </div>
+      <div class="card">
+        <h3>Monthly cashflow</h3>
+        <canvas id="cashflow" height="240"></canvas>
+      </div>
+    </div>
+
+    <!-- Assumptions -->
     <div class="assumptions">
-      <h3>🔑 Key Assumptions & Configuration</h3>
+      <h3>Key assumptions & configuration</h3>
       <div class="assumption-columns">
         <!-- CAPEX -->
         <div class="assumption-group">
-          <div class="assumption-group-header">Setup costs (CAPEX)</div>
+          <div class="assumption-group-header">Setup costs</div>
           <div class="assumption-grid">
-            <div class="assumption-item">
-              <label>Climbing Construction (£) <small>Walls, matting, equipment, holds</small></label>
-              <input type="text" id="capex-climbing" value="300,000" onchange="calculateAll()">
-            </div>
-            <div class="assumption-item">
-              <label>General Construction (£) <small>Cafe, bar, reception areas</small></label>
-              <input type="text" id="capex-general" value="150,000" onchange="calculateAll()">
-            </div>
-            <div class="assumption-item">
-              <label>Facilities Construction (£) <small>Dry changing rooms, toilets</small></label>
-              <input type="text" id="capex-facilities" value="30,000" onchange="calculateAll()">
-            </div>
-            <div class="assumption-item">
-              <label>Software, Licences, Permits (£)</label>
-              <input type="text" id="capex-software" value="8,000" onchange="calculateAll()">
-            </div>
-            <div class="assumption-item">
-              <label>Branding & Launch (£)</label>
-              <input type="text" id="capex-branding" value="20,000" onchange="calculateAll()">
-            </div>
-            <div class="assumption-item">
-              <label>VAT Rate (%)</label>
-              <input type="text" id="vat-rate" value="20" onchange="calculateAll()">
-            </div>
-            <div class="assumption-item">
-              <label>VAT Reclaimable?</label>
-              <select id="vat-reclaimable" onchange="calculateAll()">
+            <div class="assumption-item"><label>Climbing build (£) <small>Walls, matting, holds, gym kit</small></label><input type="text" id="capex-climbing" value="300,000"></div>
+            <div class="assumption-item"><label>General build (£) <small>Cafe, bar, reception</small></label><input type="text" id="capex-general" value="150,000"></div>
+            <div class="assumption-item"><label>Facilities (£) <small>Changing, toilets</small></label><input type="text" id="capex-facilities" value="30,000"></div>
+            <div class="assumption-item"><label>Software & permits (£)</label><input type="text" id="capex-software" value="8,000"></div>
+            <div class="assumption-item"><label>Brand & launch (£)</label><input type="text" id="capex-branding" value="20,000"></div>
+            <div class="assumption-item"><label>VAT rate (%)</label><input type="text" id="vat-rate" value="20"></div>
+            <div class="assumption-item"><label>VAT reclaimable?</label>
+              <select id="vat-reclaimable">
                 <option value="yes" selected>Yes</option>
                 <option value="no">No</option>
               </select>
@@ -140,85 +152,78 @@
 
         <!-- OPEX -->
         <div class="assumption-group">
-          <div class="assumption-group-header">Operating costs (OPEX)</div>
+          <div class="assumption-group-header">Operating costs</div>
           <div class="assumption-grid">
-            <div class="assumption-item"><label>Annual Rent (£)</label><input type="text" id="annual-rent" value="56,000" onchange="calculateAll()"></div>
-            <div class="assumption-item"><label>Business Rates (£)</label><input type="text" id="business-rates" value="35,000" onchange="calculateAll()"></div>
-            <div class="assumption-item"><label>Centre Manager (£)</label><input type="text" id="manager-salary" value="36,000" onchange="calculateAll()"></div>
-            <div class="assumption-item"><label>Route Setting (£)</label><input type="text" id="route-setter-salary" value="26,000" onchange="calculateAll()"></div>
-            <div class="assumption-item"><label>Other Staff (£)</label><input type="text" id="other-staff" value="50,000" onchange="calculateAll()"></div>
-            <div class="assumption-item"><label>Utilities (£)</label><input type="text" id="utilities" value="24,000" onchange="calculateAll()"></div>
-            <div class="assumption-item"><label>Insurance (£)</label><input type="text" id="insurance" value="3,000" onchange="calculateAll()"></div>
-            <div class="assumption-item"><label>Marketing (£)</label><input type="text" id="marketing-annual" value="12,000" onchange="calculateAll()"></div>
-            <div class="assumption-item"><label>Maintenance & Holds Refresh (£)</label><input type="text" id="maintenance" value="10,000" onchange="calculateAll()"></div>
+            <div class="assumption-item"><label>Annual rent (£)</label><input type="text" id="annual-rent" value="56,000"></div>
+            <div class="assumption-item"><label>Business rates (£)</label><input type="text" id="business-rates" value="35,000"></div>
+            <div class="assumption-item"><label>Manager (£)</label><input type="text" id="manager-salary" value="36,000"></div>
+            <div class="assumption-item"><label>Route setting (£)</label><input type="text" id="route-setter-salary" value="26,000"></div>
+            <div class="assumption-item"><label>Other staff (£)</label><input type="text" id="other-staff" value="50,000"></div>
+            <div class="assumption-item"><label>Utilities (£)</label><input type="text" id="utilities" value="24,000"></div>
+            <div class="assumption-item"><label>Insurance (£)</label><input type="text" id="insurance" value="3,000"></div>
+            <div class="assumption-item"><label>Marketing (£)</label><input type="text" id="marketing-annual" value="12,000"></div>
+            <div class="assumption-item"><label>Maintenance (£)</label><input type="text" id="maintenance" value="10,000"></div>
           </div>
         </div>
 
         <!-- Revenue -->
         <div class="assumption-group">
-          <div class="assumption-group-header">Revenue</div>
+          <div class="assumption-group-header">Revenue inputs</div>
           <div class="assumption-grid">
-            <div class="assumption-item"><label>Monthly Membership (£)</label><input type="text" id="membership-price" value="70" onchange="calculateAll()"></div>
-            <div class="assumption-item"><label>Total Members</label><input type="text" id="members-count" value="450" onchange="calculateAll()"></div>
-            <div class="assumption-item"><label>Day Pass Price (£)</label><input type="text" id="day-pass-price" value="14" onchange="calculateAll()"></div>
-            <div class="assumption-item"><label>Day Passes / Month</label><input type="text" id="day-passes-monthly" value="600" onchange="calculateAll()"></div>
-
+            <div class="assumption-item"><label>Membership £</label><input type="text" id="membership-price" value="70"></div>
+            <div class="assumption-item"><label>Total members</label><input type="text" id="members-count" value="450"></div>
+            <div class="assumption-item"><label>Day pass £</label><input type="text" id="day-pass-price" value="14"></div>
+            <div class="assumption-item"><label>Day passes per month</label><input type="text" id="day-passes-monthly" value="600"></div>
             <details>
-              <summary style="text-align:left;cursor:pointer;color:#555">Advanced revenue inputs</summary>
+              <summary style="text-align:left;cursor:pointer;color:#555">Advanced</summary>
               <div class="assumption-grid" style="margin-top:10px">
-                <div class="assumption-item"><label>Coaching sessions / month</label><input type="text" id="coaching-sessions" value="40" onchange="calculateAll()"></div>
-                <div class="assumption-item"><label>Coaching price (£)</label><input type="text" id="coaching-price" value="55" onchange="calculateAll()"></div>
-                <div class="assumption-item"><label>Parties per month</label><input type="text" id="parties-monthly" value="12" onchange="calculateAll()"></div>
-                <div class="assumption-item"><label>Party revenue (£)</label><input type="text" id="party-revenue" value="150" onchange="calculateAll()"></div>
-                <div class="assumption-item"><label>Equipment rental net (£/mo)</label><input type="text" id="rental-monthly" value="800" onchange="calculateAll()"></div>
-                <div class="assumption-item"><label>Retail net (£/mo)</label><input type="text" id="retail-monthly" value="1,200" onchange="calculateAll()"></div>
-                <div class="assumption-item"><label>Cafe GMV (£/mo)</label><input type="text" id="cafe-monthly" value="4,000" onchange="calculateAll()"></div>
-                <div class="assumption-item"><label>Cafe net margin (%)</label><input type="text" id="cafe-margin" value="8" onchange="calculateAll()"></div>
+                <div class="assumption-item"><label>Coaching per month</label><input type="text" id="coaching-sessions" value="40"></div>
+                <div class="assumption-item"><label>Coaching price £</label><input type="text" id="coaching-price" value="55"></div>
+                <div class="assumption-item"><label>Parties per month</label><input type="text" id="parties-monthly" value="12"></div>
+                <div class="assumption-item"><label>Party revenue £</label><input type="text" id="party-revenue" value="150"></div>
+                <div class="assumption-item"><label>Equipment rental net £/mo</label><input type="text" id="rental-monthly" value="800"></div>
+                <div class="assumption-item"><label>Retail net £/mo</label><input type="text" id="retail-monthly" value="1,200"></div>
+                <div class="assumption-item"><label>Cafe GMV £/mo</label><input type="text" id="cafe-monthly" value="4,000"></div>
+                <div class="assumption-item"><label>Cafe net margin %</label><input type="text" id="cafe-margin" value="8"></div>
               </div>
             </details>
           </div>
         </div>
       </div>
-
-      <div class="scenario-buttons" role="group" aria-label="Scenario bottom">
-        <button class="scenario-btn" data-scenario="conservative" aria-pressed="false">Conservative</button>
-        <button class="scenario-btn" data-scenario="realistic" aria-pressed="true">Realistic</button>
-        <button class="scenario-btn" data-scenario="optimistic" aria-pressed="false">Optimistic</button>
-      </div>
       <div class="note">Scenario math and sources explained below.</div>
     </div>
 
-    <!-- Financial Summary -->
+    <!-- Summary -->
     <div class="summary-table">
-      <h3>📊 Annual Financial Performance</h3>
-      <div class="summary-row"><div>Total Annual Revenue</div><div id="annual-revenue-summary">£0</div></div>
-      <div class="summary-row"><div>Total Annual Expenses</div><div id="annual-expenses-summary">£0</div></div>
-      <div class="summary-row"><div>Annual Profit (EBITDA)</div><div id="annual-ebitda" class="negative">£0</div></div>
-      <div class="summary-row"><div>Profit Margin</div><div id="annual-margin">0%</div></div>
-      <div class="summary-row"><div>ROI (basis shown)</div><div id="roi-summary">0%</div></div>
-      <div class="summary-row"><div>Payback Period</div><div id="payback-summary">0 years</div></div>
+      <h3>Annual performance</h3>
+      <div class="summary-row"><div>Total revenue</div><div id="annual-revenue-summary">£0</div></div>
+      <div class="summary-row"><div>Total expenses</div><div id="annual-expenses-summary">£0</div></div>
+      <div class="summary-row"><div>EBITDA</div><div id="annual-ebitda" class="negative">£0</div></div>
+      <div class="summary-row"><div>Margin</div><div id="annual-margin-summary">0%</div></div>
+      <div class="summary-row"><div>ROI basis</div><div id="roi-summary">0%</div></div>
+      <div class="summary-row"><div>Payback</div><div id="payback-summary">N/A</div></div>
     </div>
 
-    <!-- Sources & Methodology -->
+    <!-- Methods & Sources -->
     <div class="talking-points">
-      <h3>📚 Sources, Methods & Validation</h3>
+      <h3>Sources, methods, validation</h3>
 
       <div class="method">
         <h4>Formulas</h4>
         <div class="mono">
-          CAPEX ex-VAT = sum(CAPEX groups)<br/>
-          CAPEX incl VAT = CAPEX ex-VAT × (1 + VAT%)<br/>
-          ROI basis = VAT reclaimable ? CAPEX ex-VAT : CAPEX incl VAT<br/>
+          CAPEX ex VAT = sum(CAPEX groups)<br/>
+          CAPEX incl VAT = CAPEX ex VAT × (1 + VAT%)<br/>
+          ROI basis = VAT reclaimable ? CAPEX ex VAT : CAPEX incl VAT<br/>
           Membership revenue = Members × Membership £ × 12<br/>
-          Day pass revenue = Day passes / mo × Day pass £ × 12<br/>
-          Coaching revenue = Sessions / mo × £ × 12<br/>
-          Parties revenue = Events / mo × £ × 12<br/>
+          Day pass revenue = Day passes per month × Day pass £ × 12<br/>
+          Coaching revenue = Sessions per month × £ × 12<br/>
+          Parties revenue = Events per month × £ × 12<br/>
           Rental net = £/mo × 12; Retail net = £/mo × 12<br/>
           Cafe net = round(Cafe GMV × Margin%) × 12<br/>
           Total revenue = sum(all above)<br/>
-          OPEX = Rent + Business rates + Manager + Route setting + Other staff + Utilities + Insurance + Marketing + Maintenance<br/>
-          EBITDA = Total revenue − OPEX<br/>
-          ROI% = round(EBITDA ÷ ROI basis × 100)<br/>
+          OPEX = Rent + Rates + Manager + Route setting + Other staff + Utilities + Insurance + Marketing + Maintenance<br/>
+          EBITDA = Revenue − OPEX<br/>
+          ROI% = EBITDA ÷ ROI basis × 100<br/>
           Payback (yrs) = ROI basis ÷ EBITDA
         </div>
       </div>
@@ -226,345 +231,449 @@
       <div class="method">
         <h4>Scenario methodology</h4>
         <p class="mono">
-          Explicit scenario values:<br/>
-          • Day pass price: 13 / 14 / 15<br/>
-          • Other staff: 46,000 / 50,000 / 60,000<br/>
-          • Route setting: 24,000 / 26,000 / 30,000<br/>
-          • Centre manager: 34,000 / 36,000 / 38,000<br/><br/>
-          Relative nudges (selected examples):<br/>
-          Conservative → Members ×0.85, Membership £ ×0.98, Day passes ×0.80;<br/>
-          Optimistic → Members ×1.20, Membership £ ×1.03, Day passes ×1.25;<br/>
-          Utilities, marketing, maintenance adjusted ± as shown in code.
+          Explicit overrides by scenario:<br/>
+          • Day pass £ = 13 / 14 / 15<br/>
+          • Other staff = 46,000 / 50,000 / 60,000<br/>
+          • Route setting = 24,000 / 26,000 / 30,000<br/>
+          • Manager = 34,000 / 36,000 / 38,000<br/><br/>
+          Relative shifts (examples):<br/>
+          Conservative → Members ×0.85, Membership £ ×0.98, Day passes ×0.80, utilities ×0.96, marketing ×0.85, maintenance ×0.90<br/>
+          Optimistic → Members ×1.20, Membership £ ×1.03, Day passes ×1.25, utilities ×1.10, marketing ×1.15, maintenance ×1.15<br/><br/>
+          Year selector:<br/>
+          • Year 1 applies ramp factors to demand streams at 40% of steady state. Variable costs scale at 70%. Fixed costs unchanged.<br/>
+          • Year 2+ uses steady state.
         </p>
       </div>
 
       <div class="method">
-        <h4>References & links</h4>
-        <div class="refs">
-          <div class="row"><div>Supplier quotes (walls, matting, mezzanine, holds)</div><input type="text" placeholder="https://drive.../walls-quote.pdf"></div>
-          <div class="row"><div>General construction fitout</div><input type="text" placeholder="https://drive.../fitout-quote.pdf"></div>
-          <div class="row"><div>Facilities fitout</div><input type="text" placeholder="https://drive.../facilities-quote.pdf"></div>
-          <div class="row"><div>Software, POS, licences</div><input type="text" placeholder="https://.../pos-and-licences.pdf"></div>
-          <div class="row"><div>Branding & launch</div><input type="text" placeholder="https://.../branding-launch.pdf"></div>
-          <div class="row"><div>VAT rate (UK Gov)</div><input type="text" value="https://www.gov.uk/vat-rates"></div>
-          <div class="row"><div>Business rates explainer</div><input type="text" value="https://www.gov.uk/introduction-to-business-rates"></div>
-          <div class="row"><div>Benchmarks: membership/day pass pricing</div><input type="text" placeholder="Add 2–3 competitor links here"></div>
-          <div class="row"><div>Energy/utilities basis</div><input type="text" placeholder="Add supplier/contract link or model note"></div>
+        <h4>CSV mapping</h4>
+        <p class="mono">The model auto-maps common headers. If a key is missing it falls back to the defaults shown in the inputs. You can also choose a CSV file with the upload control above.</p>
+      </div>
+
+      <div class="method">
+        <h4>References</h4>
+        <div class="mono">
+          • VAT rate: https://www.gov.uk/vat-rates<br/>
+          • Business rates overview: https://www.gov.uk/introduction-to-business-rates<br/>
+          • Competitor pricing: add links here in your deck<br/>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Lib for CSV -->
+<!-- Libs -->
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-  /* ---------- formatting ---------- */
-  function toInt(raw){
-    const cleaned = String(raw).replace(/[, ]+/g,'').trim();
-    const x = Math.floor(Number(cleaned));
-    return isFinite(x) ? x : 0;
+/* ---------- helpers ---------- */
+function toInt(raw){ const cleaned=String(raw??'').replace(/[, ]+/g,'').trim(); const x=Math.floor(Number(cleaned)); return isFinite(x)?x:0; }
+function money(v){ const f=Math.round(Number(v)||0); return (f<0?'-£':'£')+Math.abs(f).toLocaleString('en-GB'); }
+function pct(n){ const x=Math.round(Number(n)||0); return x+'%'; }
+function formatCommas(v){ return toInt(v).toLocaleString('en-GB'); }
+function stripCommas(v){ return String(v||'').replace(/,/g,''); }
+function valInt(id, fb){ const el=document.getElementById(id); return el?toInt(el.value):toInt(fb); }
+function setTxt(id, txt){ const el=document.getElementById(id); if(el) el.textContent=txt; }
+
+/* ---------- fields ---------- */
+const FIELD_IDS=[
+  'capex-climbing','capex-general','capex-facilities','capex-software','capex-branding','vat-rate','vat-reclaimable',
+  'annual-rent','business-rates','manager-salary','route-setter-salary','other-staff','utilities','insurance','marketing-annual','maintenance',
+  'membership-price','members-count','day-pass-price','day-passes-monthly',
+  'coaching-sessions','coaching-price','parties-monthly','party-revenue','rental-monthly','retail-monthly','cafe-monthly','cafe-margin'
+];
+
+const BASELINE={};
+let ACTIVE_SCEN='realistic';
+let YEAR_MODE='y1';
+
+/* ---------- scenario config ---------- */
+const SCENARIO_VALUE_OVERRIDES={
+  conservative:{'day-pass-price':13,'other-staff':46000,'route-setter-salary':24000,'manager-salary':34000},
+  realistic:{'day-pass-price':14,'other-staff':50000,'route-setter-salary':26000,'manager-salary':36000},
+  optimistic:{'day-pass-price':15,'other-staff':60000,'route-setter-salary':30000,'manager-salary':38000}
+};
+const SCENARIO_RELATIVE={
+  conservative:{
+    'members-count':v=>Math.max(0,Math.round(v*0.85)),
+    'membership-price':v=>Math.round(v*0.98),
+    'day-passes-monthly':v=>Math.max(0,Math.round(v*0.80)),
+    'coaching-sessions':v=>30,'coaching-price':v=>50,
+    'parties-monthly':v=>9,'party-revenue':v=>140,
+    'rental-monthly':v=>700,'retail-monthly':v=>1000,
+    'cafe-monthly':v=>3500,'cafe-margin':v=>8,
+    'utilities':v=>Math.round(v*0.96),
+    'marketing-annual':v=>Math.round(v*0.85),
+    'maintenance':v=>Math.round(v*0.90)
+  },
+  optimistic:{
+    'members-count':v=>Math.round(v*1.20),
+    'membership-price':v=>Math.round(v*1.03),
+    'day-passes-monthly':v=>Math.round(v*1.25),
+    'coaching-sessions':v=>60,'coaching-price':v=>60,
+    'parties-monthly':v=>16,'party-revenue':v=>160,
+    'rental-monthly':v=>1200,'retail-monthly':v=>1800,
+    'cafe-monthly':v=>7000,'cafe-margin':v=>9,
+    'utilities':v=>Math.round(v*1.10),
+    'marketing-annual':v=>Math.round(v*1.15),
+    'maintenance':v=>Math.round(v*1.15)
   }
-  function money(v){ const f = toInt(v); return (f < 0 ? '-£' : '£') + Math.abs(f).toLocaleString('en-GB'); }
-  function pctInt(v){ const p = Math.round(Number(v)); return isFinite(p) ? p + '%' : '0%'; }
-  function formatCommas(v){ return toInt(v).toLocaleString('en-GB'); }
-  function stripCommas(v){ return String(v).replace(/,/g,''); }
-  function valInt(id, fallback){ const el = document.getElementById(id); return el ? toInt(el.value) : toInt(fallback); }
+};
 
-  /* ---------- IDs we consider in scenarios ---------- */
-  const FIELD_IDS = [
-    // CAPEX
-    'capex-climbing','capex-general','capex-facilities','capex-software','capex-branding','vat-rate','vat-reclaimable',
-    // OPEX
-    'annual-rent','business-rates','manager-salary','route-setter-salary','other-staff','utilities','insurance','marketing-annual','maintenance',
-    // Revenue
-    'membership-price','members-count','day-pass-price','day-passes-monthly',
-    'coaching-sessions','coaching-price','parties-monthly','party-revenue','rental-monthly','retail-monthly','cafe-monthly','cafe-margin'
-  ];
+/* Year 1 ramp factors */
+const YEAR_RAMP={
+  demand: 0.40,    // 40% of steady state for demand driven revenue
+  variableCost: 0.70 // variable opex scale in year 1
+};
 
-  /* ---------- Scenario configs ---------- */
-  const BASELINE = {}; // set from CSV then defaults
-
-  // Four explicit fields must always change across scenarios
-  const SCENARIO_VALUE_OVERRIDES = {
-    conservative: { 'day-pass-price':13, 'other-staff':46000, 'route-setter-salary':24000, 'manager-salary':34000 },
-    realistic:    { 'day-pass-price':14, 'other-staff':50000, 'route-setter-salary':26000, 'manager-salary':36000 },
-    optimistic:   { 'day-pass-price':15, 'other-staff':60000, 'route-setter-salary':30000, 'manager-salary':38000 }
-  };
-  const SCENARIO_RELATIVE = {
-    conservative: {
-      'members-count': v => Math.max(0, Math.round(v*0.85)),
-      'membership-price': v => Math.round(v*0.98),
-      'day-passes-monthly': v => Math.max(0, Math.round(v*0.80)),
-      'coaching-sessions': v => 30, 'coaching-price': v => 50,
-      'parties-monthly': v => 9, 'party-revenue': v => 140,
-      'rental-monthly': v => 700, 'retail-monthly': v => 1000,
-      'cafe-monthly': v => 3500, 'cafe-margin': v => 8,
-      'utilities': v => Math.round(v*0.96),
-      'marketing-annual': v => Math.round(v*0.85),
-      'maintenance': v => Math.round(v*0.90)
-    },
-    optimistic: {
-      'members-count': v => Math.round(v*1.20),
-      'membership-price': v => Math.round(v*1.03),
-      'day-passes-monthly': v => Math.round(v*1.25),
-      'coaching-sessions': v => 60, 'coaching-price': v => 60,
-      'parties-monthly': v => 16, 'party-revenue': v => 160,
-      'rental-monthly': v => 1200, 'retail-monthly': v => 1800,
-      'cafe-monthly': v => 7000, 'cafe-margin': v => 9,
-      'utilities': v => Math.round(v*1.10),
-      'marketing-annual': v => Math.round(v*1.15),
-      'maintenance': v => Math.round(v*1.15)
-    }
-  };
-
-  /* ---------- Comma-friendly inputs ---------- */
-  function enableCommaFormatting(){
-    const sels = FIELD_IDS.map(id => '#'+id).join(',');
-    document.querySelectorAll(sels).forEach(el=>{
-      try{ el.type='text'; }catch(_){}
-      el.value = formatCommas(el.value);
-      el.addEventListener('focus',()=>{ el.value = stripCommas(el.value); el.select?.(); });
-      el.addEventListener('input',()=>{ el.value = el.value.replace(/[^\d,]/g,''); });
-      el.addEventListener('blur',()=>{
-        el.value = stripCommas(el.value);
-        el.value = String(toInt(el.value));
-        el.value = formatCommas(el.value);
-        calculateAll();
-      });
-    });
-  }
-  function prettifyAllInputs(){
-    const sels = FIELD_IDS.map(id => '#'+id).join(',');
-    document.querySelectorAll(sels).forEach(el=>{ el.value = formatCommas(el.value); });
-  }
-
-  /* ---------- Scenario invariance labelling (grey vs black) ---------- */
-  function simulateScenarioValue(id, scenarioName){
-    const base = BASELINE[id] != null ? BASELINE[id] : toInt(document.getElementById(id)?.value);
-    const explicit = SCENARIO_VALUE_OVERRIDES[scenarioName] || {};
-    if(explicit[id] != null) return toInt(explicit[id]);
-    const rel = SCENARIO_RELATIVE[scenarioName] || {};
-    if(typeof rel[id] === 'function') return toInt(rel[id](base));
-    return toInt(base); // unchanged in that scenario
-  }
-  function applyStaticDynamicClasses(){
-    FIELD_IDS.forEach(id=>{
-      const el = document.getElementById(id);
-      if(!el) return;
-      const vCons = simulateScenarioValue(id,'conservative');
-      const vReal = simulateScenarioValue(id,'realistic');
-      const vOpt  = simulateScenarioValue(id,'optimistic');
-      const invariant = (vCons === vReal) && (vReal === vOpt);
-      el.classList.remove('static-gray','dynamic-black');
-      el.classList.add(invariant ? 'static-gray' : 'dynamic-black');
-    });
-  }
-
-  /* ---------- Maths ---------- */
-  function calculateAll(){
-    // CAPEX
-    const capClimb = valInt('capex-climbing', 300000);
-    const capGen = valInt('capex-general', 150000);
-    const capFac = valInt('capex-facilities', 30000);
-    const capSoft = valInt('capex-software', 8000);
-    const capBrand = valInt('capex-branding', 20000);
-    const capexExVat = capClimb + capGen + capFac + capSoft + capBrand;
-
-    const vatRate = valInt('vat-rate', 20) / 100;
-    const vatReclaim = String(document.getElementById('vat-reclaimable').value || '').toLowerCase()==='yes';
-    const capexIncVat = Math.round(capexExVat * (1 + vatRate));
-    const capexBasis = vatReclaim ? capexExVat : capexIncVat;
-
-    document.getElementById('capex-exvat').textContent = money(capexExVat);
-    document.getElementById('capex-incvat').textContent = money(capexIncVat);
-
-    // Revenue
-    const memberPrice = valInt('membership-price', 70);
-    const members = valInt('members-count', 450);
-    const dayPassPrice = valInt('day-pass-price', 14);
-    const dayPassesPerMonth = valInt('day-passes-monthly', 600);
-
-    const coachSessions = valInt('coaching-sessions', 40);
-    const coachPrice = valInt('coaching-price', 55);
-    const partiesM = valInt('parties-monthly', 12);
-    const partyPrice = valInt('party-revenue', 150);
-    const rentalMonthly = valInt('rental-monthly', 800);
-    const retailMonthly = valInt('retail-monthly', 1200);
-    const cafeMonthly = valInt('cafe-monthly', 4000);
-    const cafeMargin = valInt('cafe-margin', 8) / 100;
-
-    const membershipRevenue = members * memberPrice * 12;
-    const dayPassRevenue = dayPassesPerMonth * dayPassPrice * 12;
-    const coachingRevenue = coachSessions * coachPrice * 12;
-    const youthRevenue = partiesM * partyPrice * 12;
-    const rentalRevenue = rentalMonthly * 12;
-    const retailRevenue = retailMonthly * 12;
-    const cafeNetRevenue = Math.round(cafeMonthly * cafeMargin) * 12;
-
-    const totalRevenue = membershipRevenue + dayPassRevenue + coachingRevenue + youthRevenue + rentalRevenue + retailRevenue + cafeNetRevenue;
-
-    // OPEX
-    const rent = valInt('annual-rent', 56000);
-    const rates = valInt('business-rates', 35000);
-    const mgr = valInt('manager-salary', 36000);
-    const rs = valInt('route-setter-salary', 26000);
-    const staffOther = valInt('other-staff', 50000);
-    const utils = valInt('utilities', 24000);
-    const ins = valInt('insurance', 3000);
-    const mkt = valInt('marketing-annual', 12000);
-    const maint = valInt('maintenance', 10000);
-
-    const totalExpenses = rent + rates + mgr + rs + staffOther + utils + ins + mkt + maint;
-
-    // EBITDA / ROI / Payback
-    const ebitda = totalRevenue - totalExpenses;
-    const roiPct = capexBasis > 0 ? Math.round((ebitda / capexBasis) * 100) : 0;
-    const paybackYears = ebitda > 0 ? (capexBasis / ebitda) : 0;
-
-    document.getElementById('annual-revenue').textContent = money(totalRevenue);
-    document.getElementById('annual-revenue-summary').textContent = money(totalRevenue);
-    document.getElementById('annual-expenses-summary').textContent = money(totalExpenses);
-
-    document.getElementById('annual-profit').textContent = money(ebitda);
-    document.getElementById('annual-profit').className = 'metric-value ' + (ebitda > 0 ? 'positive' : 'negative');
-    document.getElementById('annual-ebitda').textContent = money(ebitda);
-    document.getElementById('annual-ebitda').className = ebitda > 0 ? 'positive' : 'negative';
-    document.getElementById('annual-margin').textContent = pctInt((ebitda / Math.max(totalRevenue,1)) * 100);
-    document.getElementById('roi').textContent = pctInt(roiPct);
-    document.getElementById('roi-summary').textContent = pctInt(roiPct);
-    document.getElementById('payback-period').textContent = ebitda > 0 ? (Math.round(paybackYears*10)/10) + ' years' : 'N/A';
-    document.getElementById('payback-summary').textContent = ebitda > 0 ? (Math.round(paybackYears*10)/10) + ' years' : 'N/A';
-
-    prettifyAllInputs();
-  }
-
-  /* ---------- CSV load ---------- */
-  async function loadRealisticFromCSVIntoBaseline(){
-    // defaults as fallback
-    const defaults = {
-      'membership-price':70,'members-count':450,'day-pass-price':14,'day-passes-monthly':600,
-      'annual-rent':56000,'business-rates':35000,'manager-salary':36000,'route-setter-salary':26000,
-      'other-staff':50000,'utilities':24000,'insurance':3000,'marketing-annual':12000,'maintenance':10000,
-      'capex-climbing':300000,'capex-general':150000,'capex-facilities':30000,'capex-software':8000,'capex-branding':20000,
-      'vat-rate':20
-    };
-    Object.assign(BASELINE, defaults);
-
-    try{
-      const res = await fetch('queensgate_bouldering_provenance.csv',{cache:'no-store'});
-      if(!res.ok){ applyBaseline(); return; }
-      const text = await res.text();
-      const parsed = Papa.parse(text,{header:true,skipEmptyLines:true});
-      const rows = parsed.data || [];
-      const map = {};
-      rows.forEach(r=>{
-        const k = String(r['Variable']||'').trim();
-        const v = String(r['Value']||'').trim();
-        if(k) map[k]=v;
-      });
-
-      // Map likely CSV keys into our baseline IDs if present
-      if(map.MEMBERSHIP_PRICE) BASELINE['membership-price']=toInt(map.MEMBERSHIP_PRICE);
-      if(map.MEMBERS_COUNT) BASELINE['members-count']=toInt(map.MEMBERS_COUNT);
-      if(map.DAY_PASS_PRICE) BASELINE['day-pass-price']=toInt(map.DAY_PASS_PRICE);
-      if(map.DAY_PASSES_MONTHLY) BASELINE['day-passes-monthly']=toInt(map.DAY_PASSES_MONTHLY);
-
-      if(map.RENT) BASELINE['annual-rent']=toInt(map.RENT);
-      if(map.BUSINESS_RATES) BASELINE['business-rates']=toInt(map.BUSINESS_RATES);
-      if(map.MANAGER_SALARY) BASELINE['manager-salary']=toInt(map.MANAGER_SALARY);
-      if(map.ROUTE_SETTER_SALARY) BASELINE['route-setter-salary']=toInt(map.ROUTE_SETTER_SALARY);
-      if(map.OTHER_STAFF) BASELINE['other-staff']=toInt(map.OTHER_STAFF);
-      if(map.UTILITIES) BASELINE['utilities']=toInt(map.UTILITIES);
-      if(map.INSURANCE) BASELINE['insurance']=toInt(map.INSURANCE);
-      if(map.MARKETING) BASELINE['marketing-annual']=toInt(map.MARKETING);
-      if(map.MAINTENANCE) BASELINE['maintenance']=toInt(map.MAINTENANCE);
-
-      // CAPEX grouping from granular CSV if available
-      const climbSum = toInt(map.CAPEX_WALLS)+toInt(map.CAPEX_MATTING)+toInt(map.MEZZANINE_COST)+toInt(map.HOLDS_BUDGET)+toInt(map.GYM_EQUIPMENT);
-      if(climbSum>0) BASELINE['capex-climbing']=climbSum;
-      if(map.CAPEX_GENERAL_CONSTRUCTION) BASELINE['capex-general']=toInt(map.CAPEX_GENERAL_CONSTRUCTION);
-      if(map.CAPEX_FACILITIES) BASELINE['capex-facilities']=toInt(map.CAPEX_FACILITIES);
-      const softSum = toInt(map.SOFTWARE_POS)+toInt(map.LICENSES_PERMITS);
-      if(softSum>0) BASELINE['capex-software']=softSum;
-      if(map.BRANDING_MARKETING) BASELINE['capex-branding']=toInt(map.BRANDING_MARKETING);
-      if(map.VAT_RATE) BASELINE['vat-rate']=toInt(map.VAT_RATE);
-
-      applyBaseline();
-    }catch(e){
-      console.error(e);
-      applyBaseline();
-    }
-  }
-
-  function applyBaseline(){
-    // write baseline into inputs
-    FIELD_IDS.forEach(id=>{
-      const el = document.getElementById(id);
-      if(!el) return;
-      const v = BASELINE[id];
-      if(v!=null){
-        el.value = formatCommas(v);
-      }
-    });
-    // Default VAT reclaimable to yes
-    const vsel = document.getElementById('vat-reclaimable');
-    if(vsel && !vsel.value) vsel.value = 'yes';
-  }
-
-  /* ---------- Scenario switching ---------- */
-  function applyScenario(name){
-    // Start from baseline values visually
-    applyBaseline();
-
-    // Apply explicit values
-    const explicit = SCENARIO_VALUE_OVERRIDES[name] || {};
-    Object.keys(explicit).forEach(id=>{
-      const el = document.getElementById(id);
-      if(el) el.value = formatCommas(explicit[id]);
-    });
-
-    // Apply relative nudges
-    const rel = SCENARIO_RELATIVE[name] || {};
-    Object.keys(rel).forEach(id=>{
-      const el = document.getElementById(id);
-      if(!el) return;
-      const baseVal = BASELINE[id] != null ? BASELINE[id] : toInt(el.value);
-      el.value = formatCommas(rel[id](baseVal));
-    });
-
-    updateScenarioButtons(name);
-    // classes are static per field based on scenario differences, not per current toggle
-    calculateAll();
-  }
-
-  function updateScenarioButtons(active){
-    document.querySelectorAll('.scenario-btn').forEach(btn=>{
-      const isActive = btn.dataset.scenario === active;
-      btn.classList.toggle('active', isActive);
-      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-    });
-  }
-
-  function attachScenarioListeners(){
-    document.querySelectorAll('.scenario-btn').forEach(btn=>{
-      if(btn.__attached) return;
-      btn.addEventListener('click', ()=> applyScenario(btn.dataset.scenario), {passive:true});
-      btn.__attached = true;
-    });
-  }
-
-  /* ---------- Init ---------- */
-  window.addEventListener('load', async ()=>{
-    enableCommaFormatting();
-    attachScenarioListeners();
-    await loadRealisticFromCSVIntoBaseline();
-    // Determine static vs dynamic once, based on how scenarios would affect each field
-    applyStaticDynamicClasses();
-    // Default scenario
-    updateScenarioButtons('realistic');
-    applyScenario('realistic');
+/* ---------- inputs formatting ---------- */
+function enableCommaFormatting(){
+  const sels=FIELD_IDS.map(id=>'#'+id).join(',');
+  document.querySelectorAll(sels).forEach(el=>{
+    try{el.type='text';}catch(_){}
+    el.value=formatCommas(el.value);
+    el.addEventListener('focus',()=>{ el.value=stripCommas(el.value); el.select?.(); });
+    el.addEventListener('input',()=>{ el.value=el.value.replace(/[^\d,]/g,''); });
+    el.addEventListener('blur',()=>{ el.value=stripCommas(el.value); el.value=String(toInt(el.value)); el.value=formatCommas(el.value); calculateAll(); });
   });
+}
+function prettifyAllInputs(){
+  const sels=FIELD_IDS.map(id=>'#'+id).join(',');
+  document.querySelectorAll(sels).forEach(el=>{ el.value=formatCommas(el.value); });
+}
+
+/* ---------- invariance coloring ---------- */
+function simulateScenarioValue(id, scen){
+  const base=(BASELINE[id]!=null)?BASELINE[id]:toInt(document.getElementById(id)?.value);
+  const explicit=SCENARIO_VALUE_OVERRIDES[scen]||{};
+  if(explicit[id]!=null) return toInt(explicit[id]);
+  const rel=SCENARIO_RELATIVE[scen]||{};
+  if(typeof rel[id]==='function') return toInt(rel[id](base));
+  return toInt(base);
+}
+function applyStaticDynamicClasses(){
+  FIELD_IDS.forEach(id=>{
+    const el=document.getElementById(id); if(!el) return;
+    const vC=simulateScenarioValue(id,'conservative');
+    const vR=simulateScenarioValue(id,'realistic');
+    const vO=simulateScenarioValue(id,'optimistic');
+    const invariant=(vC===vR)&&(vR===vO);
+    el.classList.remove('static-gray','dynamic-black');
+    el.classList.add(invariant?'static-gray':'dynamic-black');
+  });
+}
+
+/* ---------- scenario & year application ---------- */
+function applyScenario(name){
+  ACTIVE_SCEN=name;
+  applyBaseline();
+  const explicit=SCENARIO_VALUE_OVERRIDES[name]||{};
+  Object.keys(explicit).forEach(id=>{ const el=document.getElementById(id); if(el) el.value=formatCommas(explicit[id]); });
+  const rel=SCENARIO_RELATIVE[name]||{};
+  Object.keys(rel).forEach(id=>{
+    const el=document.getElementById(id); if(!el) return;
+    const base=(BASELINE[id]!=null)?BASELINE[id]:toInt(el.value);
+    el.value=formatCommas(rel[id](base));
+  });
+  updateScenarioButtons(name);
+  calculateAll();
+}
+function updateScenarioButtons(active){
+  document.querySelectorAll('.scenario-btn').forEach(btn=>{
+    const isActive=btn.dataset.scenario===active;
+    btn.classList.toggle('active',isActive);
+    btn.setAttribute('aria-pressed',isActive?'true':'false');
+  });
+}
+
+/* ---------- charts ---------- */
+let revDonut,costDonut,waterfall,cashflow;
+function makeDonut(ctx,labels,values){
+  return new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data:values}]} ,options:{plugins:{legend:{position:'bottom'}},cutout:'60%'}});
+}
+function makeBar(ctx,labels,values){
+  return new Chart(ctx,{type:'bar',data:{labels,datasets:[{data:values}]} ,options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'£'+v.toLocaleString('en-GB')}}}}});
+}
+function makeLine(ctx,labels,values){
+  return new Chart(ctx,{type:'line',data:{labels,datasets:[{data:values,fill:false}]} ,options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'£'+v.toLocaleString('en-GB')}}}}});
+}
+function refreshCharts(parts){
+  // Revenue donut
+  const revLabels=['Memberships','Day passes','Coaching','Parties','Rental','Retail','Cafe net'];
+  const revValues=[parts.membership,parts.daypass,parts.coaching,parts.parties,parts.rental,parts.retail,parts.cafe];
+  if(revDonut) revDonut.destroy();
+  revDonut=makeDonut(document.getElementById('revDonut'),revLabels,revValues);
+
+  // Cost donut
+  const costLabels=['Rent','Rates','Manager','Route setting','Other staff','Utilities','Insurance','Marketing','Maintenance'];
+  const costValues=[parts.rent,parts.rates,parts.manager,parts.routes,parts.staff,parts.utilities,parts.insurance,parts.marketing,parts.maintenance];
+  if(costDonut) costDonut.destroy();
+  costDonut=makeDonut(document.getElementById('costDonut'),costLabels,costValues);
+
+  // Waterfall style bars: Revenue, minus costs, equals EBITDA
+  const wfLabels=['Revenue','Costs','EBITDA'];
+  const wfValues=[parts.revenue,-parts.expenses,parts.ebitda];
+  if(waterfall) waterfall.destroy();
+  waterfall=makeBar(document.getElementById('waterfall'),wfLabels,wfValues);
+
+  // Monthly cashflow simple split
+  if(cashflow) cashflow.destroy();
+  cashflow=makeLine(document.getElementById('cashflow'),
+    ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    Array(12).fill(Math.round(parts.ebitda/12)));
+}
+
+/* ---------- math ---------- */
+function calc(){
+  // CAPEX
+  const capClimb=valInt('capex-climbing',300000);
+  const capGen=valInt('capex-general',150000);
+  const capFac=valInt('capex-facilities',30000);
+  const capSoft=valInt('capex-software',8000);
+  const capBrand=valInt('capex-branding',20000);
+  const capexExVat=capClimb+capGen+capFac+capSoft+capBrand;
+  const vatRate=valInt('vat-rate',20)/100;
+  const reclaim=(document.getElementById('vat-reclaimable').value||'yes').toLowerCase()==='yes';
+  const capexIncVat=Math.round(capexExVat*(1+vatRate));
+  const capexBasis=reclaim?capexExVat:capexIncVat;
+
+  // Revenue base
+  let memberPrice=valInt('membership-price',70);
+  let members=valInt('members-count',450);
+  let dayPassPrice=valInt('day-pass-price',14);
+  let dayPassesPerMonth=valInt('day-passes-monthly',600);
+  let coachSessions=valInt('coaching-sessions',40);
+  let coachPrice=valInt('coaching-price',55);
+  let partiesM=valInt('parties-monthly',12);
+  let partyPrice=valInt('party-revenue',150);
+  let rentalMonthly=valInt('rental-monthly',800);
+  let retailMonthly=valInt('retail-monthly',1200);
+  let cafeMonthly=valInt('cafe-monthly',4000);
+  let cafeMargin=valInt('cafe-margin',8)/100;
+
+  // Apply Year 1 ramp to demand driven lines
+  if(YEAR_MODE==='y1'){
+    const d=YEAR_RAMP.demand;
+    members=Math.round(members*d);
+    dayPassesPerMonth=Math.round(dayPassesPerMonth*d);
+    coachSessions=Math.round(coachSessions*d);
+    partiesM=Math.round(partiesM*d);
+    rentalMonthly=Math.round(rentalMonthly*d);
+    retailMonthly=Math.round(retailMonthly*d);
+    cafeMonthly=Math.round(cafeMonthly*d);
+  }
+
+  const membershipRevenue=members*memberPrice*12;
+  const dayPassRevenue=dayPassesPerMonth*dayPassPrice*12;
+  const coachingRevenue=coachSessions*coachPrice*12;
+  const partiesRevenue=partiesM*partyPrice*12;
+  const rentalRevenue=rentalMonthly*12;
+  const retailRevenue=retailMonthly*12;
+  const cafeNet=Math.round(cafeMonthly*cafeMargin)*12;
+  const totalRevenue=membershipRevenue+dayPassRevenue+coachingRevenue+partiesRevenue+rentalRevenue+retailRevenue+cafeNet;
+
+  // OPEX base
+  let rent=valInt('annual-rent',56000);
+  let rates=valInt('business-rates',35000);
+  let manager=valInt('manager-salary',36000);
+  let routes=valInt('route-setter-salary',26000);
+  let staff=valInt('other-staff',50000);
+  let utilities=valInt('utilities',24000);
+  let insurance=valInt('insurance',3000);
+  let marketing=valInt('marketing-annual',12000);
+  let maintenance=valInt('maintenance',10000);
+
+  // Variable cost scaling in Year 1
+  if(YEAR_MODE==='y1'){
+    const vc=YEAR_RAMP.variableCost;
+    utilities=Math.round(utilities*vc);
+    marketing=Math.round(marketing*vc);
+    maintenance=Math.round(maintenance*vc);
+  }
+
+  const totalExpenses=rent+rates+manager+routes+staff+utilities+insurance+marketing+maintenance;
+  const ebitda=totalRevenue-totalExpenses;
+  const roiPct=capexBasis>0?Math.round((ebitda/capexBasis)*100):0;
+  const payYears=ebitda>0?(capexBasis/ebitda):0;
+
+  return {
+    capexExVat,capexIncVat,capexBasis,
+    revenue: totalRevenue, expenses: totalExpenses, ebitda,
+    marginPct: Math.round((ebitda/Math.max(totalRevenue,1))*100),
+    roiPct, payback: ebitda>0 ? (Math.round(payYears*10)/10)+' years' : 'N/A',
+    parts:{
+      membership: membershipRevenue, daypass: dayPassRevenue, coaching: coachingRevenue, parties: partiesRevenue,
+      rental: rentalRevenue, retail: retailRevenue, cafe: cafeNet,
+      rent, rates, manager, routes, staff, utilities, insurance, marketing, maintenance
+    }
+  };
+}
+
+function calculateAll(){
+  const r=calc();
+  setTxt('capex-exvat',money(r.capexExVat));
+  setTxt('capex-incvat',money(r.capexIncVat));
+  setTxt('annual-revenue',money(r.revenue));
+  setTxt('annual-expenses',money(r.expenses));
+  const ap=document.getElementById('annual-profit');
+  ap.textContent=money(r.ebitda);
+  ap.className='val '+(r.ebitda>0?'positive':'negative');
+  setTxt('annual-margin',pct(r.marginPct));
+  setTxt('roi',pct(r.roiPct));
+  setTxt('payback-period',r.payback);
+
+  setTxt('annual-revenue-summary',money(r.revenue));
+  setTxt('annual-expenses-summary',money(r.expenses));
+  const ae=document.getElementById('annual-ebitda');
+  ae.textContent=money(r.ebitda);
+  ae.className=(r.ebitda>0?'positive':'negative');
+  setTxt('annual-margin-summary',pct(r.marginPct));
+  setTxt('roi-summary',pct(r.roiPct));
+  setTxt('payback-summary',r.payback);
+
+  refreshCharts({
+    membership:r.parts.membership,daypass:r.parts.daypass,coaching:r.parts.coaching,parties:r.parts.parties,
+    rental:r.parts.rental,retail:r.parts.retail,cafe:r.parts.cafe,
+    rent:r.parts.rent,rates:r.parts.rates,manager:r.parts.manager,routes:r.parts.routes,staff:r.parts.staff,
+    utilities:r.parts.utilities,insurance:r.parts.insurance,marketing:r.parts.marketing,maintenance:r.parts.maintenance,
+    revenue:r.revenue,expenses:r.expenses,ebitda:r.ebitda
+  });
+  prettifyAllInputs();
+}
+
+/* ---------- CSV ---------- */
+const DEFAULTS={
+  'membership-price':70,'members-count':450,'day-pass-price':14,'day-passes-monthly':600,
+  'annual-rent':56000,'business-rates':35000,'manager-salary':36000,'route-setter-salary':26000,
+  'other-staff':50000,'utilities':24000,'insurance':3000,'marketing-annual':12000,'maintenance':10000,
+  'capex-climbing':300000,'capex-general':150000,'capex-facilities':30000,'capex-software':8000,'capex-branding':20000,'vat-rate':20
+};
+
+function applyBaseline(){
+  FIELD_IDS.forEach(id=>{
+    const el=document.getElementById(id); if(!el) return;
+    const v=(BASELINE[id]!=null)?BASELINE[id]:DEFAULTS[id];
+    if(v!=null) el.value=formatCommas(v);
+  });
+}
+
+function mapCsvToBaseline(map){
+  // Accepts wide set of header names
+  const pick=(arr)=>arr.find(k=>map[k]!=null);
+  const getInt=(arr, fb)=> toInt(map[pick(arr)] ?? fb);
+
+  BASELINE['membership-price']=getInt(['MEMBERSHIP_PRICE','membership_price','Membership_Price'],DEFAULTS['membership-price']);
+  BASELINE['members-count']=getInt(['MEMBERS_COUNT','members_count','Members'],DEFAULTS['members-count']);
+  BASELINE['day-pass-price']=getInt(['DAY_PASS_PRICE','day_pass_price'],DEFAULTS['day-pass-price']);
+  BASELINE['day-passes-monthly']=getInt(['DAY_PASSES_MONTHLY','day_passes_monthly'],DEFAULTS['day-passes-monthly']);
+
+  BASELINE['annual-rent']=getInt(['RENT','annual_rent'],DEFAULTS['annual-rent']);
+  BASELINE['business-rates']=getInt(['BUSINESS_RATES','business_rates'],DEFAULTS['business-rates']);
+  BASELINE['manager-salary']=getInt(['MANAGER_SALARY','manager_salary'],DEFAULTS['manager-salary']);
+  BASELINE['route-setter-salary']=getInt(['ROUTE_SETTER_SALARY','route_setter_salary'],DEFAULTS['route-setter-salary']);
+  BASELINE['other-staff']=getInt(['OTHER_STAFF','other_staff'],DEFAULTS['other-staff']);
+  BASELINE['utilities']=getInt(['UTILITIES','utilities'],DEFAULTS['utilities']);
+  BASELINE['insurance']=getInt(['INSURANCE','insurance'],DEFAULTS['insurance']);
+  BASELINE['marketing-annual']=getInt(['MARKETING','marketing'],DEFAULTS['marketing-annual']);
+  BASELINE['maintenance']=getInt(['MAINTENANCE','maintenance'],DEFAULTS['maintenance']);
+
+  // CAPEX granular
+  const climbSum = toInt(map['CAPEX_WALLS'])+toInt(map['CAPEX_MATTING'])+toInt(map['MEZZANINE_COST'])+toInt(map['HOLDS_BUDGET'])+toInt(map['GYM_EQUIPMENT']);
+  if(climbSum>0) BASELINE['capex-climbing']=climbSum; else BASELINE['capex-climbing']=getInt(['CAPEX_CLIMBING'],DEFAULTS['capex-climbing']);
+  BASELINE['capex-general']=getInt(['CAPEX_GENERAL_CONSTRUCTION','CAPEX_GENERAL'],DEFAULTS['capex-general']);
+  BASELINE['capex-facilities']=getInt(['CAPEX_FACILITIES'],DEFAULTS['capex-facilities']);
+  const softSum = toInt(map['SOFTWARE_POS'])+toInt(map['LICENSES_PERMITS']);
+  BASELINE['capex-software']=softSum>0?softSum:getInt(['CAPEX_SOFTWARE'],DEFAULTS['capex-software']);
+  BASELINE['capex-branding']=getInt(['BRANDING_MARKETING','CAPEX_BRANDING'],DEFAULTS['capex-branding']);
+  BASELINE['vat-rate']=getInt(['VAT_RATE'],DEFAULTS['vat-rate']);
+}
+
+async function fetchCsvText(){
+  // Try same folder first, then raw GitHub fallback if user hosts elsewhere
+  const candidates=['Queensgate_Bouldering_Financial_Model.csv','./Queensgate_Bouldering_Financial_Model.csv'];
+  for(const url of candidates){
+    try{ const res=await fetch(url,{cache:'no-store'}); if(res.ok){ return await res.text(); } }catch(e){}
+  }
+  return null;
+}
+
+async function loadCsv(){
+  Object.assign(BASELINE,DEFAULTS);
+  const text=await fetchCsvText();
+  if(text){
+    const parsed=Papa.parse(text,{header:true,skipEmptyLines:true});
+    // Expect either key:value rows or wide single row
+    let map={};
+    if(parsed.data.length>1 && parsed.meta.fields.includes('Variable') && parsed.meta.fields.includes('Value')){
+      parsed.data.forEach(r=>{ const k=String(r['Variable']||'').trim(); const v=String(r['Value']||'').trim(); if(k) map[k]=v; });
+    }else if(parsed.data.length>=1){
+      // Take first non empty row as map
+      map=parsed.data[0];
+    }
+    mapCsvToBaseline(map);
+  }
+  applyBaseline();
+}
+
+/* ---------- events ---------- */
+function attach(){
+  // scenario
+  document.querySelectorAll('.scenario-btn').forEach(btn=>{
+    if(btn._bound) return;
+    btn.addEventListener('click',()=>applyScenario(btn.dataset.scenario),{passive:true});
+    btn._bound=true;
+  });
+  // year
+  document.getElementById('yearMode').addEventListener('change',e=>{
+    YEAR_MODE=e.target.value;
+    calculateAll();
+  });
+  // csv upload fallback
+  document.getElementById('csvFile').addEventListener('change',e=>{
+    const file=e.target.files?.[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const text=String(ev.target.result||'');
+      const parsed=Papa.parse(text,{header:true,skipEmptyLines:true});
+      let map={};
+      if(parsed.data.length>1 && parsed.meta.fields.includes('Variable') && parsed.meta.fields.includes('Value')){
+        parsed.data.forEach(r=>{ const k=String(r['Variable']||'').trim(); const v=String(r['Value']||'').trim(); if(k) map[k]=v; });
+      }else if(parsed.data.length>=1){ map=parsed.data[0]; }
+      mapCsvToBaseline(map);
+      applyBaseline();
+      applyStaticDynamicClasses();
+      applyScenario(ACTIVE_SCEN);
+    };
+    reader.readAsText(file);
+  });
+
+  // input recalcs
+  FIELD_IDS.forEach(id=>{
+    const el=document.getElementById(id);
+    el?.addEventListener('change',calculateAll);
+  });
+
+  // URL params
+  const params=new URLSearchParams(location.search);
+  const scen=params.get('scenario'); // 'c','r','o'
+  const year=params.get('year'); // '1','2'
+  if(scen){ const m={c:'conservative',r:'realistic',o:'optimistic'}; if(m[scen]) ACTIVE_SCEN=m[scen]; }
+  if(year){ YEAR_MODE=(year==='1')?'y1':'steady'; document.getElementById('yearMode').value=YEAR_MODE; }
+}
+
+/* ---------- init ---------- */
+window.addEventListener('load', async ()=>{
+  enableCommaFormatting();
+  attach();
+  await loadCsv();
+  applyStaticDynamicClasses();
+  // Defaults: Realistic + Year 1
+  updateScenarioButtons(ACTIVE_SCEN);
+  applyScenario(ACTIVE_SCEN);
+  document.getElementById('yearMode').value='y1';
+  YEAR_MODE='y1';
+  calculateAll();
+});
 </script>
 </body>
 </html>

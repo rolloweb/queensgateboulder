@@ -12,9 +12,9 @@
 <style>
   :root{
     color-scheme: light dark;
-    --gold:#fce38b;   /* highlight */
-    --salmon:#df7d6e; /* costs */
-    --blue:#6ba0cc;   /* revenue */
+    --gold:#fce38b;
+    --salmon:#df7d6e;
+    --blue:#6ba0cc;
     --ink:#101418;
     --paper:#f8fafc;
   }
@@ -22,12 +22,18 @@
     :root{ --paper:#0b0b0c; --ink:#e6e6e6; }
   }
 
-  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
-  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
 
-  /* Sticky header with toggles always visible */
-  header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.96);backdrop-filter:saturate(1.1) blur(6px);border-bottom:2px solid var(--gold);box-shadow:0 4px 14px rgba(0,0,0,.06)}
-  @media (prefers-color-scheme:dark){header{background:rgba(16,16,16,.96)}}
+  /* Sticky header that really sticks */
+  header{
+    position:sticky; top:0; z-index:9999;
+    background:rgba(255,255,255,.97);
+    border-bottom:2px solid var(--gold);
+    backdrop-filter:saturate(1.1) blur(6px);
+  }
+  @media (prefers-color-scheme:dark){header{background:rgba(16,16,16,.97)}}
+
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
   h1{margin:.25rem 0 0;font-weight:900;font-size:clamp(22px,3vw,30px)}
   p.muted{margin:.25rem 0 0;opacity:.7}
 
@@ -61,14 +67,14 @@
   .drivers input{width:100%;box-sizing:border-box;border:2px solid var(--blue);border-radius:10px;padding:8px 10px;font-weight:800;font-variant-numeric:tabular-nums;background:#fff}
   @media (prefers-color-scheme:dark){.drivers input{background:#0b0e12;color:#e6f0fb;border-color:#2c6a9e}}
 
-  /* Monthly break even card redesign */
+  /* Monthly break even improved */
   .break-card{background:#0e1216;border:2px solid #1f2937;color:#f1f5f9;border-radius:16px;padding:16px}
   .break-head{display:flex;justify-content:space-between;align-items:center}
   .break-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
   .break-row{display:flex;justify-content:space-between;align-items:baseline;background:#111827;border:1px solid #1f2937;border-radius:12px;padding:10px}
-  .break-label{opacity:.8}
+  .break-label{opacity:.85}
   .break-val{font-weight:900}
-  .break-members{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding:12px;border-radius:12px;border:2px solid var(--gold);background:color-mix(in oklab, var(--gold) 20%, transparent)}
+  .break-members{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding:12px;border-radius:12px;border:2px solid var(--gold);background:rgba(252,227,139,.18)}
   .pill{display:inline-block;background:#10b981;color:#062e26;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800}
   @media (prefers-color-scheme:dark){.pill{background:#10b981;color:#022019}}
 
@@ -79,10 +85,9 @@
 
   .finance-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
   .metric{border-radius:12px;padding:10px}
-  .metric h4{margin:0 0 4px;font-size:12px;opacity:.85}
+  .metric h4{margin:0 0 4px;font-size:12px;opacity:.9}
   .metric .val{font-weight:900;font-size:18px}
 
-  /* Contrast: dark text on gold, light text on blue/salmon */
   .m-gold{background:var(--gold);color:#1f2937}
   .m-blue{background:var(--blue);color:#fff}
   .m-salmon{background:var(--salmon);color:#fff}
@@ -131,7 +136,6 @@
 
   <!-- Drivers + Break even + Chart -->
   <section class="row cols-3" style="margin-top:12px">
-    <!-- Monthly break even redesigned -->
     <div class="break-card">
       <div class="break-head">
         <h2 style="margin:0;font-size:18px;font-weight:800">Monthly break even</h2>
@@ -148,7 +152,6 @@
       </div>
     </div>
 
-    <!-- Drivers -->
     <div class="card">
       <h2 style="margin:0 0 8px;font-size:18px;font-weight:800">Revenue drivers</h2>
       <div class="drivers">
@@ -161,7 +164,6 @@
       <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button id="resetDrivers" class="btn" type="button">Reset</button></div>
     </div>
 
-    <!-- Chart -->
     <div class="card">
       <h2 style="margin:0 0 8px;font-size:18px;font-weight:800">Revenue vs costs</h2>
       <div class="chart-wrap"><canvas id="revCostChart" aria-label="Revenue vs Costs chart"></canvas></div>
@@ -181,7 +183,7 @@
     </div>
 
     <div class="finance-metrics">
-      <div class="metric m-blue"><h4>Annual debt service</h4><div class="val mono" id="debtService">£0</div></div>
+      <div class="metric m-blue"><h4>Annual debt service</h4><div class="val mono" id="debtService">n/a</div></div>
       <div class="metric m-salmon"><h4>DSCR (EBITDA ÷ Debt service)</h4><div class="val mono" id="dscr">n/a</div></div>
       <div class="metric m-gold"><h4>Simple payback on capex</h4><div class="val mono" id="simplePayback">n/a</div></div>
       <div class="metric m-gold"><h4>Debt payback on loan</h4><div class="val mono" id="debtPayback">n/a</div></div>
@@ -193,7 +195,6 @@
   <section class="card" style="margin-top:12px">
     <div class="section-head">
       <h2 style="margin:0;font-size:18px;font-weight:900">Detailed view</h2>
-      <!-- Removed the global Operating total badge -->
     </div>
     <div id="tableContainer" style="overflow-x:auto"></div>
   </section>
@@ -201,7 +202,12 @@
 </main>
 
 <script>
-  const CSV_PATH = "./adjusted_queensgate_bouldering_model_v3.csv";
+  /* Try the new CSV first, then fall back so the page never goes blank */
+  const CSV_CANDIDATES = [
+    "./adjusted_queensgate_bouldering_model_v3.csv",
+    "./adjusted_queensgate_bouldering_model.csv",
+    "./Queensgate_Bouldering_Financial_ModelV2_ADJUSTED.csv"
+  ];
 
   const money = n => !isFinite(n) ? "£0" : "£"+ Number(n).toLocaleString("en-GB",{maximumFractionDigits:0});
   const num = v => { if (v===null||v===undefined) return 0; if (typeof v==="number") return v; const clean=String(v).replace(/[£,\s]/g,""); const p=parseFloat(clean); return isNaN(p)?0:p; };
@@ -215,27 +221,49 @@
 
   const driverOverrides = { membersPerMonth:null, memberPrice:null, dayPassesPerMonth:null, dayPassPrice:null, otherPerMonth:null };
 
+  /* Column helpers that tolerate header changes */
+  function getCol(row, names){
+    for (const n of names){
+      if (row.hasOwnProperty(n)) return row[n];
+    }
+    return null;
+  }
+  function sectionName(row){
+    return String(getCol(row, ["SECTION TITLE","Section","SECTION","Category"]) || "Other");
+  }
+  function descName(row){
+    return String(getCol(row, ["DESCRIPTION","Description","Item"]) || "");
+  }
+  function notesText(row){
+    return String(getCol(row, ["NOTES","Notes","Note"]) || "").trim();
+  }
+  function valueFor(row, scn){
+    const y1 = getCol(row, ["Year 1","Year1","YEAR 1","YEAR_1"]);
+    if (useYear1 && y1 !== null && y1 !== "") return num(y1);
+    const tryCols = [scn, scn.toUpperCase(), scn[0], scn[0]?.toUpperCase()];
+    for (const c of tryCols){
+      const v = getCol(row, [c]);
+      if (v !== null && v !== "") return num(v);
+    }
+    return 0;
+  }
+
   function groupRows(){
     bySection = {};
     rows.forEach(r=>{
-      const s = (r["SECTION TITLE"] || r["Section"] || "Other") + "";
+      const s = sectionName(r);
       if(!bySection[s]) bySection[s] = [];
       bySection[s].push(r);
     });
   }
 
-  function getCellValue(row, scn){
-    if(useYear1 && row.hasOwnProperty("Year 1") && row["Year 1"] !== null && row["Year 1"] !== "") return num(row["Year 1"]);
-    return num(row[scn]);
-  }
-
   function readRevenueDriversFromCSV(scn){
-    const revRows = (bySection["REVENUE"] || bySection["Revenue"] || []);
+    const revRows = (bySection["REVENUE"] || bySection["Revenue"] || bySection["Revenue "] || []);
     const pick = (cands) => {
       const want = cands.map(x=>x.toUpperCase());
-      const row = revRows.find(r => want.includes(String(r["DESCRIPTION"]||"").toUpperCase()));
+      const row = revRows.find(r => want.includes(descName(r).toUpperCase()));
       if (!row) return 0;
-      return useYear1 && row["Year 1"] ? num(row["Year 1"]) : num(row[scn]);
+      return valueFor(row, scn);
     };
     return {
       membersPerMonth: pick(["MEMBERS_ MONTHLY","MEMBERS_MONTHLY","MEMBERS PER MONTH","MEMBERS"]),
@@ -264,8 +292,8 @@
     const isCapex = secName.toUpperCase().includes("CAPITAL EXPENDITURE");
     const isRevenue = secName.toUpperCase().includes("REVENUE");
     if (isRevenue) return getRevenuePieces(scn).annual;
-    if (isCapex) return arr.reduce((a,r)=>a+num(r["Year 1"]),0);
-    return arr.reduce((a,r)=>a+getCellValue(r, scn),0);
+    if (isCapex) return arr.reduce((a,r)=>a+num(getCol(r, ["Year 1","Year1","YEAR 1","YEAR_1"])),0);
+    return arr.reduce((a,r)=>a+valueFor(r, scn),0);
   }
 
   function totalOperating(scn){
@@ -303,7 +331,7 @@
     const noteEl = document.getElementById("bankNote");
     if (!isFinite(dscr)) {
       if (loan<=0) noteEl.textContent = "Enter a loan amount to populate DSCR and debt payback.";
-      else if (ebitda<=0) noteEl.textContent = "EBITDA is negative. Increase revenue or reduce operating costs to see DSCR and payback.";
+      else if (ebitda<=0) noteEl.textContent = "EBITDA is negative. Increase revenue or reduce operating costs.";
       else noteEl.textContent = "";
     } else {
       if (dscr < 1.0) noteEl.textContent = "DSCR below 1.0 means EBITDA does not cover debt service.";
@@ -327,7 +355,6 @@
     document.getElementById("kpiRevenueLabel").textContent = useYear1 ? "Year 1 revenue" : "Annual revenue";
     document.getElementById("kpiCostsLabel").textContent = useYear1 ? "Year 1 operating costs" : "Annual operating costs";
 
-    /* Break even */
     const monthlyCosts = totalOperating(currentScenario)/12;
     const monthlyOtherRevenue = (rev.dayPassesPerMonth*rev.dayPassPrice) + rev.otherPerMonth;
     const needed = Math.max(0, Math.ceil((monthlyCosts - monthlyOtherRevenue) / (rev.memberPrice || 1)));
@@ -335,7 +362,6 @@
     document.getElementById("beOtherRev").textContent = money(monthlyOtherRevenue);
     document.getElementById("membersReq").textContent = isFinite(needed) ? needed.toLocaleString("en-GB") : "0";
 
-    /* Chart */
     const ctx = document.getElementById("revCostChart");
     const data = { labels:["Revenue","Costs"], datasets:[{label:"Annual £", data:[rev.annual, costs], backgroundColor:[cssVal("--blue"), cssVal("--salmon")] }] };
     const opts = { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:(p)=>money(p.raw)}} } };
@@ -345,6 +371,15 @@
 
     renderDebtAndPayback(ebitda, totalCapex());
     setDriverInputs();
+  }
+
+  function totalCapex(){
+    return Object.keys(bySection).reduce((acc,sec)=>{
+      if (sec.toUpperCase().includes("CAPITAL EXPENDITURE")){
+        acc += (bySection[sec]||[]).reduce((a,r)=>a+num(getCol(r, ["Year 1","Year1","YEAR 1","YEAR_1"])),0);
+      }
+      return acc;
+    },0);
   }
 
   function renderTable(){
@@ -371,8 +406,8 @@
         </td></tr>
       `;
       (bySection[sec]||[]).forEach(r=>{
-        const desc = String(r["DESCRIPTION"]||"");
-        const notes = String(r["NOTES"]||"").trim();
+        const desc = descName(r);
+        const notes = notesText(r);
         let unit = isRevenue ? "Monthly" : isCapex ? "One time" : (useYear1 ? "Year 1" : "Annual");
         let value = 0;
 
@@ -393,9 +428,9 @@
           }
           return;
         } else if (isCapex){
-          value = num(r["Year 1"]);
+          value = num(getCol(r, ["Year 1","Year1","YEAR 1","YEAR_1"]));
         } else {
-          value = getCellValue(r, currentScenario);
+          value = valueFor(r, currentScenario);
         }
         html += rowHTML(desc, unit, money(value), notes);
       });
@@ -455,28 +490,26 @@
     setIf("otherPerMonth","inOther");
   }
 
-  ["loanAmount","loanRate","loanYears","equityAmount"].forEach(id=>{
-    document.getElementById(id).addEventListener("input", ()=>recalc());
-  });
-
-  function loadCSV(){
-    Papa.parse(CSV_PATH,{
+  /* CSV loader with fallback */
+  function loadCSVFrom(list, idx=0){
+    if (idx >= list.length){
+      document.querySelector("main").innerHTML = `
+        <div class="card"><h2 style="margin:0 0 8px;font-size:18px;font-weight:900">Could not load CSV</h2>
+        <p style="color:#dc2626;margin:0 0 8px">Tried: ${CSV_CANDIDATES.join(", ")}</p></div>`;
+      return;
+    }
+    const path = list[idx];
+    Papa.parse(path,{
       download:true, header:true, dynamicTyping:false, skipEmptyLines:true,
       complete:(res)=>{
         rows = res.data.map(r=>{ Object.keys(r).forEach(k=>{ if(r[k]==="") r[k]=null; }); return r; });
         groupRows(); setDriverInputs(true); recalc();
       },
-      error:(err)=>{
-        document.querySelector("main").innerHTML = `
-          <div class="card"><h2 style="margin:0 0 8px;font-size:18px;font-weight:900">Could not load CSV</h2>
-          <p style="color:#dc2626;margin:0 0 8px">Error: ${err?.message || "Unknown error"}</p>
-          <p class="muted" style="margin:0">CSV must be next to this HTML and named <b>adjusted_queensgate_bouldering_model_v3.csv</b>.</p></div>`;
-        console.error("CSV load error", err);
-      }
+      error:()=> loadCSVFrom(list, idx+1)
     });
   }
 
-  loadCSV();
+  loadCSVFrom(CSV_CANDIDATES);
 </script>
 
 </body>

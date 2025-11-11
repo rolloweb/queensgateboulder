@@ -17,28 +17,37 @@
     --blue:#6ba0cc;
     --ink:#101418;
     --paper:#f8fafc;
+    --header-h: 0px; /* will be set by JS */
   }
   @media (prefers-color-scheme:dark){
     :root{ --paper:#0b0b0c; --ink:#e6e6e6; }
   }
 
-  html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+  html,body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+  }
 
   /* FIXED header that always stays visible */
-header{
-  position: fixed;   /* was: sticky */
-  top: 0; left: 0; right: 0;
-  z-index: 9999;
-  background: rgba(255,255,255,.97);
-  border-bottom: 2px solid var(--gold);
-  backdrop-filter: saturate(1.1) blur(6px);
-}
-@media (prefers-color-scheme:dark){
-  header{ background: rgba(16,16,16,.97) }
-}
+  header{
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 9999;
+    background: rgba(255,255,255,.97);
+    border-bottom: 2px solid var(--gold);
+    backdrop-filter: saturate(1.1) blur(6px);
+    box-sizing: border-box;
+  }
+  @media (prefers-color-scheme:dark){
+    header{ background: rgba(16,16,16,.97) }
+  }
+
   .wrap{max-width:1100px;margin:0 auto;padding:16px}
   h1{margin:.25rem 0 0;font-weight:900;font-size:clamp(22px,3vw,30px)}
   p.muted{margin:.25rem 0 0;opacity:.7}
+
+  /* Spacer directly below header so content is never hidden */
+  #header-spacer{ height: var(--header-h); }
 
   .row{display:grid;gap:12px}
   @media(min-width:900px){.row.cols-4{grid-template-columns:repeat(4,1fr)}.row.cols-3{grid-template-columns:repeat(3,1fr)}}
@@ -126,11 +135,11 @@ header{
     </div>
   </div>
 </header>
+
 <!-- Spacer to offset the fixed header height -->
 <div id="header-spacer"></div>
 
-  <main class="wrap" style="padding-top:16px;padding-bottom:40px">
-
+<main class="wrap" style="padding-top:16px;padding-bottom:40px">
   <!-- KPIs -->
   <section class="row cols-4">
     <div class="card accent"><div class="kpi mono" id="kpiRevenue">£0</div><div class="kpi-sub" id="kpiRevenueLabel">Annual revenue</div></div>
@@ -207,12 +216,25 @@ header{
 </main>
 
 <script>
-  /* Try the new CSV first, then fall back so the page never goes blank */
+  /* CSV candidates (v3 first) */
   const CSV_CANDIDATES = [
     "./adjusted_queensgate_bouldering_model_v3.csv",
     "./adjusted_queensgate_bouldering_model.csv",
     "./Queensgate_Bouldering_Financial_ModelV2_ADJUSTED.csv"
   ];
+
+  /* Header spacer sizing so content isn't hidden under fixed header.
+     Works inside Squarespace iframes too. */
+  function sizeHeaderSpacer(){
+    const h = document.querySelector('header');
+    const s = document.getElementById('header-spacer');
+    if (!h || !s) return;
+    const px = h.offsetHeight + 'px';
+    s.style.height = px;
+    document.documentElement.style.setProperty('--header-h', px);
+  }
+  window.addEventListener('load', sizeHeaderSpacer);
+  window.addEventListener('resize', sizeHeaderSpacer);
 
   const money = n => !isFinite(n) ? "£0" : "£"+ Number(n).toLocaleString("en-GB",{maximumFractionDigits:0});
   const num = v => { if (v===null||v===undefined) return 0; if (typeof v==="number") return v; const clean=String(v).replace(/[£,\s]/g,""); const p=parseFloat(clean); return isNaN(p)?0:p; };
@@ -226,7 +248,6 @@ header{
 
   const driverOverrides = { membersPerMonth:null, memberPrice:null, dayPassesPerMonth:null, dayPassPrice:null, otherPerMonth:null };
 
-  /* Column helpers that tolerate header changes */
   function getCol(row, names){
     for (const n of names){
       if (row.hasOwnProperty(n)) return row[n];
@@ -294,10 +315,10 @@ header{
 
   function sectionTotal(secName, scn){
     const arr = bySection[secName] || [];
-    const isCapex = secName.toUpperCase().includes("CAPITAL EXPENDITURE");
+    const isCapex = secName.toUpperCase().includes("CAPITAL EXPENDITURE") || secName.toUpperCase().includes("CAPEX") || secName.toUpperCase().includes("FIT OUT");
     const isRevenue = secName.toUpperCase().includes("REVENUE");
     if (isRevenue) return getRevenuePieces(scn).annual;
-    if (isCapex) return arr.reduce((a,r)=>a+num(getCol(r, ["Year 1","Year1","YEAR 1","YEAR_1"])),0);
+    if (isCapex) return arr.reduce((a,r)=>a+num(getCol(r, ["Year 1","Year1","YEAR 1","YEAR_1","Realistic","R","Conservative"])),0);
     return arr.reduce((a,r)=>a+valueFor(r, scn),0);
   }
 
@@ -305,12 +326,11 @@ header{
     return Object.keys(bySection).reduce((acc,sec)=>{
       const u = sec.toUpperCase();
       if (u.includes("REVENUE")) return acc;
-      if (u.includes("CAPITAL EXPENDITURE")) return acc;
+      if (u.includes("CAPITAL") || u.includes("CAPEX") || u.includes("FIT OUT")) return acc;
       return acc + sectionTotal(sec, scn);
     },0);
   }
 
-  /* Debt maths */
   function annuityPayment(P, r_annual, years){
     const n = years * 12;
     const i = r_annual / 12;
@@ -318,6 +338,17 @@ header{
     const m = P * (i) / (1 - Math.pow(1+i, -n));
     return m * 12;
   }
+
+  function totalCapex(){
+    return Object.keys(bySection).reduce((acc,sec)=>{
+      const name = sec.toUpperCase();
+      if (name.includes("CAPITAL") || name.includes("CAPEX") || name.includes("FIT OUT")){
+        acc += (bySection[sec]||[]).reduce((a,r)=>a+num(getCol(r, ["Year 1","Year1","YEAR 1","YEAR_1","Realistic","R","Conservative"])),0);
+      }
+      return acc;
+    },0);
+  }
+
   function renderDebtAndPayback(ebitda, capex){
     const loan = parseFloat(document.getElementById("loanAmount").value) || 0;
     const rate = (parseFloat(document.getElementById("loanRate").value) || 0) / 100;
@@ -378,16 +409,6 @@ header{
     setDriverInputs();
   }
 
-function totalCapex(){
-  return Object.keys(bySection).reduce((acc,sec)=>{
-    const name = sec.toUpperCase();
-    if (name.includes("CAPITAL") || name.includes("CAPEX") || name.includes("FIT OUT")){
-      acc += (bySection[sec]||[]).reduce((a,r)=>a+num(getCol(r, ["Year 1","Year1","YEAR 1","YEAR_1","Realistic","R","Conservative"])),0);
-    }
-    return acc;
-  },0);
-}
-
   function renderTable(){
     const container = document.getElementById("tableContainer");
     const secOrder = Object.keys(bySection);
@@ -398,7 +419,7 @@ function totalCapex(){
         </thead><tbody>
     `;
     secOrder.forEach(sec=>{
-      const isCapex = sec.toUpperCase().includes("CAPITAL EXPENDITURE");
+      const isCapex = sec.toUpperCase().includes("CAPITAL EXPENDITURE") || sec.toUpperCase().includes("CAPEX") || sec.toUpperCase().includes("FIT OUT");
       const isRevenue = sec.toUpperCase().includes("REVENUE");
       const t = sectionTotal(sec, currentScenario);
       html += `
@@ -434,7 +455,7 @@ function totalCapex(){
           }
           return;
         } else if (isCapex){
-          value = num(getCol(r, ["Year 1","Year1","YEAR 1","YEAR_1"]));
+          value = num(getCol(r, ["Year 1","Year1","YEAR 1","YEAR_1","Realistic","R","Conservative"]));
         } else {
           value = valueFor(r, currentScenario);
         }
@@ -496,7 +517,6 @@ function totalCapex(){
     setIf("otherPerMonth","inOther");
   }
 
-  /* CSV loader with fallback */
   function loadCSVFrom(list, idx=0){
     if (idx >= list.length){
       document.querySelector("main").innerHTML = `
@@ -509,7 +529,7 @@ function totalCapex(){
       download:true, header:true, dynamicTyping:false, skipEmptyLines:true,
       complete:(res)=>{
         rows = res.data.map(r=>{ Object.keys(r).forEach(k=>{ if(r[k]==="") r[k]=null; }); return r; });
-        groupRows(); setDriverInputs(true); recalc();
+        groupRows(); setDriverInputs(true); recalc(); sizeHeaderSpacer();
       },
       error:()=> loadCSVFrom(list, idx+1)
     });

@@ -11,76 +11,44 @@
   :root{
     color-scheme: light dark;
     --gold:#fce38b;
-    --salmon:#df7d6e;
     --blue:#6ba0cc;
     --ink:#101418;
     --paper:#f8fafc;
   }
-  @media (prefers-color-scheme:dark){
-    :root{ --paper:#0b0b0c; --ink:#e6e6e6; }
+  @media(prefers-color-scheme:dark){
+    :root{--paper:#0b0b0c;--ink:#e6e6e6}
   }
+  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui}
 
-  html,body{
-    margin:0; background:var(--paper); color:var(--ink);
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-  }
-
-  /* Sticky header from Code A */
   header{
-    position:sticky;
-    top:0;
-    z-index:10;
+    position:sticky;top:0;z-index:10;
     background:rgba(255,255,255,.97);
     border-bottom:2px solid var(--gold);
     backdrop-filter:saturate(1.1) blur(6px);
   }
   @media(prefers-color-scheme:dark){
-    header{ background:rgba(16,16,16,.97); }
+    header{background:rgba(16,16,16,.97)}
   }
 
   .wrap{max-width:1100px;margin:0 auto;padding:16px}
-  h1{margin:0;font-size:26px;font-weight:900}
-
-  .toggle-row{
-    display:flex;gap:12px;align-items:center;
-    flex-wrap:wrap;margin-top:8px
-  }
-
-  .switch{display:flex;align-items:center;gap:8px;font-weight:800}
-  .switch input{
-    appearance:none;width:46px;height:26px;border-radius:999px;
-    background:#cbd5e1;position:relative;cursor:pointer;
-    border:2px solid #93a3b8
-  }
-  .switch input:checked{
-    background:var(--gold);border-color:var(--gold)
-  }
-  .switch input::after{
-    content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;
-    border-radius:50%;background:#fff;transition:left .18s ease
-  }
-  .switch input:checked::after{left:24px}
+  .row{display:grid;gap:12px}
+  @media(min-width:900px){.row.cols-2{grid-template-columns:repeat(2,1fr)}}
 
   .card{
-    background:#fff;border:2px solid #e5e7eb;
-    border-radius:16px;padding:18px;margin-top:16px;
+    background:#fff;padding:18px;border-radius:16px;
+    border:2px solid #e5e7eb;margin-top:18px
   }
   @media(prefers-color-scheme:dark){
     .card{background:#121416;border-color:#222}
   }
 
-  .row{display:grid;gap:12px}
-  @media(min-width:900px){
-    .row.cols-3{grid-template-columns:repeat(3,1fr)}
-  }
-
   .kpi{font-size:30px;font-weight:900}
   .mono{font-variant-numeric:tabular-nums}
 
-  .drivers input{
+  input{
     width:100%;padding:8px;
     border-radius:10px;border:2px solid var(--blue);
-    background:#fff;font-weight:800;
+    background:#fff;font-weight:800
   }
 
   table{width:100%;border-collapse:collapse;margin-top:12px}
@@ -97,87 +65,52 @@
 <header>
   <div class="wrap">
     <h1>Queensgate Bouldering • Financial Model</h1>
-    <div class="toggle-row">
-      <label class="switch">
-        <input type="checkbox" id="yearToggle">
-        <span>Use Year 1</span>
-      </label>
-    </div>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-weight:700">
+      <input type="checkbox" id="yearToggle">
+      Use Year 1
+    </label>
   </div>
 </header>
 
 <main class="wrap" style="padding-bottom:40px">
 
-  <!-- KPIs -->
-  <section class="row cols-3">
+  <section class="row cols-2">
     <div class="card">
       <div class="kpi mono" id="kpiEbitda">£0</div>
       <div>EBITDA</div>
     </div>
     <div class="card">
-      <div class="kpi mono" id="kpiDebt">£0</div>
-      <div>Annual debt service</div>
-    </div>
-    <div class="card">
-      <div class="kpi mono" id="kpiDscr">n/a</div>
-      <div>Cover ratio</div>
+      <div class="kpi mono" id="kpiCapex">£0</div>
+      <div>CAPEX</div>
     </div>
   </section>
 
-  <!-- Revenue Drivers -->
   <section class="card">
     <h2>Revenue drivers</h2>
-    <div class="row cols-3 drivers" style="margin-top:12px">
-      <div>
-        <label>Members per month</label>
-        <input id="drvMembers" type="number">
-      </div>
-      <div>
-        <label>Member price</label>
-        <input id="drvMemberPrice" type="number">
-      </div>
-      <div>
-        <label>Day passes</label>
-        <input id="drvDayPasses" type="number">
-      </div>
-      <div>
-        <label>Day pass price</label>
-        <input id="drvDayPrice" type="number">
-      </div>
-      <div>
-        <label>Other revenue</label>
-        <input id="drvOther" type="number">
-      </div>
+    <div class="row cols-2" style="margin-top:12px">
+      <div><label>Members per month</label><input id="drvMembers"></div>
+      <div><label>Member price</label><input id="drvMemberPrice"></div>
+      <div><label>Day passes</label><input id="drvDayPasses"></div>
+      <div><label>Day pass price</label><input id="drvDayPrice"></div>
+      <div><label>Other revenue</label><input id="drvOther"></div>
     </div>
   </section>
 
-  <!-- Loan -->
   <section class="card">
     <h2>Loan</h2>
-    <div class="row cols-3">
-      <div>
-        <label>Loan amount</label>
-        <input id="loanAmount" type="number" value="350000">
-      </div>
-      <div>
-        <label>Interest rate percent</label>
-        <input id="loanRate" type="number" value="7">
-      </div>
-      <div>
-        <label>Term years</label>
-        <input id="loanYears" type="number" value="7">
-      </div>
+    <div class="row cols-2">
+      <div><label>Loan amount</label><input id="loanAmount" value="350000"></div>
+      <div><label>Interest rate percent</label><input id="loanRate" value="7"></div>
+      <div><label>Loan term (months)</label><input id="loanMonths" value="84"></div>
     </div>
   </section>
 
-  <!-- Detailed Table -->
   <section class="card">
     <h2>Detailed view</h2>
     <div id="tableContainer"></div>
   </section>
 
 </main>
-
 
 <script>
 let rows = [];
@@ -191,59 +124,55 @@ function group(){
   bySection = {};
   rows.forEach(r=>{
     const sec = r["SECTION TITLE"] || "Other";
-    if (!bySection[sec]) bySection[sec] = [];
+    if(!bySection[sec]) bySection[sec] = [];
     bySection[sec].push(r);
   });
 }
 
-function value(row){
+function val(row){
   return useYear1 ? num(row["Year 1"]) : num(row["Year 2"]);
 }
 
 function sectionTotal(sec){
-  return (bySection[sec]||[]).reduce((a,r)=>a + value(r),0);
+  return (bySection[sec]||[]).reduce((a,r)=>a+val(r),0);
+}
+
+function normalise(s){
+  return String(s||"").toUpperCase().replace(/[\s_]/g,"");
 }
 
 function readRevenue(){
-  const revSec = bySection["Revenue"] || bySection["REVENUE"] || [];
-  const find = name => {
-    const row = revSec.find(r => r["DESCRIPTION"]?.toUpperCase()===name);
-    return row ? value(row) : 0;
+  const rev = bySection["Revenue"] || bySection["REVENUE"] || [];
+  const get = key => {
+    const k = normalise(key);
+    const row = rev.find(r => normalise(r["DESCRIPTION"])===k);
+    return row ? val(row) : 0;
   };
-
   return {
-    members: find("MEMBERS"),
-    memberPrice: find("MEMBER PRICE"),
-    dayPasses: find("DAY PASSES"),
-    dayPrice: find("DAY PASS PRICE"),
-    other: find("OTHER")
+    members: get("MEMBERSPERMONTH"),
+    memberPrice: get("MEMBERPRICE"),
+    dayPasses: get("DAYPASSES"),
+    dayPrice: get("DAYPASSPRICE"),
+    other: get("OTHERREVENUE")
   };
 }
 
-function computeRevenue(drivers){
-  return (drivers.members*drivers.memberPrice + drivers.dayPasses*drivers.dayPrice + drivers.other) * 12;
-}
-
-function annualDebtService(P, rate, years){
-  const r = rate/100/12;
-  const n = years*12;
-  if (r===0) return P/years;
-  const m = P * r / (1 - Math.pow(1+r, -n));
-  return m*12;
+function computeRevenue(d){
+  return (d.members*d.memberPrice + d.dayPasses*d.dayPrice + d.other) * 12;
 }
 
 function render(){
-  const revCsv = readRevenue();
+  const csvRev = readRevenue();
 
-  const drivers = {
-    members: num(document.getElementById("drvMembers").value || revCsv.members),
-    memberPrice: num(document.getElementById("drvMemberPrice").value || revCsv.memberPrice),
-    dayPasses: num(document.getElementById("drvDayPasses").value || revCsv.dayPasses),
-    dayPrice: num(document.getElementById("drvDayPrice").value || revCsv.dayPrice),
-    other: num(document.getElementById("drvOther").value || revCsv.other),
+  const drv = {
+    members: num(document.getElementById("drvMembers").value || csvRev.members),
+    memberPrice: num(document.getElementById("drvMemberPrice").value || csvRev.memberPrice),
+    dayPasses: num(document.getElementById("drvDayPasses").value || csvRev.dayPasses),
+    dayPrice: num(document.getElementById("drvDayPrice").value || csvRev.dayPrice),
+    other: num(document.getElementById("drvOther").value || csvRev.other),
   };
 
-  const revenue = computeRevenue(drivers);
+  const revenue = computeRevenue(drv);
 
   const operating = Object.keys(bySection)
     .filter(s => s.toUpperCase()!=="REVENUE" && !s.toUpperCase().includes("CAPEX"))
@@ -255,16 +184,8 @@ function render(){
     .filter(s => s.toUpperCase().includes("CAPEX"))
     .reduce((a,s)=>a + sectionTotal(s),0);
 
-  const loan = num(document.getElementById("loanAmount").value);
-  const rate = num(document.getElementById("loanRate").value);
-  const years = num(document.getElementById("loanYears").value);
-
-  const debt = annualDebtService(loan, rate, years);
-  const dscr = debt>0 ? ebitda/debt : NaN;
-
   document.getElementById("kpiEbitda").textContent = money(ebitda);
-  document.getElementById("kpiDebt").textContent = money(debt);
-  document.getElementById("kpiDscr").textContent = isFinite(dscr) ? dscr.toFixed(2) : "n/a";
+  document.getElementById("kpiCapex").textContent = money(capex);
 
   /* Table */
   let html = `<table><thead>
@@ -276,7 +197,7 @@ function render(){
     bySection[sec].forEach(r=>{
       html += `<tr>
         <td>${r["DESCRIPTION"]}</td>
-        <td class="mono">${money(value(r))}</td>
+        <td class="mono">${money(val(r))}</td>
       </tr>`;
     });
   });
@@ -291,7 +212,7 @@ document.getElementById("yearToggle").addEventListener("change", e=>{
 });
 
 ["drvMembers","drvMemberPrice","drvDayPasses","drvDayPrice","drvOther",
- "loanAmount","loanRate","loanYears"]
+ "loanAmount","loanRate","loanMonths"]
 .forEach(id=>{
   document.getElementById(id).addEventListener("input", render);
 });

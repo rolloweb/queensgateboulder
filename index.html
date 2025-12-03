@@ -18,13 +18,15 @@
   @media(prefers-color-scheme:dark){
     :root{--paper:#0b0b0c;--ink:#e6e6e6}
   }
+
   html,body{
     margin:0;
     background:var(--paper);
     color:var(--ink);
-    font-family:system-ui;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
   }
 
+  /* Sticky header */
   header{
     position:sticky;
     top:0;
@@ -70,6 +72,7 @@
     border:2px solid var(--blue);
     background:#fff;
     font-weight:800;
+    box-sizing:border-box;
   }
 
   table{
@@ -100,12 +103,11 @@
     <h1>Queensgate Bouldering • Financial Model</h1>
 
     <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-weight:700">
-      <input type="checkbox" id="yearToggle">
+      <input type="checkbox" id="yearToggle" checked>
       Use Year 1
     </label>
   </div>
 </header>
-
 
 <main class="wrap" style="padding-bottom:40px">
 
@@ -121,41 +123,33 @@
     </div>
   </section>
 
-
   <!-- Revenue drivers -->
   <section class="card">
     <h2>Revenue drivers</h2>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
-
       <div>
         <label>Members per month</label>
         <input id="drvMembers" type="number">
       </div>
-
       <div>
         <label>Member price</label>
         <input id="drvMemberPrice" type="number">
       </div>
-
       <div>
         <label>Day passes</label>
         <input id="drvDayPasses" type="number">
       </div>
-
       <div>
         <label>Day pass price</label>
         <input id="drvDayPrice" type="number">
       </div>
-
       <div style="grid-column:1 / span 2">
         <label>Other revenue</label>
         <input id="drvOther" type="number">
       </div>
-
     </div>
   </section>
-
 
   <!-- Loan -->
   <section class="card">
@@ -175,9 +169,7 @@
         <input id="loanMonths" type="number" value="84">
       </div>
     </div>
-
   </section>
-
 
   <!-- Detailed table -->
   <section class="card">
@@ -187,115 +179,133 @@
 
 </main>
 
-
 <script>
 let rows = [];
 let bySection = {};
-let useYear1 = false;
+let useYear1 = true;
 
 const money = n => "£" + Number(n).toLocaleString("en-GB",{maximumFractionDigits:0});
-const num = v => parseFloat(String(v).replace(/[£,]/g,"")) || 0;
+const num = v => {
+  if (v === null || v === undefined) return 0;
+  const clean = String(v).replace(/[£,\s]/g,"");
+  const p = parseFloat(clean);
+  return isNaN(p) ? 0 : p;
+};
 
-function group(){
+function groupSections(){
   bySection = {};
   rows.forEach(r=>{
     const sec = r["SECTION TITLE"] || "Other";
-    if(!bySection[sec]) bySection[sec] = [];
+    if (!bySection[sec]) bySection[sec] = [];
     bySection[sec].push(r);
   });
 }
 
-function val(row){
+function currentValue(row){
   return useYear1 ? num(row["Year 1"]) : num(row["Year 2"]);
 }
 
-function sectionTotal(sec){
-  return (bySection[sec]||[]).reduce((a,r)=>a+val(r),0);
+function isRevenueSection(name){
+  return name.toUpperCase().includes("REVENUE");
+}
+function isCapexSection(name){
+  const u = name.toUpperCase();
+  return u.includes("CAPITAL EXPENDITURE") || u.includes("CAPEX") || u.includes("FIT OUT");
 }
 
-function normalise(s){
-  return String(s||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+function sectionTotal(name){
+  const arr = bySection[name] || [];
+  return arr.reduce((a,r)=>a + currentValue(r),0);
 }
 
-function readRevenueForYear(isYear1){
-  const rev = bySection["Revenue"] || bySection["REVENUE"] || [];
+// Map your actual revenue driver rows
+function readRevenueFromCsv(){
+  const secName = Object.keys(bySection).find(s => isRevenueSection(s)) || null;
+  const revRows = secName ? bySection[secName] : [];
 
-  function get(label){
-    const target = normalise(label);
-    const row = rev.find(r => normalise(r["DESCRIPTION"]) === target);
-    if (!row) return 0;
-    return isYear1 ? num(row["Year 1"]) : num(row["Year 2"]);
-  }
+  const getByDesc = key => {
+    const target = String(key).toUpperCase();
+    const row = revRows.find(r => String(r["DESCRIPTION"]||"").toUpperCase() === target);
+    return row ? currentValue(row) : 0;
+  };
 
   return {
-    members: get("MEMBERSPERMONTH"),
-    memberPrice: get("MEMBERPRICE"),
-    dayPasses: get("DAYPASSES"),
-    dayPrice: get("DAYPASSPRICE"),
-    other: get("OTHERREVENUE")
+    members:     getByDesc("MEMBERS_ MONTHLY"),
+    memberPrice: getByDesc("MEMBERS_PRICE"),
+    dayPasses:   getByDesc("DAY_PASSES_MONTHLY"),
+    dayPrice:    getByDesc("DAY_PASS_PRICE"),
+    other:       getByDesc("OTHER_REV_MONTH")
   };
 }
 
 function populateDriverInputs(){
-  const rev = readRevenueForYear(useYear1);
-
-  document.getElementById("drvMembers").value = rev.members;
-  document.getElementById("drvMemberPrice").value = rev.memberPrice;
-  document.getElementById("drvDayPasses").value = rev.dayPasses;
-  document.getElementById("drvDayPrice").value = rev.dayPrice;
-  document.getElementById("drvOther").value = rev.other;
+  const rev = readRevenueFromCsv();
+  document.getElementById("drvMembers").value      = rev.members;
+  document.getElementById("drvMemberPrice").value  = rev.memberPrice;
+  document.getElementById("drvDayPasses").value    = rev.dayPasses;
+  document.getElementById("drvDayPrice").value     = rev.dayPrice;
+  document.getElementById("drvOther").value        = rev.other;
 }
 
-function computeRevenue(d){
-  return (d.members*d.memberPrice + d.dayPasses*d.dayPrice + d.other) * 12;
+function computeAnnualRevenue(drivers){
+  const m = drivers.members * drivers.memberPrice;
+  const d = drivers.dayPasses * drivers.dayPrice;
+  return (m + d + drivers.other) * 12;
 }
 
 function render(){
-  const defaultDrivers = readRevenueForYear(useYear1);
+  const defaults = readRevenueFromCsv();
 
   const drv = {
-    members: num(document.getElementById("drvMembers").value || defaultDrivers.members),
-    memberPrice: num(document.getElementById("drvMemberPrice").value || defaultDrivers.memberPrice),
-    dayPasses: num(document.getElementById("drvDayPasses").value || defaultDrivers.dayPasses),
-    dayPrice: num(document.getElementById("drvDayPrice").value || defaultDrivers.dayPrice),
-    other: num(document.getElementById("drvOther").value || defaultDrivers.other)
+    members:     num(document.getElementById("drvMembers").value)      || defaults.members,
+    memberPrice: num(document.getElementById("drvMemberPrice").value)  || defaults.memberPrice,
+    dayPasses:   num(document.getElementById("drvDayPasses").value)    || defaults.dayPasses,
+    dayPrice:    num(document.getElementById("drvDayPrice").value)     || defaults.dayPrice,
+    other:       num(document.getElementById("drvOther").value)        || defaults.other
   };
 
-  const revenue = computeRevenue(drv);
+  const revenue = computeAnnualRevenue(drv);
 
-  const operating = Object.keys(bySection)
-    .filter(s => s.toUpperCase()!=="REVENUE" && !s.toUpperCase().includes("CAPEX"))
-    .reduce((a,s)=>a + sectionTotal(s),0);
+  const sections = Object.keys(bySection);
+
+  const operating = sections
+    .filter(s => !isRevenueSection(s) && !isCapexSection(s))
+    .reduce((acc,s)=>acc + sectionTotal(s),0);
 
   const ebitda = revenue - operating;
 
-  const capex = Object.keys(bySection)
-    .filter(s => s.toUpperCase().includes("CAPEX"))
-    .reduce((a,s)=>a + sectionTotal(s),0);
+  const capex = sections
+    .filter(s => isCapexSection(s))
+    .reduce((acc,s)=>acc + sectionTotal(s),0);
 
   document.getElementById("kpiEbitda").textContent = money(ebitda);
-  document.getElementById("kpiCapex").textContent = money(capex);
+  document.getElementById("kpiCapex").textContent  = money(capex);
 
   renderTable();
 }
 
 function renderTable(){
+  const sections = Object.keys(bySection);
   let html = `
     <table>
       <thead>
-        <tr><th>Item</th><th>Value</th></tr>
+        <tr>
+          <th style="width:60%">Item</th>
+          <th style="width:40%">Value</th>
+        </tr>
       </thead>
       <tbody>
   `;
 
-  Object.keys(bySection).forEach(sec=>{
+  sections.forEach(sec=>{
     html += `<tr><td colspan="2" style="font-weight:900;padding-top:14px">${sec}</td></tr>`;
-    bySection[sec].forEach(r=>{
+    (bySection[sec] || []).forEach(r=>{
       html += `
         <tr>
           <td>${r["DESCRIPTION"]}</td>
-          <td class="mono">${money(val(r))}</td>
-        </tr>`;
+          <td class="mono">${money(currentValue(r))}</td>
+        </tr>
+      `;
     });
   });
 
@@ -303,28 +313,32 @@ function renderTable(){
       </tbody>
     </table>
   `;
-
   document.getElementById("tableContainer").innerHTML = html;
 }
 
+/* Events */
 document.getElementById("yearToggle").addEventListener("change", e=>{
   useYear1 = e.target.checked;
   populateDriverInputs();
   render();
 });
 
-["drvMembers","drvMemberPrice","drvDayPasses","drvDayPrice","drvOther",
- "loanAmount","loanRate","loanMonths"]
-.forEach(id=>{
+[
+  "drvMembers","drvMemberPrice","drvDayPasses","drvDayPrice","drvOther",
+  "loanAmount","loanRate","loanMonths"
+].forEach(id=>{
   document.getElementById(id).addEventListener("input", render);
 });
 
+/* Load CSV */
 Papa.parse("./queensgate_bouldering_model.csv",{
   download:true,
   header:true,
-  complete:res=>{
+  dynamicTyping:false,
+  skipEmptyLines:true,
+  complete: res =>{
     rows = res.data;
-    group();
+    groupSections();
     populateDriverInputs();
     render();
   }

@@ -425,7 +425,17 @@
         tdItem.textContent = String(r["DESCRIPTION"] || "");
         const tdVal = document.createElement("td");
         tdVal.className = "num mono";
-        tdVal.textContent = money(valueFor(r));
+let displayValue = valueFor(r);
+
+// If this is a CAPEX line and year 2 is selected, force it to zero
+if (currentYear === 2) {
+  const sec = (r["SECTION TITLE"] || "").toUpperCase();
+  if (sec.includes("CAPEX") || sec.includes("CAPITAL") || sec.includes("FIT OUT")) {
+    displayValue = 0;
+  }
+}
+
+tdVal.textContent = money(displayValue);
         tr.appendChild(tdSec);
         tr.appendChild(tdItem);
         tr.appendChild(tdVal);

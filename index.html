@@ -298,9 +298,17 @@
   }
 
   function valueFor(row){
-    const col = currentYear === 1 ? "Year 1" : "Year 2";
-    return num(row[col]);
+  const sec = String(row["SECTION TITLE"] || "").toUpperCase();
+
+  // All CAPEX is Year 1 ONLY
+  if (sec.includes("CAPITAL") || sec.includes("EXPENDITURE") || sec.includes("CAPEX")) {
+    return num(row["Year 1"]); 
   }
+
+  // Everything else respects selected year
+  const col = currentYear === 1 ? "Year 1" : "Year 2";
+  return num(row[col]);
+}
 
   function getCsvRevenueDrivers(){
     const out = {

@@ -18,10 +18,17 @@
   @media(prefers-color-scheme:dark){
     :root{--paper:#0b0b0c;--ink:#e6e6e6}
   }
-  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui}
+  html,body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:system-ui;
+  }
 
   header{
-    position:sticky;top:0;z-index:10;
+    position:sticky;
+    top:0;
+    z-index:10;
     background:rgba(255,255,255,.97);
     border-bottom:2px solid var(--gold);
     backdrop-filter:saturate(1.1) blur(6px);
@@ -31,29 +38,55 @@
   }
 
   .wrap{max-width:1100px;margin:0 auto;padding:16px}
+
   .row{display:grid;gap:12px}
-  @media(min-width:900px){.row.cols-2{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:900px){
+    .row.cols-2{grid-template-columns:repeat(2,1fr)}
+  }
 
   .card{
-    background:#fff;padding:18px;border-radius:16px;
-    border:2px solid #e5e7eb;margin-top:18px
+    background:#fff;
+    border:2px solid #e5e7eb;
+    border-radius:16px;
+    padding:18px;
+    margin-top:20px;
   }
   @media(prefers-color-scheme:dark){
     .card{background:#121416;border-color:#222}
   }
 
-  .kpi{font-size:30px;font-weight:900}
-  .mono{font-variant-numeric:tabular-nums}
-
-  input{
-    width:100%;padding:8px;
-    border-radius:10px;border:2px solid var(--blue);
-    background:#fff;font-weight:800
+  .kpi{
+    font-size:30px;
+    font-weight:900;
+  }
+  .mono{
+    font-variant-numeric:tabular-nums;
   }
 
-  table{width:100%;border-collapse:collapse;margin-top:12px}
-  th{text-align:left;font-size:12px;opacity:.7;padding:6px 0}
-  td{padding:8px 0;border-top:1px solid #e5e7eb}
+  input{
+    width:100%;
+    padding:8px;
+    border-radius:10px;
+    border:2px solid var(--blue);
+    background:#fff;
+    font-weight:800;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:12px;
+  }
+  th{
+    text-align:left;
+    font-size:12px;
+    opacity:.7;
+    padding:6px 0;
+  }
+  td{
+    padding:8px 0;
+    border-top:1px solid #e5e7eb;
+  }
   @media(prefers-color-scheme:dark){
     td{border-color:#222}
   }
@@ -65,6 +98,7 @@
 <header>
   <div class="wrap">
     <h1>Queensgate Bouldering • Financial Model</h1>
+
     <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-weight:700">
       <input type="checkbox" id="yearToggle">
       Use Year 1
@@ -72,8 +106,10 @@
   </div>
 </header>
 
+
 <main class="wrap" style="padding-bottom:40px">
 
+  <!-- KPI summary -->
   <section class="row cols-2">
     <div class="card">
       <div class="kpi mono" id="kpiEbitda">£0</div>
@@ -85,32 +121,72 @@
     </div>
   </section>
 
+
+  <!-- Revenue drivers -->
   <section class="card">
     <h2>Revenue drivers</h2>
-    <div class="row cols-2" style="margin-top:12px">
-      <div><label>Members per month</label><input id="drvMembers"></div>
-      <div><label>Member price</label><input id="drvMemberPrice"></div>
-      <div><label>Day passes</label><input id="drvDayPasses"></div>
-      <div><label>Day pass price</label><input id="drvDayPrice"></div>
-      <div><label>Other revenue</label><input id="drvOther"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+
+      <div>
+        <label>Members per month</label>
+        <input id="drvMembers" type="number">
+      </div>
+
+      <div>
+        <label>Member price</label>
+        <input id="drvMemberPrice" type="number">
+      </div>
+
+      <div>
+        <label>Day passes</label>
+        <input id="drvDayPasses" type="number">
+      </div>
+
+      <div>
+        <label>Day pass price</label>
+        <input id="drvDayPrice" type="number">
+      </div>
+
+      <div style="grid-column:1 / span 2">
+        <label>Other revenue</label>
+        <input id="drvOther" type="number">
+      </div>
+
     </div>
   </section>
 
+
+  <!-- Loan -->
   <section class="card">
     <h2>Loan</h2>
+
     <div class="row cols-2">
-      <div><label>Loan amount</label><input id="loanAmount" value="350000"></div>
-      <div><label>Interest rate percent</label><input id="loanRate" value="7"></div>
-      <div><label>Loan term (months)</label><input id="loanMonths" value="84"></div>
+      <div>
+        <label>Loan amount</label>
+        <input id="loanAmount" type="number" value="350000">
+      </div>
+      <div>
+        <label>Interest rate percent</label>
+        <input id="loanRate" type="number" value="7">
+      </div>
+      <div>
+        <label>Loan term (months)</label>
+        <input id="loanMonths" type="number" value="84">
+      </div>
     </div>
+
   </section>
 
+
+  <!-- Detailed table -->
   <section class="card">
     <h2>Detailed view</h2>
     <div id="tableContainer"></div>
   </section>
 
 </main>
+
 
 <script>
 let rows = [];
@@ -138,16 +214,19 @@ function sectionTotal(sec){
 }
 
 function normalise(s){
-  return String(s||"").toUpperCase().replace(/[\s_]/g,"");
+  return String(s||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
 }
 
-function readRevenue(){
+function readRevenueForYear(isYear1){
   const rev = bySection["Revenue"] || bySection["REVENUE"] || [];
-  const get = key => {
-    const k = normalise(key);
-    const row = rev.find(r => normalise(r["DESCRIPTION"])===k);
-    return row ? val(row) : 0;
-  };
+
+  function get(label){
+    const target = normalise(label);
+    const row = rev.find(r => normalise(r["DESCRIPTION"]) === target);
+    if (!row) return 0;
+    return isYear1 ? num(row["Year 1"]) : num(row["Year 2"]);
+  }
+
   return {
     members: get("MEMBERSPERMONTH"),
     memberPrice: get("MEMBERPRICE"),
@@ -157,19 +236,29 @@ function readRevenue(){
   };
 }
 
+function populateDriverInputs(){
+  const rev = readRevenueForYear(useYear1);
+
+  document.getElementById("drvMembers").value = rev.members;
+  document.getElementById("drvMemberPrice").value = rev.memberPrice;
+  document.getElementById("drvDayPasses").value = rev.dayPasses;
+  document.getElementById("drvDayPrice").value = rev.dayPrice;
+  document.getElementById("drvOther").value = rev.other;
+}
+
 function computeRevenue(d){
   return (d.members*d.memberPrice + d.dayPasses*d.dayPrice + d.other) * 12;
 }
 
 function render(){
-  const csvRev = readRevenue();
+  const defaultDrivers = readRevenueForYear(useYear1);
 
   const drv = {
-    members: num(document.getElementById("drvMembers").value || csvRev.members),
-    memberPrice: num(document.getElementById("drvMemberPrice").value || csvRev.memberPrice),
-    dayPasses: num(document.getElementById("drvDayPasses").value || csvRev.dayPasses),
-    dayPrice: num(document.getElementById("drvDayPrice").value || csvRev.dayPrice),
-    other: num(document.getElementById("drvOther").value || csvRev.other),
+    members: num(document.getElementById("drvMembers").value || defaultDrivers.members),
+    memberPrice: num(document.getElementById("drvMemberPrice").value || defaultDrivers.memberPrice),
+    dayPasses: num(document.getElementById("drvDayPasses").value || defaultDrivers.dayPasses),
+    dayPrice: num(document.getElementById("drvDayPrice").value || defaultDrivers.dayPrice),
+    other: num(document.getElementById("drvOther").value || defaultDrivers.other)
   };
 
   const revenue = computeRevenue(drv);
@@ -187,27 +276,40 @@ function render(){
   document.getElementById("kpiEbitda").textContent = money(ebitda);
   document.getElementById("kpiCapex").textContent = money(capex);
 
-  /* Table */
-  let html = `<table><thead>
-    <tr><th>Item</th><th>Value</th></tr>
-  </thead><tbody>`;
+  renderTable();
+}
+
+function renderTable(){
+  let html = `
+    <table>
+      <thead>
+        <tr><th>Item</th><th>Value</th></tr>
+      </thead>
+      <tbody>
+  `;
 
   Object.keys(bySection).forEach(sec=>{
     html += `<tr><td colspan="2" style="font-weight:900;padding-top:14px">${sec}</td></tr>`;
     bySection[sec].forEach(r=>{
-      html += `<tr>
-        <td>${r["DESCRIPTION"]}</td>
-        <td class="mono">${money(val(r))}</td>
-      </tr>`;
+      html += `
+        <tr>
+          <td>${r["DESCRIPTION"]}</td>
+          <td class="mono">${money(val(r))}</td>
+        </tr>`;
     });
   });
 
-  html += `</tbody></table>`;
+  html += `
+      </tbody>
+    </table>
+  `;
+
   document.getElementById("tableContainer").innerHTML = html;
 }
 
 document.getElementById("yearToggle").addEventListener("change", e=>{
   useYear1 = e.target.checked;
+  populateDriverInputs();
   render();
 });
 
@@ -223,6 +325,7 @@ Papa.parse("./queensgate_bouldering_model.csv",{
   complete:res=>{
     rows = res.data;
     group();
+    populateDriverInputs();
     render();
   }
 });

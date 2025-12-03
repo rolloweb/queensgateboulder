@@ -451,7 +451,19 @@ tdVal.textContent = money(displayValue);
       + (rev.dayPassesPerMonth * rev.dayPassPrice * 12)
       + (rev.otherPerMonth * 12);
 
-    const baseOperating = totalOperatingCosts();
+let baseOperating = totalOperatingCosts();
+
+// Remove CAPEX from Year 2 operating cost calculations
+if (currentYear === 2) {
+  Object.keys(bySection).forEach(sec=>{
+    const up = sec.toUpperCase();
+    if (up.includes("CAPEX") || up.includes("CAPITAL") || up.includes("FIT OUT")) {
+      bySection[sec].forEach(r=>{
+        baseOperating -= valueFor(r); // removes Yr2 capex if present
+      });
+    }
+  });
+}
     const ebitda = annualRevenue - baseOperating;
     const capex = totalCapex();
 

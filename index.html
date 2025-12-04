@@ -1,160 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Queensgate Bouldering Centre – Financial Model</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta charset="UTF-8" />
+<title>Queensgate Bouldering Centre – Financial Model</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-  <!-- CSV parser -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<!-- CSV parser -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-      background:#f5f7fa;color:#1f2933;padding:20px;
-    }
-    .container{
-      max-width:1200px;margin:0 auto;background:#fff;border-radius:12px;
-      box-shadow:0 2px 12px rgba(15,23,42,0.12);overflow:hidden;
-    }
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:#f5f7fa;color:#1f2933;padding:20px;
+  }
+  .container{
+    max-width:1200px;margin:0 auto;background:#fff;border-radius:12px;
+    box-shadow:0 2px 12px rgba(15,23,42,0.12);overflow:hidden;
+  }
 
-    /* Header */
-    .header{
-      display:flex;align-items:center;gap:18px;
-      padding:24px 28px;
-      background:linear-gradient(120deg,#667eea 0%,#764ba2 40%,#a855f7 100%);
-      color:#fff;
-    }
-    .header-icon{
-      width:42px;height:42px;border-radius:10px;overflow:hidden;
-      background:#fff1;border:2px solid #ffffff55;display:flex;align-items:center;justify-content:center;
-      font-size:28px;
-    }
-    .header h1{
-      font-size:clamp(1.6rem,2.4vw,2.1rem);
-      font-weight:800;
-    }
-    .header p{
-      margin-top:6px;font-size:.95rem;opacity:.96;
-    }
+  /* Header */
+  .header{
+    display:flex;align-items:center;gap:18px;
+    padding:24px 28px;
+    background:linear-gradient(120deg,#667eea 0%,#764ba2 40%,#a855f7 100%);
+    color:#fff;
+  }
+  .header-icon{
+    width:42px;height:42px;border-radius:10px;overflow:hidden;
+    background:#fff1;border:2px solid #ffffff55;display:flex;align-items:center;justify-content:center;
+    font-size:28px;
+  }
+  .header h1{
+    font-size:clamp(1.6rem,2.4vw,2.1rem);
+    font-weight:800;
+  }
+  .header p{
+    margin-top:6px;font-size:.95rem;opacity:.96;
+  }
 
-    .content{padding:24px 26px 30px;}
+  .content{padding:24px 26px 30px;}
 
-    /* Top metrics */
-    .key-metrics{
-      display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:16px;margin-bottom:24px;padding:16px 18px;background:#f8fafc;border-radius:12px;
-    }
-    .metric{text-align:left}
-    .metric-label{font-size:.8rem;color:#6b7280;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;}
-    .metric-value{
-      font-size:1.6rem;font-weight:800;
-    }
-    .metric-value.revenue{color:#4f46e5;}
-    .metric-value.capex{color:#ea580c;}
-    .metric-value.opex{color:#0ea5e9;}
-    .metric-value.ebitda{color:#16a34a;}
+  /* Top metrics */
+  .key-metrics{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;margin-bottom:24px;padding:16px 18px;background:#f8fafc;border-radius:12px;
+  }
+  .metric{text-align:left}
+  .metric-label{font-size:.8rem;color:#6b7280;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;}
+  .metric-value{
+    font-size:1.6rem;font-weight:800;
+  }
+  .metric-value.revenue{color:#4f46e5;}
+  .metric-value.ebitda{color:#16a34a;}
+  .metric-value.capex{color:#ea580c;}
+  .metric-value.opex{color:#0f766e;}
 
-    /* Year toggle */
-    .toolbar{
-      display:flex;justify-content:space-between;align-items:center;
-      margin-bottom:18px;flex-wrap:wrap;gap:10px;
-    }
-    .year-toggle{display:inline-flex;border-radius:999px;background:#e5e7eb;padding:3px;}
-    .year-btn{
-      border:none;background:transparent;padding:6px 14px;border-radius:999px;
-      font-size:.9rem;font-weight:600;color:#4b5563;cursor:pointer;
-    }
-    .year-btn.active{
-      background:#fff;color:#111827;box-shadow:0 1px 4px rgba(0,0,0,.15);
-    }
-    .toolbar-note{font-size:.9rem;color:#4b5563;}
+  /* Year toggle */
+  .toolbar{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:18px;flex-wrap:wrap;gap:10px;
+  }
+  .year-toggle{display:inline-flex;border-radius:999px;background:#e5e7eb;padding:3px;}
+  .year-btn{
+    border:none;background:transparent;padding:6px 14px;border-radius:999px;
+    font-size:.9rem;font-weight:600;color:#4b5563;cursor:pointer;
+  }
+  .year-btn.active{
+    background:#fff;color:#111827;box-shadow:0 1px 4px rgba(0,0,0,.15);
+  }
+  .toolbar-note{font-size:.9rem;color:#4b5563;}
 
-    /* Revenue assumptions block */
-    .revenue-assumptions{
-      margin-bottom:18px;padding:14px 16px;border-radius:12px;
-      border:1px solid #e5e7eb;background:#f9fafb;
-    }
-    .revenue-assumptions-header{
-      display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px;
-    }
-    .revenue-assumptions-title{
-      font-weight:700;font-size:1rem;color:#111827;
-    }
-    .revenue-assumptions-sub{
-      font-size:.85rem;color:#6b7280;
-    }
-    .rev-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-      gap:10px;
-      margin-top:6px;
-    }
-    .field{display:flex;flex-direction:column;gap:4px;}
-    .field label{font-size:.85rem;color:#4b5563;}
-    .field input{
-      padding:7px 8px;border-radius:8px;border:1px solid #cbd5e1;
-      text-align:right;font-size:.95rem;
-      font-variant-numeric:tabular-nums;
-    }
-    .field input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 1px #6366f177;}
+  /* Sections */
+  .section{
+    border:1px solid #e5e7eb;border-radius:12px;margin-bottom:18px;overflow:hidden;
+  }
+  .section-header{
+    background:#f9fafb;padding:12px 16px;border-bottom:1px solid #e5e7eb;
+    display:flex;justify-content:space-between;align-items:center;gap:8px;
+  }
+  .section-title{font-weight:700;font-size:1.05rem;color:#111827;}
+  .section-header .section-total{font-weight:700;font-size:1rem;color:#4f46e5;}
+  .section-body{padding:16px;}
 
-    /* Sections */
-    .section{
-      border:1px solid #e5e7eb;border-radius:12px;margin-bottom:18px;overflow:hidden;
-    }
-    .section-header{
-      background:#f9fafb;padding:12px 16px;border-bottom:1px solid #e5e7eb;
-      display:flex;justify-content:space-between;align-items:center;gap:8px;
-    }
-    .section-title{font-weight:700;font-size:1.05rem;color:#111827;}
-    .section-header .section-total{font-weight:700;font-size:1rem;color:#4f46e5;}
-    .section-body{padding:16px;}
+  /* Revenue drivers form */
+  .rev-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:14px;
+    margin-top:14px;
+  }
+  .field{display:flex;flex-direction:column;gap:4px;}
+  .field label{font-size:.9rem;color:#4b5563;}
+  .field input{
+    padding:9px 10px;border-radius:8px;border:1px solid #cbd5e1;
+    text-align:right;font-size:1rem;
+  }
+  .field input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 1px #6366f177;}
+  .help-text{font-size:.85rem;color:#6b7280;}
 
-    /* Loan */
-    .loan-grid{
-      display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:4px;
-    }
-    .loan-metrics-table{
-      width:100%;border-collapse:collapse;font-size:.9rem;margin-top:12px;
-    }
-    .loan-metrics-table th,
-    .loan-metrics-table td{
-      padding:6px 6px;border-bottom:1px solid #e5e7eb;text-align:left;
-    }
-    .loan-metrics-table th{
-      font-size:.75rem;text-transform:uppercase;letter-spacing:.07em;color:#6b7280;
-    }
-    .pill{
-      font-size:.85rem;font-weight:600;padding:6px 10px;border-radius:999px;
-      background:#eef2ff;color:#3730a3;display:inline-block;
-    }
+  /* Loan */
+  .loan-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:10px;
+  }
+  .loan-metrics{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px;
+  }
+  .pill{
+    font-size:.85rem;font-weight:600;padding:6px 10px;border-radius:999px;
+    background:#eef2ff;color:#3730a3;display:inline-block;
+  }
 
-    /* Tables */
-    .table-wrap{overflow-x:auto;}
-    table.breakdown-table{width:100%;border-collapse:collapse;font-size:.9rem;}
-    table.breakdown-table th,
-    table.breakdown-table td{
-      padding:8px 6px;border-bottom:1px solid #e5e7eb;text-align:left;
-    }
-    table.breakdown-table th{
-      font-size:.75rem;text-transform:uppercase;letter-spacing:.07em;color:#6b7280;
-    }
-    table.breakdown-table tfoot td{
-      font-weight:700;background:#f9fafb;
-    }
-    .bd-input{
-      width:100%;padding:5px 6px;border-radius:6px;border:1px solid #cbd5e1;
-      text-align:right;font-size:.85rem;font-variant-numeric:tabular-nums;
-    }
-    .mono{font-variant-numeric:tabular-nums;}
-    .num{text-align:right;}
+  /* Table */
+  .table-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:.9rem;}
+  th,td{padding:8px 6px;border-bottom:1px solid #e5e7eb;text-align:left;}
+  th{font-size:.75rem;text-transform:uppercase;letter-spacing:.07em;color:#6b7280;}
+  .sec-row th{background:#f9fafb;border-top:2px solid #e5e7eb;}
+  .mono{font-variant-numeric:tabular-nums;}
+  .num{text-align:right;}
+  .sec-total-row td{
+    font-weight:700;
+    border-top:1px solid #cbd5e1;
+    background:#f9fafb;
+  }
 
-    @media(max-width:640px){
-      .content{padding:18px 16px 24px;}
-    }
-  </style>
+  @media(max-width:640px){
+    .content{padding:18px 16px 24px;}
+  }
+</style>
 </head>
 <body>
 <div class="container">
@@ -162,28 +136,28 @@
     <div class="header-icon">🧗‍♂️</div>
     <div>
       <h1>Queensgate Bouldering Centre – Financial Model</h1>
-      <p><strong>Purpose:</strong> Robust, source-backed projections aligned to supplier quotes for a two-level bouldering gym in Queensgate.</p>
+      <p><strong>Purpose:</strong> Robust, source backed projections aligned to supplier quotes for a two level bouldering gym in Queensgate.</p>
     </div>
   </header>
 
   <div class="content">
-    <!-- Top metrics -->
+    <!-- Metrics -->
     <section class="key-metrics">
       <div class="metric">
         <div class="metric-label">Annual revenue</div>
         <div class="metric-value revenue mono" id="kmRevenue">£0</div>
       </div>
       <div class="metric">
+        <div class="metric-label">Annual profit (EBITDA)</div>
+        <div class="metric-value ebitda mono" id="kmEbitda">£0</div>
+      </div>
+      <div class="metric">
         <div class="metric-label">Total capex</div>
         <div class="metric-value capex mono" id="kmCapex">£0</div>
       </div>
       <div class="metric">
-        <div class="metric-label">Total opex</div>
+        <div class="metric-label">Annual opex</div>
         <div class="metric-value opex mono" id="kmOpex">£0</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Annual profit (EBITDA)</div>
-        <div class="metric-value ebitda mono" id="kmEbitda">£0</div>
       </div>
     </section>
 
@@ -192,154 +166,90 @@
         <button class="year-btn active" data-year="1" type="button">Year 1</button>
         <button class="year-btn" data-year="2" type="button">Year 2</button>
       </div>
-      <div class="toolbar-note">Toggle between Year 1 and Year 2. All inputs are editable and totals recalc instantly.</div>
+      <div class="toolbar-note">Figures update from the CSV for the selected year. Adjust revenue drivers to explore upside or downside.</div>
     </div>
 
-    <!-- Revenue assumptions (per month) -->
-    <div class="revenue-assumptions">
-      <div class="revenue-assumptions-header">
-        <div class="revenue-assumptions-title">
-          Revenue assumptions <span class="revenue-assumptions-sub">(per month, Year <span id="revYearLabel">1</span>)</span>
-        </div>
-        <div class="revenue-assumptions-sub">Annual revenue is calculated from these drivers.</div>
-      </div>
-      <div class="rev-grid">
-        <div class="field">
-          <label for="revMembersPerMonth">Members per month</label>
-          <input id="revMembersPerMonth" type="number" min="0" step="1" inputmode="numeric">
-        </div>
-        <div class="field">
-          <label for="revMemberPrice">Member price (£)</label>
-          <input id="revMemberPrice" type="number" min="0" step="0.1" inputmode="decimal">
-        </div>
-        <div class="field">
-          <label for="revDayPassesPerMonth">Day passes per month</label>
-          <input id="revDayPassesPerMonth" type="number" min="0" step="1" inputmode="numeric">
-        </div>
-        <div class="field">
-          <label for="revDayPassPrice">Day pass price (£)</label>
-          <input id="revDayPassPrice" type="number" min="0" step="0.1" inputmode="decimal">
-        </div>
-        <div class="field">
-          <label for="revOtherPerMonth">Other revenue per month (£)</label>
-          <input id="revOtherPerMonth" type="number" min="0" step="1" inputmode="numeric">
-        </div>
-      </div>
-    </div>
-
-    <!-- CAPEX breakdown -->
+    <!-- Revenue drivers -->
     <section class="section">
       <div class="section-header">
-        <div class="section-title">CAPEX breakdown</div>
-        <div class="section-total mono" id="capexSectionTotal">Total capex (Year 1) £0</div>
+        <div class="section-title">Revenue drivers</div>
+        <div class="section-total mono" id="revTotalLabel">Annual revenue £0</div>
       </div>
-      <div class="section-body table-wrap">
-        <table class="breakdown-table" id="capexTable">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th class="num">Year 1</th>
-              <th class="num">Year 2</th>
-            </tr>
-          </thead>
-          <tbody>
-          <!-- filled by JS -->
-          </tbody>
-          <tfoot>
-            <tr>
-              <td>Total capex</td>
-              <td class="num mono" id="capexTotalY1">£0</td>
-              <td class="num mono" id="capexTotalY2">£0</td>
-            </tr>
-          </tfoot>
-        </table>
+      <div class="section-body">
+        <p class="help-text">Defaults come from the CSV for the selected year. Adjust any field to explore upside or downside.</p>
+        <div class="rev-grid">
+          <div class="field">
+            <label for="inMembersPerMonth">Members per month</label>
+            <input id="inMembersPerMonth" type="number" min="0" step="1" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="inMemberPrice">Member price (£)</label>
+            <input id="inMemberPrice" type="number" min="0" step="0.1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="inDayPassesPerMonth">Day passes per month</label>
+            <input id="inDayPassesPerMonth" type="number" min="0" step="1" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="inDayPassPrice">Day pass price (£)</label>
+            <input id="inDayPassPrice" type="number" min="0" step="0.1" inputmode="decimal">
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <label for="inOtherRevenuePerMonth">Other revenue per month (£)</label>
+            <input id="inOtherRevenuePerMonth" type="number" min="0" step="1" inputmode="numeric">
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Loan breakdown -->
+    <!-- Loan -->
     <section class="section">
       <div class="section-header">
-        <div class="section-title">Loan breakdown</div>
-        <div class="section-total mono" id="loanSummary">Balance to finance £270,000</div>
+        <div class="section-title">Loan</div>
+        <div class="section-total mono" id="loanTag">Annual debt service £0</div>
       </div>
       <div class="section-body">
         <div class="loan-grid">
           <div class="field">
-            <label for="loanCapitalCost">Capital cost (£)</label>
-            <input id="loanCapitalCost" type="number" min="0" step="1000" value="300000">
+            <label for="loanAmount">Loan amount (£)</label>
+            <input id="loanAmount" type="number" min="0" step="1000" value="350000">
           </div>
           <div class="field">
-            <label for="loanDepositPct">Deposit percent (%)</label>
-            <input id="loanDepositPct" type="number" min="0" step="1" value="10">
+            <label for="loanRate">Interest rate percent (APR)</label>
+            <input id="loanRate" type="number" min="0" step="0.1" value="7.0">
           </div>
           <div class="field">
-            <label>Balance to finance (£)</label>
-            <input id="loanBalance" type="number" readonly class="mono" style="background:#f3f4f6;">
+            <label for="loanMonths">Loan term (months)</label>
+            <input id="loanMonths" type="number" min="1" step="1" value="84">
           </div>
         </div>
 
-        <table class="loan-metrics-table" id="loanTable">
-          <thead>
-            <tr>
-              <th>Term (months)</th>
-              <th>Monthly repayment (£)</th>
-              <th class="num">Annual debt service</th>
-              <th class="num">EBITDA after debt</th>
-              <th class="num">Debt coverage</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr data-index="0">
-              <td><input type="number" class="bd-input loan-term" value="36" min="1" step="1"></td>
-              <td><input type="number" class="bd-input loan-monthly" value="10107.55" step="1"></td>
-              <td class="num mono loan-annual">£0</td>
-              <td class="num mono loan-ebitda-after">£0</td>
-              <td class="num mono loan-coverage">0.0x</td>
-            </tr>
-            <tr data-index="1">
-              <td><input type="number" class="bd-input loan-term" value="48" min="1" step="1"></td>
-              <td><input type="number" class="bd-input loan-monthly" value="8180.40" step="1"></td>
-              <td class="num mono loan-annual">£0</td>
-              <td class="num mono loan-ebitda-after">£0</td>
-              <td class="num mono loan-coverage">0.0x</td>
-            </tr>
-            <tr data-index="2">
-              <td><input type="number" class="bd-input loan-term" value="60" min="1" step="1"></td>
-              <td><input type="number" class="bd-input loan-monthly" value="7045.71" step="1"></td>
-              <td class="num mono loan-annual">£0</td>
-              <td class="num mono loan-ebitda-after">£0</td>
-              <td class="num mono loan-coverage">0.0x</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="loan-metrics">
+          <div><span class="pill mono" id="loanAnnualDebt">Annual debt service £0</span></div>
+          <div><span class="pill mono" id="loanFreeCash">EBITDA after debt £0</span></div>
+          <div><span class="pill mono" id="loanPayback">Debt payback N/A</span></div>
+        </div>
       </div>
     </section>
 
-    <!-- OPEX breakdown -->
+    <!-- Detail table -->
     <section class="section">
       <div class="section-header">
-        <div class="section-title">OPEX breakdown</div>
-        <div class="section-total mono" id="opexSectionTotal">Total opex (Year 1) £0</div>
+        <div class="section-title">Detailed breakdown from CSV</div>
+        <div class="section-total mono" id="detailYearLabel">Year 1</div>
       </div>
       <div class="section-body table-wrap">
-        <table class="breakdown-table" id="opexTable">
+        <table id="detailTable">
           <thead>
             <tr>
+              <th>Section</th>
               <th>Item</th>
-              <th class="num">Year 1</th>
-              <th class="num">Year 2</th>
+              <th class="num">Value</th>
             </tr>
           </thead>
           <tbody>
           <!-- filled by JS -->
           </tbody>
-          <tfoot>
-            <tr>
-              <td>Total opex</td>
-              <td class="num mono" id="opexTotalY1">£0</td>
-              <td class="num mono" id="opexTotalY2">£0</td>
-            </tr>
-          </tfoot>
         </table>
       </div>
     </section>
@@ -347,6 +257,7 @@
 </div>
 
 <script>
+  // Path to your CSV in the repo
   const CSV_PATH = "./queensgate_bouldering_model_v2.csv";
 
   // Helpers
@@ -356,194 +267,281 @@
     const sign = n < 0 ? "-" : "";
     return sign + "£" + Math.abs(Math.round(n)).toLocaleString("en-GB");
   };
-
   const num = v => {
     if (v === null || v === undefined) return 0;
     if (typeof v === "number") return v;
-    const clean = String(v).replace(/[£,\s,]/g,"");
+    const clean = String(v).replace(/[£,\s]/g,"");
     const n = parseFloat(clean);
     return isNaN(n) ? 0 : n;
   };
 
+  // Pretty labels for DESCRIPTION codes
+  const prettyDescriptionMap = {
+    "MEMBERS_MONTHLY":"Members per month",
+    "MEMBERS_ MONTHLY":"Members per month",
+    "MEMBERS_PRICE":"Member price (£)",
+    "DAY_PASSES_MONTHLY":"Day passes per month",
+    "DAY_PASS_PRICE":"Day pass price (£)",
+    "OTHER_REV_MONTH":"Other revenue per month (£)",
+    "WALLS_&_MATTS":"Walls and matting",
+    "HOLDS_BUDGET":"Holds budget",
+    "GENERAL_CONSTRUCTION":"General construction",
+    "STRIP_OUT":"Strip out"
+  };
+  function prettyLabelFromRaw(raw){
+    if (!raw) return "";
+    const upper = String(raw).toUpperCase();
+    if (prettyDescriptionMap[upper]) return prettyDescriptionMap[upper];
+    const cleaned = String(raw).replace(/_/g," ").trim();
+    if (!cleaned) return "";
+    return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
+  }
+
+  // State
+  let rows = [];
+  let bySection = {};
   let currentYear = 1;
 
-  // Revenue state: per year
-  const revenueState = {
-    1: {membersPerMonth:0, memberPrice:0, dayPassesPerMonth:0, dayPassPrice:0, otherPerMonth:0},
-    2: {membersPerMonth:0, memberPrice:0, dayPassesPerMonth:0, dayPassPrice:0, otherPerMonth:0}
+  const driverOverrides = {
+    membersPerMonth:null,
+    memberPrice:null,
+    dayPassesPerMonth:null,
+    dayPassPrice:null,
+    otherPerMonth:null
   };
 
-  const revenueKeyMap = {
-    "members per month":"membersPerMonth",
-    "member price (£)":"memberPrice",
-    "day passes per month":"dayPassesPerMonth",
-    "day pass price (£)":"dayPassPrice",
-    "other revenue per month":"otherPerMonth"
+  // Map CSV DESCRIPTION to logical revenue driver keys
+  const revenueDescriptionMap = {
+    "MEMBERS_MONTHLY":"membersPerMonth",
+    "MEMBERS_ MONTHLY":"membersPerMonth",
+    "MEMBERS_PRICE":"memberPrice",
+    "DAY_PASSES_MONTHLY":"dayPassesPerMonth",
+    "DAY_PASS_PRICE":"dayPassPrice",
+    "OTHER_REV_MONTH":"otherPerMonth"
   };
 
-  // CAPEX & OPEX definitions from CSV
-  let capexDefs = [];
-  let opexDefs = [];
-
-  function buildBreakdownTable(defs, tableId, inputClassPrefix){
-    const tbody = document.querySelector("#" + tableId + " tbody");
-    tbody.innerHTML = "";
-    defs.forEach((row, idx)=>{
-      const tr = document.createElement("tr");
-      const tdLabel = document.createElement("td");
-      tdLabel.textContent = row.label;
-      const tdY1 = document.createElement("td");
-      const tdY2 = document.createElement("td");
-
-      const inY1 = document.createElement("input");
-      inY1.type = "number";
-      inY1.step = "1";
-      inY1.className = "bd-input " + inputClassPrefix + "-input";
-      inY1.dataset.year = "1";
-      inY1.value = row.year1;
-      tdY1.appendChild(inY1);
-
-      const inY2 = document.createElement("input");
-      inY2.type = "number";
-      inY2.step = "1";
-      inY2.className = "bd-input " + inputClassPrefix + "-input";
-      inY2.dataset.year = "2";
-      inY2.value = row.year2;
-      tdY2.appendChild(inY2);
-
-      tr.appendChild(tdLabel);
-      tr.appendChild(tdY1);
-      tr.appendChild(tdY2);
-      tbody.appendChild(tr);
-
-      // Recalc on change
-      inY1.addEventListener("input", recalc);
-      inY2.addEventListener("input", recalc);
+  function groupRows(){
+    bySection = {};
+    rows.forEach(r=>{
+      const sec = String(r["SECTION TITLE"] || r["Section"] || "").trim() || "Other";
+      if (!bySection[sec]) bySection[sec] = [];
+      bySection[sec].push(r);
     });
   }
 
-  function readRevenueInputsIntoState(){
-    const state = revenueState[currentYear];
-    state.membersPerMonth = num(document.getElementById("revMembersPerMonth").value);
-    state.memberPrice = num(document.getElementById("revMemberPrice").value);
-    state.dayPassesPerMonth = num(document.getElementById("revDayPassesPerMonth").value);
-    state.dayPassPrice = num(document.getElementById("revDayPassPrice").value);
-    state.otherPerMonth = num(document.getElementById("revOtherPerMonth").value);
+  function valueFor(row){
+    const sec = String(row["SECTION TITLE"] || "").toUpperCase();
+
+    // All CAPEX is Year 1 only
+    if (sec.includes("CAPITAL") || sec.includes("EXPENDITURE") || sec.includes("CAPEX")) {
+      return num(row["Year 1"]);
+    }
+
+    const col = currentYear === 1 ? "Year 1" : "Year 2";
+    return num(row[col]);
   }
 
-  function setRevenueInputsFromState(){
-    const state = revenueState[currentYear];
-    document.getElementById("revYearLabel").textContent = currentYear;
-    document.getElementById("revMembersPerMonth").value = state.membersPerMonth || 0;
-    document.getElementById("revMemberPrice").value = state.memberPrice || 0;
-    document.getElementById("revDayPassesPerMonth").value = state.dayPassesPerMonth || 0;
-    document.getElementById("revDayPassPrice").value = state.dayPassPrice || 0;
-    document.getElementById("revOtherPerMonth").value = state.otherPerMonth || 0;
+  function getCsvRevenueDrivers(){
+    const out = {
+      membersPerMonth:0,
+      memberPrice:0,
+      dayPassesPerMonth:0,
+      dayPassPrice:0,
+      otherPerMonth:0
+    };
+    const revRows = Object.keys(bySection)
+      .filter(sec => String(sec).toUpperCase().includes("REVENUE"))
+      .flatMap(sec => bySection[sec]);
+
+    revRows.forEach(r=>{
+      const raw = String(r["DESCRIPTION"] || "").trim().toUpperCase();
+      const key = revenueDescriptionMap[raw];
+      if (!key) return;
+      out[key] = valueFor(r);
+    });
+    return out;
   }
 
-  function annualRevenue(){
-    const s = revenueState[currentYear];
-    const mRev = s.membersPerMonth * s.memberPrice * 12;
-    const dRev = s.dayPassesPerMonth * s.dayPassPrice * 12;
-    const oRev = s.otherPerMonth * 12;
-    return mRev + dRev + oRev;
+  function getRevenueDrivers(){
+    const csvVals = getCsvRevenueDrivers();
+    return {
+      membersPerMonth: driverOverrides.membersPerMonth ?? csvVals.membersPerMonth,
+      memberPrice: driverOverrides.memberPrice ?? csvVals.memberPrice,
+      dayPassesPerMonth: driverOverrides.dayPassesPerMonth ?? csvVals.dayPassesPerMonth,
+      dayPassPrice: driverOverrides.dayPassPrice ?? csvVals.dayPassPrice,
+      otherPerMonth: driverOverrides.otherPerMonth ?? csvVals.otherPerMonth
+    };
   }
 
-  function totalFromInputs(className, year){
+  function totalCapex(){
     let total = 0;
-    document.querySelectorAll("." + className).forEach(inp=>{
-      const y = Number(inp.dataset.year);
-      if (y === year){
-        total += num(inp.value);
+    Object.keys(bySection).forEach(sec=>{
+      const up = sec.toUpperCase();
+      if (up.includes("CAPEX") || up.includes("CAPITAL") || up.includes("FIT OUT") || up.includes("EXPENDITURE")){
+        bySection[sec].forEach(r=>{
+          total += num(r["Year 1"]); // capex is one off, based on Year 1 only
+        });
       }
     });
     return total;
   }
 
-  function updateBreakdownSectionTotals(){
-    const capexY1 = totalFromInputs("capex-input",1);
-    const capexY2 = totalFromInputs("capex-input",2);
-    const opexY1 = totalFromInputs("opex-input",1);
-    const opexY2 = totalFromInputs("opex-input",2);
-
-    const capexForYear = currentYear === 1 ? capexY1 : capexY2;
-    const opexForYear = currentYear === 1 ? opexY1 : opexY2;
-
-    document.getElementById("capexSectionTotal").textContent =
-      "Total capex (Year " + currentYear + ") " + money(capexForYear);
-    document.getElementById("opexSectionTotal").textContent =
-      "Total opex (Year " + currentYear + ") " + money(opexForYear);
-
-    document.getElementById("capexTotalY1").textContent = money(capexY1);
-    document.getElementById("capexTotalY2").textContent = money(capexY2);
-    document.getElementById("opexTotalY1").textContent = money(opexY1);
-    document.getElementById("opexTotalY2").textContent = money(opexY2);
-
-    return {capex:capexForYear, opex:opexForYear};
+  function totalOperatingCosts(){
+    let total = 0;
+    Object.keys(bySection).forEach(sec=>{
+      const up = sec.toUpperCase();
+      if (up.includes("REVENUE")) return;
+      if (up.includes("CAPEX") || up.includes("CAPITAL") || up.includes("FIT OUT") || up.includes("EXPENDITURE")) return;
+      bySection[sec].forEach(r=>{
+        total += valueFor(r);
+      });
+    });
+    return total;
   }
 
-  function updateLoanMetrics(ebitda){
-    const capitalCost = num(document.getElementById("loanCapitalCost").value);
-    const depositPct = num(document.getElementById("loanDepositPct").value);
-    const balance = capitalCost * (1 - depositPct / 100);
-    const balanceInput = document.getElementById("loanBalance");
-    balanceInput.value = Math.round(balance);
-    document.getElementById("loanSummary").textContent = "Balance to finance " + money(balance);
+  function setRevenueInputsFromCsv(){
+    const rev = getCsvRevenueDrivers();
+    document.getElementById("inMembersPerMonth").value = rev.membersPerMonth || "";
+    document.getElementById("inMemberPrice").value = rev.memberPrice || "";
+    document.getElementById("inDayPassesPerMonth").value = rev.dayPassesPerMonth || "";
+    document.getElementById("inDayPassPrice").value = rev.dayPassPrice || "";
+    document.getElementById("inOtherRevenuePerMonth").value = rev.otherPerMonth || "";
+  }
 
-    const rows = document.querySelectorAll("#loanTable tbody tr");
-    rows.forEach(row=>{
-      const termInput = row.querySelector(".loan-term");
-      const monthlyInput = row.querySelector(".loan-monthly");
-      const annualCell = row.querySelector(".loan-annual");
-      const ebitdaCell = row.querySelector(".loan-ebitda-after");
-      const covCell = row.querySelector(".loan-coverage");
+  function readRevenueInputsToOverrides(){
+    function parseOrNull(id){
+      const v = parseFloat(document.getElementById(id).value);
+      return isNaN(v) ? null : v;
+    }
+    driverOverrides.membersPerMonth   = parseOrNull("inMembersPerMonth");
+    driverOverrides.memberPrice       = parseOrNull("inMemberPrice");
+    driverOverrides.dayPassesPerMonth = parseOrNull("inDayPassesPerMonth");
+    driverOverrides.dayPassPrice      = parseOrNull("inDayPassPrice");
+    driverOverrides.otherPerMonth     = parseOrNull("inOtherRevenuePerMonth");
+  }
 
-      const monthly = num(monthlyInput.value);
-      const annualDebt = monthly * 12;
-      const ebitdaAfter = ebitda - annualDebt;
-      const coverage = annualDebt > 0 ? (ebitda / annualDebt) : 0;
+  function computeLoanMetrics(ebitda){
+    const loan = num(document.getElementById("loanAmount").value);
+    const ratePct = num(document.getElementById("loanRate").value);
+    const months = Math.max(1, num(document.getElementById("loanMonths").value));
+    const rMonthly = ratePct / 100 / 12;
 
-      annualCell.textContent = money(annualDebt);
-      ebitdaCell.textContent = money(ebitdaAfter);
-      covCell.textContent = coverage.toFixed(2) + "x";
+    let mPayment;
+    if (ratePct === 0){
+      mPayment = loan / months;
+    } else {
+      mPayment = loan * rMonthly / (1 - Math.pow(1 + rMonthly, -months));
+    }
+    const annualDebt = mPayment * 12;
+    const freeAfterDebt = ebitda - annualDebt;
+    const debtPaybackYears = freeAfterDebt > 0 ? loan / freeAfterDebt : NaN;
 
-      termInput.addEventListener("input", recalc);
-      monthlyInput.addEventListener("input", recalc);
+    document.getElementById("loanAnnualDebt").textContent = "Annual debt service " + money(annualDebt);
+    document.getElementById("loanTag").textContent = "Annual debt service " + money(annualDebt);
+    document.getElementById("loanFreeCash").textContent = "EBITDA after debt " + money(freeAfterDebt);
+    document.getElementById("loanPayback").textContent = isFinite(debtPaybackYears)
+      ? "Debt payback " + debtPaybackYears.toFixed(1) + " years"
+      : "Debt payback N/A";
+  }
+
+  function renderDetailTable(){
+    const tbody = document.querySelector("#detailTable tbody");
+    tbody.innerHTML = "";
+    const yearLabel = currentYear === 1 ? "Year 1" : "Year 2";
+    document.getElementById("detailYearLabel").textContent = yearLabel;
+
+    const secNames = Object.keys(bySection);
+    secNames.forEach(sec=>{
+      const trHead = document.createElement("tr");
+      trHead.className = "sec-row";
+      const th1 = document.createElement("th");
+      th1.colSpan = 3;
+      th1.textContent = sec;
+      trHead.appendChild(th1);
+      tbody.appendChild(trHead);
+
+      let sectionTotal = 0;
+
+      bySection[sec].forEach(r=>{
+        const tr = document.createElement("tr");
+        const tdSec = document.createElement("td");
+        tdSec.textContent = "";
+        const tdItem = document.createElement("td");
+        const rawDesc = String(r["DESCRIPTION"] || "");
+        tdItem.textContent = prettyLabelFromRaw(rawDesc);
+        const tdVal = document.createElement("td");
+        tdVal.className = "num mono";
+
+        let displayValue = valueFor(r);
+
+        // If this is a CAPEX line and year 2 is selected, force it to zero for display
+        if (currentYear === 2) {
+          const secTitle = (r["SECTION TITLE"] || "").toUpperCase();
+          if (secTitle.includes("CAPEX") || secTitle.includes("CAPITAL") || secTitle.includes("FIT OUT") || secTitle.includes("EXPENDITURE")) {
+            displayValue = 0;
+          }
+        }
+
+        sectionTotal += displayValue;
+        tdVal.textContent = money(displayValue);
+        tr.appendChild(tdSec);
+        tr.appendChild(tdItem);
+        tr.appendChild(tdVal);
+        tbody.appendChild(tr);
+      });
+
+      // Section total row
+      const totalRow = document.createElement("tr");
+      totalRow.className = "sec-total-row";
+      const tdBlank = document.createElement("td");
+      const tdLabel = document.createElement("td");
+      const tdTotal = document.createElement("td");
+      tdBlank.textContent = "";
+      tdLabel.textContent = "Section total";
+      tdTotal.className = "num mono";
+      tdTotal.textContent = money(sectionTotal);
+      totalRow.appendChild(tdBlank);
+      totalRow.appendChild(tdLabel);
+      totalRow.appendChild(tdTotal);
+      tbody.appendChild(totalRow);
     });
   }
 
   function recalc(){
-    readRevenueInputsIntoState();
+    readRevenueInputsToOverrides();
+    const rev = getRevenueDrivers();
 
-    const revenue = annualRevenue();
-    const breakdownTotals = updateBreakdownSectionTotals();
-    const capex = breakdownTotals.capex;
-    const opex = breakdownTotals.opex;
+    const annualRevenue =
+      (num(rev.membersPerMonth) * num(rev.memberPrice) * 12) +
+      (num(rev.dayPassesPerMonth) * num(rev.dayPassPrice) * 12) +
+      (num(rev.otherPerMonth) * 12);
 
-    const ebitda = revenue - opex;
+    const baseOperating = totalOperatingCosts();
+    const ebitda = annualRevenue - baseOperating;
+    const capex = totalCapex();
 
-    // Top metrics
-    document.getElementById("kmRevenue").textContent = money(revenue);
-    document.getElementById("kmCapex").textContent = money(capex);
-    document.getElementById("kmOpex").textContent = money(opex);
+    // Update metrics
+    document.getElementById("kmRevenue").textContent = money(annualRevenue);
     document.getElementById("kmEbitda").textContent = money(ebitda);
+    document.getElementById("kmCapex").textContent = money(capex);
+    document.getElementById("kmOpex").textContent = money(baseOperating);
+    document.getElementById("revTotalLabel").textContent = "Annual revenue " + money(annualRevenue);
 
-    updateLoanMetrics(ebitda);
+    computeLoanMetrics(ebitda);
+    renderDetailTable();
   }
 
-  function attachRevenueListeners(){
-    ["revMembersPerMonth","revMemberPrice","revDayPassesPerMonth",
-     "revDayPassPrice","revOtherPerMonth",
-     "loanCapitalCost","loanDepositPct"
+  function attachListeners(){
+    [
+      "inMembersPerMonth","inMemberPrice",
+      "inDayPassesPerMonth","inDayPassPrice","inOtherRevenuePerMonth",
+      "loanAmount","loanRate","loanMonths"
     ].forEach(id=>{
       const el = document.getElementById(id);
-      if (el){
-        el.addEventListener("input", recalc);
-      }
+      if (!el) return;
+      el.addEventListener("input", recalc);
     });
-  }
 
-  function attachYearToggle(){
     document.getElementById("yearToggle").addEventListener("click", e=>{
       const btn = e.target.closest(".year-btn");
       if (!btn) return;
@@ -555,7 +553,8 @@
         b.classList.toggle("active", b === btn);
       });
 
-      setRevenueInputsFromState();
+      Object.keys(driverOverrides).forEach(k=> driverOverrides[k] = null);
+      setRevenueInputsFromCsv();
       recalc();
     });
   }
@@ -566,43 +565,14 @@
       header:true,
       skipEmptyLines:true,
       complete: res => {
-        capexDefs = [];
-        opexDefs = [];
-
-        res.data.forEach(row=>{
-          const secRaw = row["SECTION TITLE"];
-          const descRaw = row["DESCRIPTION"];
-          if (!secRaw || !descRaw) return;
-
-          const sec = String(secRaw).trim();
-          const desc = String(descRaw).trim();
-          const y1 = num(row["Year 1"]);
-          const y2 = num(row["Year 2"]);
-
-          const secLower = sec.toLowerCase();
-
-          if (secLower === "revenue"){
-            const key = revenueKeyMap[desc.toLowerCase()];
-            if (key){
-              revenueState[1][key] = y1;
-              revenueState[2][key] = y2;
-            }
-            return;
-          }
-
-          if (secLower.indexOf("capital expenditure") === 0){
-            capexDefs.push({label:desc, year1:y1, year2:y2});
-          } else {
-            opexDefs.push({label:desc, year1:y1, year2:y2});
-          }
+        rows = res.data.map(r=>{
+          Object.keys(r).forEach(k=>{
+            if (r[k] === "") r[k] = null;
+          });
+          return r;
         });
-
-        // Build tables
-        buildBreakdownTable(capexDefs,"capexTable","capex");
-        buildBreakdownTable(opexDefs,"opexTable","opex");
-
-        // Set initial revenue inputs and run first calc
-        setRevenueInputsFromState();
+        groupRows();
+        setRevenueInputsFromCsv();
         recalc();
       },
       error: err => {
@@ -613,8 +583,7 @@
   }
 
   window.addEventListener("load", ()=>{
-    attachRevenueListeners();
-    attachYearToggle();
+    attachListeners();
     loadCsv();
   });
 </script>

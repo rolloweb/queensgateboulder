@@ -2,429 +2,177 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Queensgate Bouldering Centre – Financial Model</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-<!-- CSV parser -->
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
     background:#f5f7fa;color:#1f2933;padding:20px;
   }
   .container{
     max-width:1200px;margin:0 auto;background:#fff;border-radius:12px;
-    box-shadow:0 2px 12px rgba(15,23,42,0.12);overflow:hidden;
+    box-shadow:0 2px 12px rgba(0,0,0,.1);padding:24px;
   }
-
-  /* Header */
-  .header{
-    display:flex;align-items:center;gap:18px;
-    padding:24px 28px;
-    background:linear-gradient(120deg,#667eea 0,#764ba2 40,#a855f7 100);
-    color:#fff;
-  }
-  .header-icon{
-    width:42px;height:42px;border-radius:10px;overflow:hidden;
-    background:#fff1;border:2px solid #ffffff55;display:flex;align-items:center;justify-content:center;
-    font-size:28px;
-  }
-  .header h1{
-    font-size:clamp(1.6rem,2.4vw,2.1rem);
-    font-weight:800;
-  }
-
-  .content{padding:24px 26px 30px;}
-
-  /* Top metrics */
   .key-metrics{
     display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:16px;margin-bottom:24px;padding:16px 18px;background:#f8fafc;border-radius:12px;
+    gap:16px;margin-bottom:24px;padding:16px;background:#f9fafb;border-radius:12px;
   }
-  .metric-label{font-size:.8rem;color:#6b7280;text-transform:uppercase;margin-bottom:4px;}
-  .metric-value{font-size:1.5rem;font-weight:800}
-  .revenue{color:#4f46e5}
-  .ebitda{color:#16a34a}
-  .capex{color:#ea580c}
-  .opex{color:#0f766e}
-
-  /* Toggle */
-  .year-toggle{display:inline-flex;border-radius:999px;background:#e5e7eb;padding:3px;}
-  .year-btn{border:none;background:transparent;padding:6px 14px;border-radius:999px;font-size:.9rem;font-weight:600;color:#4b5563;cursor:pointer;}
-  .year-btn.active{background:#fff;color:#111827;box-shadow:0 1px 4px rgba(0,0,0,.15)}
-
-  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
-
-  /* Sections */
-  .section{border:1px solid #e5e7eb;border-radius:12px;margin-bottom:18px;overflow:hidden;}
-  .section-header{background:#f9fafb;padding:12px 16px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;}
-  .section-title{font-weight:700;font-size:1.05rem}
-  .section-total{font-size:1rem;font-weight:700;color:#4f46e5}
-  .section-body{padding:16px}
-
-  /* Inputs */
-  .rev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:14px;}
-  .field{display:flex;flex-direction:column;gap:5px}
-  .field input{
-    padding:9px 10px;border-radius:8px;border:1px solid #cbd5e1;text-align:right;
-  }
-
-  /* Table */
-  table{width:100%;border-collapse:collapse;font-size:.9rem}
-  th,td{padding:8px 6px;border-bottom:1px solid #e5e7eb}
-  th{text-transform:uppercase;font-size:.75rem;color:#6b7280}
-  .sec-row th{background:#f3f4f6}
-  .num{text-align:right;font-variant-numeric:tabular-nums}
-  .sec-total-row td{background:#f9fafb;font-weight:700;border-top:1px solid #cbd5e1}
-
+  .metric-value{font-size:1.6rem;font-weight:800}
+  .rev{color:#4f46e5} .cap{color:#d97706} .opex{color:#0ea5e9} .ebit{color:#16a34a}
+  table{width:100%;border-collapse:collapse;margin-top:16px}
+  th,td{border-bottom:1px solid #e5e7eb;padding:10px 6px;font-size:.9rem}
+  .num{text-align:right}
+  input{width:120px;text-align:right;padding:6px;border:1px solid #cbd5e1;border-radius:6px;}
+  .yearBtn.active{background:#6366f1;color:#fff;border-color:#6366f1;}
+  .yearBtn{padding:8px 16px;border-radius:20px;border:1px solid #d1d5db;background:#e5e7eb;cursor:pointer;}
 </style>
 </head>
 
 <body>
 <div class="container">
-<header class="header">
-  <div class="header-icon">🧗‍♂️</div>
-  <div>
-    <h1>Queensgate Bouldering Centre – Financial Model</h1>
-  </div>
-</header>
 
-<div class="content">
+  <div style="margin-bottom:20px">
+    <button class="yearBtn active" data-year="1">Year 1</button>
+    <button class="yearBtn" data-year="2">Year 2</button>
+  </div>
 
-<!-- TOP LEVEL METRICS -->
-<section class="key-metrics">
-  <div>
-    <div class="metric-label">Annual revenue</div>
-    <div class="metric-value revenue" id="kmRevenue">£0</div>
-  </div>
-  <div>
-    <div class="metric-label">Annual opex</div>
-    <div class="metric-value opex" id="kmOpex">£0</div>
-  </div>
-  <div>
-    <div class="metric-label">Total capex</div>
-    <div class="metric-value capex" id="kmCapex">£0</div>
-  </div>
-  <div>
-    <div class="metric-label">Annual profit (EBITDA)</div>
-    <div class="metric-value ebitda" id="kmEbitda">£0</div>
-  </div>
-</section>
-
-<!-- TOGGLE -->
-<div class="toolbar">
-  <div class="year-toggle" id="yearToggle">
-    <button class="year-btn active" data-year="1">Year 1</button>
-    <button class="year-btn" data-year="2">Year 2</button>
-  </div>
-</div>
-
-<!-- REVENUE DRIVERS -->
-<section class="section">
-  <div class="section-header">
-    <div class="section-title">Revenue drivers</div>
-    <div class="section-total" id="revTotalLabel">Annual revenue £0</div>
-  </div>
-  <div class="section-body">
-    <div class="rev-grid">
-      <div class="field">
-        <label>Members per month</label>
-        <input id="inMembersPerMonth">
-      </div>
-      <div class="field">
-        <label>Member price (&pound;)</label>
-        <input id="inMemberPrice">
-      </div>
-      <div class="field">
-        <label>Day passes per month</label>
-        <input id="inDayPassesPerMonth">
-      </div>
-      <div class="field">
-        <label>Day pass price (&pound;)</label>
-        <input id="inDayPassPrice">
-      </div>
-      <div class="field" style="grid-column:1/-1">
-        <label>Other revenue per month (&pound;)</label>
-        <input id="inOtherRevenuePerMonth">
-      </div>
+  <div class="key-metrics">
+    <div>
+      <div>Revenue Total</div>
+      <div id="revTotal" class="metric-value rev">&pound;0</div>
+    </div>
+    <div>
+      <div>CAPEX Total</div>
+      <div id="capexTotal" class="metric-value cap">&pound;0</div>
+    </div>
+    <div>
+      <div>OPEX Total</div>
+      <div id="opexTotal" class="metric-value opex">&pound;0</div>
+    </div>
+    <div>
+      <div>Annual profit EBITDA</div>
+      <div id="ebitda" class="metric-value ebit">&pound;0</div>
     </div>
   </div>
-</section>
 
-<!-- LOAN -->
-<section class="section">
-  <div class="section-header">
-    <div class="section-title">Loan</div>
-    <div class="section-total" id="loanTag">Annual debt service £0</div>
-  </div>
+  <h2>CAPEX Breakdown</h2>
+  <table id="capexTable"><thead><tr><th>Item</th><th class="num">Value</th></tr></thead><tbody></tbody></table>
 
-  <div class="section-body">
-    <div class="loan-grid">
-      <div class="field">
-        <label>Loan amount (&pound;)</label>
-        <input id="loanAmount" value="350000">
-      </div>
-      <div class="field">
-        <label>Interest rate percent (APR)</label>
-        <input id="loanRate" value="7.0">
-      </div>
-      <div class="field">
-        <label>Loan term (months)</label>
-        <input id="loanMonths" value="84">
-      </div>
-    </div>
+  <h2>Finance Options</h2>
+  <table>
+    <tr><th>Capital Cost</th><td class="num">&pound;300000</td></tr>
+    <tr><th>Deposit 10%</th><td class="num">&pound;30000</td></tr>
+    <tr><th>Balance to Finance</th><td class="num">&pound;270000</td></tr>
+  </table>
 
-    <div class="loan-metrics" style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
-      <span class="pill" id="loanAnnualDebt">Annual debt service £0</span>
-      <span class="pill" id="loanFreeCash">EBITDA after debt £0</span>
-      <span class="pill" id="loanPayback">Debt payback N/A</span>
-    </div>
-  </div>
-</section>
+  <h3>Repayment Scenarios</h3>
+  <table>
+    <tr><th>36 months</th><td class="num">&pound;10107.55 monthly</td></tr>
+    <tr><th>48 months</th><td class="num">&pound;8180.40 monthly</td></tr>
+    <tr><th>60 months</th><td class="num">&pound;7045.71 monthly</td></tr>
+  </table>
 
-<!-- CSV TABLE -->
-<section class="section">
-  <div class="section-header">
-    <div class="section-title">Detailed breakdown from CSV</div>
-    <div class="section-total" id="detailYearLabel">Year 1</div>
-  </div>
+  <h2>OPEX Breakdown</h2>
+  <table id="opexTable"><thead><tr><th>Item</th><th class="num">Value</th></tr></thead><tbody></tbody></table>
 
-  <div class="section-body table-wrap">
-    <table id="detailTable">
-      <thead>
-        <tr>
-          <th>Section</th>
-          <th>Item</th>
-          <th class="num">Value</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</section>
-
-</div>
 </div>
 
 <script>
 const CSV_PATH = "./queensgate_bouldering_model_v2.csv";
 
-const money = v => "£" + Math.round(Number(v)).toLocaleString("en-GB");
-const num = v => Number(String(v || "0").replace(/[£,]/g,"")) || 0;
-
 let rows = [];
-let bySection = {};
 let currentYear = 1;
 
-const driverOverrides = {
-  membersPerMonth:null,
-  memberPrice:null,
-  dayPassesPerMonth:null,
-  dayPassPrice:null,
-  otherPerMonth:null
-};
-
-function prettyLabel(desc){
-  if(!desc) return "";
-  return desc.replace(/_/g," ").replace(/\s+/g," ").toLowerCase()
-    .replace(/(^\w|\s\w)/g,m=>m.toUpperCase());
+function money(n){
+  return "&pound;" + Number(n).toLocaleString("en-GB");
 }
 
-function groupRows(){
-  bySection = {};
-  rows.forEach(r=>{
-    const sec = r["SECTION TITLE"] || "Other";
-    if(!bySection[sec]) bySection[sec] = [];
-    bySection[sec].push(r);
-  });
-}
-
-function isCapex(sectionName){
-  const s = sectionName.toUpperCase();
-  return s.includes("CAPEX") || s.includes("CAPITAL") || s.includes("EXPENDITURE");
-}
-
-function valueFor(row){
-  const sec = row["SECTION TITLE"] || "";
-  if(isCapex(sec)) return num(row["Year 1"]);  
-  return currentYear === 1 ? num(row["Year 1"]) : num(row["Year 2"]);
-}
-
-/* REVENUE AUTO DECTECTION */
-function getCsvRevenueDrivers(){
-  const out = {membersPerMonth:0,memberPrice:0,dayPassesPerMonth:0,dayPassPrice:0,otherPerMonth:0};
-
-  rows.forEach(r=>{
-    const d = String(r["DESCRIPTION"] || "").toUpperCase();
-
-    if(d.includes("MEMBERS") && d.includes("MONTH")) out.membersPerMonth = valueFor(r);
-    if(d.includes("MEMBERS") && d.includes("PRICE")) out.memberPrice = valueFor(r);
-    if(d.includes("DAY") && d.includes("MONTH")) out.dayPassesPerMonth = valueFor(r);
-    if(d.includes("DAY") && d.includes("PRICE")) out.dayPassPrice = valueFor(r);
-    if(d.includes("OTHER") || d.includes("MISC")) out.otherPerMonth = valueFor(r);
-  });
-  return out;
-}
-
-function getRevenueDrivers(){
-  const csvVals = getCsvRevenueDrivers();
-  return {
-    membersPerMonth: driverOverrides.membersPerMonth ?? csvVals.membersPerMonth,
-    memberPrice: driverOverrides.memberPrice ?? csvVals.memberPrice,
-    dayPassesPerMonth: driverOverrides.dayPassesPerMonth ?? csvVals.dayPassesPerMonth,
-    dayPassPrice: driverOverrides.dayPassPrice ?? csvVals.dayPassPrice,
-    otherPerMonth: driverOverrides.otherPerMonth ?? csvVals.otherPerMonth
-  };
-}
-
-function totalCapex(){
-  let t = 0;
-  Object.keys(bySection).forEach(sec=>{
-    if(isCapex(sec)){
-      bySection[sec].forEach(r=> t += num(r["Year 1"]));
+function loadCsv(){
+  Papa.parse(CSV_PATH,{
+    download:true,
+    header:true,
+    complete: res=>{
+      rows = res.data.map(r=>({
+        section: r.SECTION,
+        desc: r.DESCRIPTION,
+        y1: Number(r.YEAR1),
+        y2: Number(r.YEAR2)
+      }));
+      render();
     }
   });
-  return t;
 }
 
-function totalOpex(){
-  let t = 0;
-  Object.keys(bySection).forEach(sec=>{
-    if(!isCapex(sec) && !sec.toUpperCase().includes("REVENUE")){
-      bySection[sec].forEach(r=> t += valueFor(r));
-    }
+function getVal(r){
+  return currentYear === 1 ? r.y1 : r.y2;
+}
+
+function totals(){
+  let rev=0, cap=0, op=0;
+
+  rows.forEach(r=>{
+    const v = getVal(r);
+    if(r.section==="REVENUE") rev += v;
+    if(r.section==="CAPEX") cap += v;
+    if(r.section==="OPEX") op += v;
   });
-  return t;
+
+  return {rev,cap,op};
 }
 
-function setRevenueInputsFromCsv(){
-  const d = getCsvRevenueDrivers();
-  document.getElementById("inMembersPerMonth").value = d.membersPerMonth;
-  document.getElementById("inMemberPrice").value = d.memberPrice;
-  document.getElementById("inDayPassesPerMonth").value = d.dayPassesPerMonth;
-  document.getElementById("inDayPassPrice").value = d.dayPassPrice;
-  document.getElementById("inOtherRevenuePerMonth").value = d.otherPerMonth;
-}
-
-function readOverride(id){ const v = document.getElementById(id).value; return v === "" ? null : num(v); }
-
-function readOverrides(){
-  driverOverrides.membersPerMonth = readOverride("inMembersPerMonth");
-  driverOverrides.memberPrice = readOverride("inMemberPrice");
-  driverOverrides.dayPassesPerMonth = readOverride("inDayPassesPerMonth");
-  driverOverrides.dayPassPrice = readOverride("inDayPassPrice");
-  driverOverrides.otherPerMonth = readOverride("inOtherRevenuePerMonth");
-}
-
-function computeLoan(ebitda){
-  const loan = num(document.getElementById("loanAmount").value);
-  const ratePct = num(document.getElementById("loanRate").value);
-  const months = num(document.getElementById("loanMonths").value);
-  const r = ratePct/100/12;
-
-  const mPayment = ratePct === 0 ? loan/months :
-    loan * r / (1 - Math.pow(1+r, -months));
-
-  const annualDebt = mPayment * 12;
-  const free = ebitda - annualDebt;
-  const payback = free > 0 ? (loan/free).toFixed(1) : "N/A";
-
-  document.getElementById("loanAnnualDebt").textContent = "Annual debt service " + money(annualDebt);
-  document.getElementById("loanTag").textContent = "Annual debt service " + money(annualDebt);
-  document.getElementById("loanFreeCash").textContent = "EBITDA after debt " + money(free);
-  document.getElementById("loanPayback").textContent = "Debt payback " + payback + " years";
-}
-
-function renderTable(){
-  const tbody = document.querySelector("#detailTable tbody");
+function fillTable(section, tableId){
+  const tbody = document.querySelector("#"+tableId+" tbody");
   tbody.innerHTML = "";
 
-  Object.keys(bySection).forEach(sec=>{
-    const head = document.createElement("tr");
-    head.className = "sec-row";
-    head.innerHTML = `<th colspan="3">${sec}</th>`;
-    tbody.appendChild(head);
+  rows.filter(r=>r.section===section).forEach(r=>{
+    const v = getVal(r);
 
-    let secTotal = 0;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r.desc.replace(/_/g," ")}</td>
+      <td class="num">
+        <input data-desc="${r.desc}" value="${v}">
+      </td>`;
+    tbody.appendChild(tr);
+  });
 
-    bySection[sec].forEach(r=>{
-      let v = valueFor(r);
-      if(currentYear === 2 && isCapex(sec)) v = 0;
-
-      secTotal += v;
-
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td></td>
-        <td>${prettyLabel(r["DESCRIPTION"])}</td>
-        <td class="num">${money(v)}</td>`;
-      tbody.appendChild(row);
+  tbody.querySelectorAll("input").forEach(inp=>{
+    inp.addEventListener("input",e=>{
+      const row = rows.find(r=>r.desc===e.target.dataset.desc);
+      const v = Number(e.target.value || 0);
+      if(currentYear===1) row.y1 = v; else row.y2 = v;
+      render();
     });
-
-    const trow = document.createElement("tr");
-    trow.className = "sec-total-row";
-    trow.innerHTML = `<td></td><td>Section total</td><td class="num">${money(secTotal)}</td>`;
-    tbody.appendChild(trow);
   });
-
-  document.getElementById("detailYearLabel").textContent =
-    currentYear === 1 ? "Year 1" : "Year 2";
 }
 
-function recalc(){
-  readOverrides();
-  const d = getRevenueDrivers();
+function render(){
+  const {rev,cap,op} = totals();
+  const ebit = rev - op;
 
-  const revenue =
-    num(d.membersPerMonth)*num(d.memberPrice)*12 +
-    num(d.dayPassesPerMonth)*num(d.dayPassPrice)*12 +
-    num(d.otherPerMonth)*12;
+  document.getElementById("revTotal").innerHTML = money(rev);
+  document.getElementById("capexTotal").innerHTML = money(cap);
+  document.getElementById("opexTotal").innerHTML = money(op);
+  document.getElementById("ebitda").innerHTML = money(ebit);
 
-  const opex = totalOpex();
-  const capex = totalCapex();
-  const ebitda = revenue - opex;
-
-  document.getElementById("kmRevenue").textContent = money(revenue);
-  document.getElementById("kmOpex").textContent = money(opex);
-  document.getElementById("kmCapex").textContent = money(capex);
-  document.getElementById("kmEbitda").textContent = money(ebitda);
-  document.getElementById("revTotalLabel").textContent = "Annual revenue " + money(revenue);
-
-  computeLoan(ebitda);
-  renderTable();
+  fillTable("CAPEX","capexTable");
+  fillTable("OPEX","opexTable");
 }
 
-function attachListeners(){
-  ["inMembersPerMonth","inMemberPrice","inDayPassesPerMonth","inDayPassPrice","inOtherRevenuePerMonth",
-   "loanAmount","loanRate","loanMonths"].forEach(id=>{
-    document.getElementById(id).addEventListener("input", recalc);
-  });
-
-  document.getElementById("yearToggle").addEventListener("click", e=>{
-    const btn = e.target.closest("button");
-    if(!btn) return;
+document.querySelectorAll(".yearBtn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".yearBtn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
     currentYear = Number(btn.dataset.year);
-    document.querySelectorAll(".year-btn").forEach(b=> b.classList.toggle("active", b===btn));
-    setRevenueInputsFromCsv();
-    recalc();
+    render();
   });
-}
-
-Papa.parse(CSV_PATH,{
-  download:true,
-  header:true,
-  skipEmptyLines:true,
-  complete: res=>{
-    rows = res.data;
-    groupRows();
-    setRevenueInputsFromCsv();
-    recalc();
-  }
 });
 
-attachListeners();
+loadCsv();
 </script>
 
 </body>

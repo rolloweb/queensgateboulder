@@ -1,0 +1,34 @@
+SECTION TITLE,DESCRIPTION,Year 1,Year 2,Source/Calculation
+Revenue,Members per month,270,380,https://docs.google.com/document/d/1Bt8Y3bVvrlQUXOjdv80AqQA7FbKgtfsnr4K9rSAqWDE/edit?usp=sharing
+Revenue,Member price (£),48,50,https://docs.google.com/spreadsheets/d/11IAXH7emWI-WaSasR6AAgeBZXTDgjuh8/edit?usp=sharing&ouid=112884505940743111356&rtpof=true&sd=true
+Revenue,Day passes per month,250,320,https://docs.google.com/document/d/1J1FZkmbktUikjif8V3ogvJrifSfrbXcjdSNEESnlcnU/edit?usp=sharing
+Revenue,Day pass price (£),12,14,https://docs.google.com/spreadsheets/d/11IAXH7emWI-WaSasR6AAgeBZXTDgjuh8/edit?usp=sharing&ouid=112884505940743111356&rtpof=true&sd=true
+Revenue,Other revenue per month,500,700,https://docs.google.com/document/d/1iOhH6qKzYc9zZlHl8Jfk23qU5ln6fK0zCbELc8QHUSI/edit?usp=sharing
+Capital Expenditure (Setup),Wall & Matts,275000,0,Supplier quote
+Capital Expenditure (Setup),Holds budget,25000,0,Supplier quote
+Capital Expenditure (Setup),General construction,50000,0,Average cost calculated on previous construction of similar size
+Capital Expenditure (Setup),Strip out,20000,0,Average cost calculated on previous construction of similar size
+Fixed premises costs,Rent,0,"35,000",Cost guidance provided by Queensgate
+Fixed premises costs,Business rates,35000,"35,000",Cost guidance provided by Queensgate
+Fixed premises costs,Service charge,57850,"57,850",Cost guidance provided by Queensgate
+Fixed premises costs,Utilities,24000,"24,000",Cost guidance provided by Queensgate
+Staffing costs,General manager,30000,"30,000",External hire at ££35k (C) vs. experienced or founder-managed at £30-32k (R/O). Based on East England gym manager averages (£33-36k). Founder operation reduces cost and improves DSCR
+Staffing costs,Climbing instructors,15000,"39,600",£26k each (C) for qualified CWI instructors; £24k (R) typical regional rate; £22k (O) with mixed part-time or volunteer cover. Based on ABC Climbing Jobs & UK wall benchmarks
+Staffing costs,Reception front desk,3500,"12,000","25-35 hrs/week coverage; £20k (C) full rota, £18k (R) leaner, £16k (O) shared role or self-check-in system (e.g., Griptonite). Matches small-wall staffing levels."
+Staffing costs,Cleaner/Maintenance,7000,"8,800","Contracted daily 7 days (C-£11k), reduced 5-6 days (R - £10k), or part-time shared service (O - £9k). Based on UK cleaning contractor rates £10-13/hr"
+Staffing costs,Payroll NI holiday,8000,"15,000","20 % uplift (C/R) covers NI 13.8 %, pension 3 %, holiday/training. 17 % (O) if mostly PT or owner-operated. Based on HMRC employer cost guidance"
+Operating & maintenance,Route setting & holds replacement,4000,"4,000","Year 1: 3-4 resets instead of 6, minimal spare holds; use freelance setters at ~£300/day"
+Operating & maintenance,Equipment & PPE testing,1200,"1,380",Year 1: single LOLER + basic inspections; less equipment volume
+Operating & maintenance,Cleaning & waste,2000,"2,000",Year 1: small-scale contract or part-time cleaner; reduced bin service frequency
+Operating & maintenance,Insurance,6500,"6,500",First-year policy discounts often available; smaller insured contents pre-café
+Operating & maintenance,"IT software, wifi etc.",1500,"1,500",Year 1: use basic POS + single camera system; delay CRM upgrade
+Operating & maintenance,Music license,650,644,Mandatory from Day 1 but fixed low cost
+Marketing,Launch campaign,1500,"2,000","Owner to handle design and digital ads; cost covers boosted posts, local PR ads, signage, and flyers"
+Marketing,Paid ads ongoing,2400,"5,400","Year 1 minimal spend: £200/month across Meta + Google; rely heavily on organic reach, content, and partnerships"
+Marketing,Website hosting,400,540,Use existing Squarespace/WordPress subscription and handle SEO/updates yourself. | v2 efficiencies: cost efficiency
+Marketing,Print & Merch,600,"1,080",Limited signage and posters; produce materials in-house
+Marketing,Community events/Local support,800,"1,080",Run 1-2 open days or collaborations with nearby leisure outlets; minimal spend on prizes and refreshments
+Admin & professional fees,Accountancy/bookeeping,1000,"1,100",Year 1: use small local accountant for year-end + self-manage bookkeeping in Xero or QuickBooks
+Admin & professional fees,Legal/HR,800,"1,800","Basic one-off legal review of lease, insurance and H&S templates; postpone ongoing retainers until Year 2"
+Admin & professional fees,"Bank fees, card processing",1700,"2,200",First-year turnover smaller ‚1 % of £175 k revenue. Update automatically in model to scale with sales
+Admin & professional fees,"Office supplies, software",800,"1,000",Minimal printing and admin tools; use Google Workspace or Microsoft 365 personal tier
